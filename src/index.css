@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+
+:root {
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #000000;
+}
+
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Roboto' sans-serif;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  box-shadow: 0 0 10px #0051ff7d !important;
+
+}
+
+.desktop-area::-webkit-scrollbar {
+  display: none;
+}
+
+.desktop-area {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d0d0d;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2d2d2e;
+  transition: 1s !important;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2e2e2e;
+}
+
+@keyframes shrinkBar {
+  from {
+    width: 100%;
+  }
+
+  to {
+    width: 0%;
+    opacity: 0;
+  }
+}
+
+@keyframes expandIn {
+  from {
+    width: 0;
+    opacity: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  to {
+    width: auto;
+    opacity: 1;
+  }
+}
+
+.animate-expand {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: expandIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale {
+  animation: scaleIn 0.5s 0.7s forwards;
+}

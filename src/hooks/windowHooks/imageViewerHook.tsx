@@ -1,0 +1,20 @@
+import { useState } from "react";
+import { useWindowStatus } from "../windowHook";
+import { FullFileData } from "../../types/file";
+
+export const useImageViewerHook = () => {
+    const { currentStatus, openWindow, minimizeWindow, closeWindow } = useWindowStatus();
+    const [file, setFile] = useState<FullFileData | null>(null)
+    const [loading, setLoading] = useState<boolean>()
+
+    return {
+        file,
+        setFile,
+        loading,
+        setLoading,
+        currentStatus,
+        openWindow,
+        minimizeWindow,
+        closeWindow
+    };
+};

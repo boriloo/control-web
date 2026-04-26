@@ -1,0 +1,130 @@
+import { useEffect, useState } from "react"
+import { useUser } from "../../../context/AuthContext"
+import { DotLottieReact } from "@lottiefiles/dotlottie-react"
+import { BasicFilter, ColorFilter, returnFilterEffects } from "../../../types/auth"
+import { useAppContext } from "../../../context/AppContext"
+
+export default function AppearanceOption() {
+    const { callToast } = useAppContext();
+    const { user, currentDesktop, hasDesktops, setUserFilters, userFilters } = useUser()
+    const [loading, setLoading] = useState<boolean>(false)
+    const [darkFilter, setDarkFilter] = useState<BasicFilter>('low')
+    const [blurFilter, setBlurFilter] = useState<BasicFilter>('low')
+    const [colorFilter, setColorFilter] = useState<ColorFilter>('color')
+
+    useEffect(() => {
+        setDarkFilter(localStorage.getItem('dark-filter') as BasicFilter)
+        setBlurFilter(localStorage.getItem('blur-filter') as BasicFilter)
+        setColorFilter(localStorage.getItem('color-filter') as ColorFilter)
+    }, [userFilters])
+
+
+    if (!currentDesktop) return;
+
+
+    const handleEditFilters = async () => {
+        if (!currentDesktop) return;
+        try {
+            setLoading(true)
+            localStorage.setItem('dark-filter', darkFilter)
+            localStorage.setItem('blur-filter', blurFilter)
+            localStorage.setItem('color-filter', colorFilter)
+            const classes = returnFilterEffects()
+            setUserFilters(classes)
+            callToast({ message: 'Filtros alterados com sucesso!', type: 'success' })
+        } catch (err) {
+            console.log('ERRO AO ATUALIZAR IMAGEM PELAS CONFIGURAÇÕES: ', err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+
+    return (
+        <div className="flex flex-col items-start gap-4 p-6 py-5 w-full">
+            {hasDesktops && (<h1 className="text-[25px] flex">Aparência</h1>)}
+            <p className="text-md mt-[-12px] mb-1">Efeitos aplicados ao fundo quando uma janela é aberta.</p>
+            <div className="w-full h-[1px] bg-white/40 mt-[-10px]"></div>
+
+            <div className="flex flex-col gap-4 px-2 items-start w-full">
+                <p className="text-xl mt-2">Filtros</p>
+                <p className="text-md mt-[-12px] mb-1">Efeitos aplicados ao fundo quando uma janela é aberta.</p>
+
+                <div className="flex flex-row gap-3 w-full flex-wrap">
+                    <div className="flex flex-col gap-1 flex-1 bg-(--color-regular) p-3 pb-4 rounded-md min-w-40">
+                        <p className="text-[18px] mb-2">Filtro escuro</p>
+                        <div className="flex flex-col gap-2">
+                            <div onClick={() => setDarkFilter('off')} className={`${darkFilter === 'off' ? 'bg-(--color-light)/30 hover:bg-(--color-light)/50 border-(--color-lighter)' :
+                                'bg-(--color-dark)/70 hover:bg-(--color-dark)/90 border-transparent'} border-1 flex flex-row gap-2 items-center transition-all p-2 cursor-pointer  rounded-md`}>
+                                <div className={`${darkFilter === 'off' ? 'bg-(--color-lighter) border-(--color-lighter)' : ''} transition-all w-5 h-5 border-1 rounded-full`}></div>
+                                <p>Desativado</p>
+                            </div>
+                            <div onClick={() => setDarkFilter('low')} className={`${darkFilter === 'low' ? 'bg-(--color-light)/30 hover:bg-(--color-light)/50 border-(--color-lighter)' :
+                                'bg-(--color-dark)/70 hover:bg-(--color-dark)/90 border-transparent'} border-1 flex flex-row gap-2 items-center transition-all p-2 cursor-pointer  rounded-md`}>
+                                <div className={`${darkFilter === "low" ? 'bg-(--color-lighter) border-(--color-lighter)' : ''} transition-all w-5 h-5 border-1 rounded-full`}></div>
+                                <p>Pouco</p>
+                            </div>
+                            <div onClick={() => setDarkFilter('high')} className={`${darkFilter === 'high' ? 'bg-(--color-light)/30 hover:bg-(--color-light)/50 border-(--color-lighter)' :
+                                'bg-(--color-dark)/70 hover:bg-(--color-dark)/90 border-transparent'} border-1 flex flex-row gap-2 items-center transition-all p-2 cursor-pointer  rounded-md`}>
+                                <div className={`${darkFilter === "high" ? 'bg-(--color-lighter) border-(--color-lighter)' : ''} transition-all w-5 h-5 border-1 rounded-full`}></div>
+                                <p>Muito</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-1 flex-1 bg-(--color-regular) p-3 pb-4 rounded-md min-w-40">
+                        <p className="text-[18px] mb-2">Desfoque</p>
+                        <div className="flex flex-col gap-2">
+                            <div onClick={() => setBlurFilter('off')} className={`${blurFilter === 'off' ? 'bg-(--color-light)/30 hover:bg-(--color-light)/50 border-(--color-lighter)' :
+                                'bg-(--color-dark)/70 hover:bg-(--color-dark)/90 border-transparent'} border-1 flex flex-row gap-2 items-center transition-all p-2 cursor-pointer  rounded-md`}>
+                                <div className={`${blurFilter === 'off' ? 'bg-(--color-lighter) border-(--color-lighter)' : ''} transition-all w-5 h-5 border-1 rounded-full`}></div>
+                                <p>Desativado</p>
+                            </div>
+                            <div onClick={() => setBlurFilter('low')} className={`${blurFilter === 'low' ? 'bg-(--color-light)/30 hover:bg-(--color-light)/50 border-(--color-lighter)' :
+                                'bg-(--color-dark)/70 hover:bg-(--color-dark)/90 border-transparent'} border-1 flex flex-row gap-2 items-center transition-all p-2 cursor-pointer  rounded-md`}>
+                                <div className={`${blurFilter === "low" ? 'bg-(--color-lighter) border-(--color-lighter)' : ''} transition-all w-5 h-5 border-1 rounded-full`}></div>
+                                <p>Pouco</p>
+                            </div>
+                            <div onClick={() => setBlurFilter('high')} className={`${blurFilter === 'high' ? 'bg-(--color-light)/30 hover:bg-(--color-light)/50 border-(--color-lighter)' :
+                                'bg-(--color-dark)/70 hover:bg-(--color-dark)/90 border-transparent'} border-1 flex flex-row gap-2 items-center transition-all p-2 cursor-pointer  rounded-md`}>
+                                <div className={`${blurFilter === "high" ? 'bg-(--color-lighter) border-(--color-lighter)' : ''} transition-all w-5 h-5 border-1 rounded-full`}></div>
+                                <p>Muito</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-1 flex-1 bg-(--color-regular) p-3 pb-4 rounded-md min-w-40">
+                        <p className="text-[18px] mb-2">Saturação</p>
+                        <div className="flex flex-col gap-2">
+                            <div onClick={() => setColorFilter('color')} className={`${colorFilter === 'color' ? 'bg-(--color-light)/30 hover:bg-(--color-light)/50 border-(--color-lighter)' :
+                                'bg-(--color-dark)/70 hover:bg-(--color-dark)/90 border-transparent'} border-1 flex flex-row gap-2 items-center transition-all p-2 cursor-pointer  rounded-md`}>
+                                <div className={`${colorFilter === "color" ? 'bg-(--color-lighter) border-(--color-lighter)' : ''} transition-all w-5 h-5 border-1 rounded-full`}></div>
+                                <p>Cor</p>
+                            </div>
+                            <div onClick={() => setColorFilter('gray')} className={`${colorFilter === 'gray' ? 'bg-(--color-light)/30 hover:bg-(--color-light)/50 border-(--color-lighter)' :
+                                'bg-(--color-dark)/70 hover:bg-(--color-dark)/90 border-transparent'} border-1 flex flex-row gap-2 items-center transition-all p-2 cursor-pointer  rounded-md`}>
+                                <div className={`${colorFilter === "gray" ? 'bg-(--color-lighter) border-(--color-lighter)' : ''} transition-all w-5 h-5 border-1 rounded-full`}></div>
+                                <p>Preto e Branco</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                {loading ? (
+                    <div className={`
+            p-0.5 px-3 rounded-sm font-medium`}>
+                        <DotLottieReact
+                            src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                            className="w-20 p-0"
+                            loop
+                            autoplay
+                        />
+                    </div>
+                ) : (
+                    <button disabled={loading} onClick={handleEditFilters} className={`border-1 border-(--color-lighter) transition-all cursor-pointer 
+            hover:bg-(--color-lighter) p-2 px-4 rounded-sm font-medium`}>Salvar filtros</button>
+                )}
+            </div>
+
+        </div >
+    )
+}

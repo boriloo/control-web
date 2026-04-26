@@ -1,0 +1,29 @@
+import { useConfigHook } from "./configHook";
+import { useContextMenuHook } from "./contextMenuHook";
+import { useDeleteFileHook } from "./deleteFileHook";
+import { useDesktopConfigHook } from "./desktopConfig";
+import { useFileHook } from "./fileHook";
+import { useImageViewerHook } from "./imageViewerHook";
+import { useListDesktopHook } from "./listDesktopHook";
+import { useNewDesktopHook } from "./newDesktopHook";
+import { useNewFileHook } from "./newFileHook";
+import { useOpenLinkHook } from "./openLinkHook";
+import { useProfileHook } from "./profileHook";
+import { useSocialHook } from "./socialHook";
+
+export function useAllWindows() {
+    return {
+        fileViewer: useFileHook(),
+        listdt: useListDesktopHook(),
+        profile: useProfileHook(),
+        config: useConfigHook(),
+        newFile: useNewFileHook(),
+        newdt: useNewDesktopHook(),
+        openLink: useOpenLinkHook(),
+        dtConfig: useDesktopConfigHook(),
+        imgViewer: useImageViewerHook(),
+        social: useSocialHook(),
+        contextMenu: useContextMenuHook(),
+        deleteFile: useDeleteFileHook(),
+    };
+}

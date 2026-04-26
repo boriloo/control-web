@@ -1,0 +1,245 @@
+import { ExternalLink, FolderRoot, Maximize, Minus, Plus, Trash, X } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useWindowContext } from "../../context/WindowContext"
+import { useUser } from "../../context/AuthContext";
+import { returnFilterEffects } from "../../types/auth";
+import ColumnFile from "./fileViewer/columnFile";
+import { useAppContext } from "../../context/AppContext";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { FileData, FilePathData } from "../../types/file";
+import { getFileByIdService, getFileParentNamesService, getFilesFromParentService } from "../../services/fileServices";
+import { useFileContext } from "../../context/FileContext";
+
+export default function FileWindow() {
+    const { allFiles } = useFileContext()
+    const { minimazeAllWindows } = useAppContext();
+    const { user, currentDesktop } = useUser()
+    const { fileViewer, newFile, deleteFile } = useWindowContext();
+    const [isFullsceen, setIsFullscreen] = useState<boolean>(false)
+    const [internalFiles, setInternalFiles] = useState<FileData[]>([])
+    const [imageValidations, setImageValidations] = useState<Record<string, boolean>>({});
+    const [animationKey, setAnimationKey] = useState<number>(0);
+    const [seeFiles, setSeeFiles] = useState<boolean>(false)
+    const [path, setPath] = useState<FilePathData[]>([])
+    const [loading, setLoading] = useState<boolean>(false)
+    const [animKey, setAnimKey] = useState(0);
+
+
+    useEffect(() => {
+        if (!fileViewer.file?.desktopId || !fileViewer.file?.id || !user || !currentDesktop) return;
+        setAnimKey(prev => prev + 1);
+        const initInternalFiles = async () => {
+
+            try {
+                const files = await getFilesFromParentService(currentDesktop?.id, fileViewer.file.id)
+
+                type FileType = "folder" | "link" | "file";
+                const typeOrder: Record<FileType, number> = { folder: 0, link: 1, file: 2 };
+
+                const sortedArray = files.sort((a: { fileType: FileType }, b: { fileType: FileType }) => {
+                    return typeOrder[a.fileType] - typeOrder[b.fileType];
+                });
+                setInternalFiles(sortedArray);
+
+                const path = await getFileParentNamesService(currentDesktop.id, fileViewer.file.parentId)
+                setPath(path.reverse())
+            } catch (err) {
+                alert(err)
+            }
+        }
+
+        initInternalFiles()
+
+    }, [fileViewer.file, user?.id, allFiles]);
+
+    useEffect(() => {
+        if (fileViewer.currentStatus === 'open') {
+            setSeeFiles(false)
+            setTimeout(() => {
+                setAnimationKey(prev => prev + 1);
+                setSeeFiles(true)
+            }, 100)
+        }
+    }, [fileViewer.currentStatus]);
+
+    function validateImage(url: string): Promise<boolean> {
+        return new Promise((resolve) => {
+            let convertedUrl = 'null'
+            if (url.startsWith('https://drive.google.com')) {
+                const regex = /\/d\/([a-zA-Z0-9_-]+)/;
+                const match = url.match(regex);
+
+                if (match && match[1]) {
+                    const fileId = match[1];
+                    convertedUrl = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
+                } else {
+                    console.warn("Não foi possível extrair o ID do arquivo do Google Drive.");
+                }
+            } else if (/\.(jpg|jpeg|png|webp|gif|bmp|svg)/i.test(url)) {
+                convertedUrl = url
+            }
+
+            const img = new Image();
+            if (convertedUrl) {
+                img.src = convertedUrl;
+            } else {
+                img.src = url
+            }
+
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+        });
+    }
+
+    useEffect(() => {
+        internalFiles.forEach(file => {
+            if (file.fileType === 'link' && file.url && !imageValidations[file.url]) {
+                validateImage(file.url).then(isValid => {
+                    setImageValidations(prev => ({
+                        ...prev,
+                        [file.url as string]: isValid
+                    }));
+                });
+            }
+        });
+    }, [internalFiles]);
+
+
+    const handleAreaClick = (e: React.MouseEvent<HTMLElement>) => {
+        if (e.target != e.currentTarget) return;
+        fileViewer.closeWindow();
+    }
+
+    const handleCreateFile = () => {
+        newFile.openWindow()
+        newFile.setFile(fileViewer.file)
+    }
+
+    const handleDeleteFolder = () => {
+        deleteFile.setFile(fileViewer.file)
+        deleteFile.openWindow()
+    }
+
+    const handlePathClick = async (pathId: string | null) => {
+        if (!currentDesktop) return;
+
+        if (!pathId) {
+            minimazeAllWindows()
+            return;
+        }
+
+        try {
+            setLoading(true)
+            const file = await getFileByIdService(pathId, currentDesktop?.id)
+
+            fileViewer.setFile(file)
+        } catch (err) {
+            throw err
+        } finally {
+            setLoading(false)
+        }
+
+    }
+
+
+    return (
+
+        <div onClick={handleAreaClick} className={`${isFullsceen ? 'pb-[40px]' : ' p-2 pb-[50px]'} ${fileViewer.currentStatus === "open" ? returnFilterEffects() : 'pointer-events-none'} 
+        fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 cursor-pointer`}>
+            <div className={`${isFullsceen ? 'max-w-full max-h-full' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${fileViewer.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0'} 
+                bg-(--color-dark) cursor-default origin-bottom relative transition-all duration-250 flex flex-col w-full h-full overflow-y-auto select-none`}>
+                <div className="z-50 sticky select-none top-0 w-full bg-black/50 h-8 flex flex-row justify-between items-center backdrop-blur-[2px]">
+                    <p className="p-2">{fileViewer.file?.name ?? 'Pasta'}</p>
+                    <div className="flex flex-row h-full">
+                        <Minus onClick={fileViewer.minimizeWindow} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-white/20" />
+                        <Maximize onClick={() => setIsFullscreen(!isFullsceen)} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-white/20" />
+                        <X onClick={fileViewer.closeWindow} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-red-500" />
+                    </div>
+                </div>
+                <div className="flex flex-col w-full p-4 gap-4 items-center">
+                    <div className="flex row items-start gap-4 w-full flex-wrap">
+                        <div className="flex-1 flex flex-col gap-2">
+                            <p>Endereço</p>
+                            <div className=" p-1 px-2 flex flex-row bg-black/30 rounded-md border-1 border-(--color-light)/60 items-center">
+                                <FolderRoot size={16} className="mr-2 text-(--color-light)" />
+                                {path && path.map((pathSegment) => (
+                                    <div className="flex flex-row items-center">
+                                        <p key={pathSegment.name} onClick={() => handlePathClick(pathSegment.id)} className="p-0.5 px-2 rounded-sm transition-all cursor-pointer leading-5 h-7 hover:bg-zinc-800 
+                                        hover:px-3 max-w-40 truncate">
+                                            {pathSegment.id ? pathSegment.name : currentDesktop?.name}
+                                        </p>
+                                        <p className="ml-1 mr-1 text-(--color-light)">|</p>
+                                    </div>
+                                ))}
+                                <p className="p-0.5 ml-2 px-2 rounded-sm bg-(--color-light)/10 leading-5.5 text-(--color-lighter) max-w-40 truncate animate-expand h-7"
+                                    key={animKey}>
+                                    {fileViewer.file?.name}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex flex-row gap-4 flex-1 max-w-65">
+                            <div onClick={handleCreateFile} className="flex flex-col items-center p-2 px-4 gap-1 bg-(--color-light)/80 flex-1 
+                            cursor-pointer  transition-all rounded-md hover:bg-white hover:text-(--color-dark) hover:border-white/70 hover:scale-105">
+                                <Plus size={25} />
+                                Novo
+                            </div>
+                            {/* <div className="flex flex-col items-center p-2 px-4 gap-1 bg-(--color-regular) flex-1 cursor-pointer 
+                             transition-all rounded-md hover:bg-blue-600/10 hover:text-blue-500 hover:border-blue-500
+                            inset-shadow-sm inset-shadow-zinc-600 shadow-md hover:inset-shadow-blue-900">
+                                <ExternalLink size={25} />
+                                Abrir
+                            </div> */}
+                            <div onClick={handleDeleteFolder} className="flex flex-col items-center p-2 px-4 gap-1 bg-(--color-light)/80 flex-1 cursor-pointer 
+                             transition-all rounded-md hover:bg-red-600/20 hover:text-red-500 hover:border-red-500 hover:scale-105">
+                                <Trash size={25} />
+                                Excluir Pasta
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div className="flex flex-row gap-1 rounded-md flex-1  mx-4 mb-4 overflow-hidden min-h-[200px]">
+
+                    <div className={`${!seeFiles && 'opacity-0'} flex flex-1 flex-col relative gap-2 w-full rounded-md p-2 overflow-y-auto scroll-smooth bg-(--color-darker)`}>
+                        <div className={`${loading ? '' : 'opacity-0 pointer-events-none'} transition-all duration-500 flex flex-col gap-1 absolute z-10 justify-center 
+                        items-center bg-zinc-950/80 inset-0`}>
+                            <DotLottieReact
+                                src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                                className="w-40 p-0"
+                                loop
+                                autoplay
+                            />
+                            <p>Carregando arquivos</p>
+                        </div>
+                        {internalFiles.length > 0 ?
+                            internalFiles.map((file, index) => (
+                                <ColumnFile file={file} animationKey={animationKey} index={index} imageValidations={imageValidations} />
+                            ))
+                            :
+                            <div className="flex flex-1 justify-center items-center">
+                                Esta pasta está vazia.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <style>{`
+                @keyframes slideIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(30px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .animate-slideIn {
+                    animation: slideIn 0.3s ease;
+                }
+            `}</style>
+        </div >
+    )
+}
