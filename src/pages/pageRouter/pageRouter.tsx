@@ -4,11 +4,12 @@ import DashboardPage from "../dashboard/page";
 import { useUser } from "../../context/AuthContext";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import AuthPage from "../auth/page";
+import EmailSentPage from "../email/page";
 
 
 const LoadingScreen = () => (
     <div
-     className={`bg-black transtion-all duration-500 pointer-events-none fixed z-50 flex flex-col justify-center items-center w-full min-h-screen`}>
+        className={`bg-black transtion-all duration-500 pointer-events-none fixed z-50 flex flex-col justify-center items-center w-full min-h-screen`}>
         <p className={`control-text text-[50px] mt-10`}>Control</p>
         <DotLottieReact
             src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
@@ -37,6 +38,11 @@ export default function PageRouter() {
                 <Route
                     path="/auth"
                     element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <AuthPage />}
+                />
+
+                <Route
+                    path="/email-sent"
+                    element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <EmailSentPage />}
                 />
 
 

@@ -47,6 +47,28 @@ export default function AuthPage() {
     const [loginForm, setLoginForm] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null)
     const [approved, setApproved] = useState<boolean>(true)
+    const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
+    const [fade, setFade] = useState(true);
+
+    const phrases = [
+        "Domine seu fluxo de trabalho de ponta a ponta",
+        "Transforme ideias complexas em projetos organizados",
+        "Centralize sua produtividade em um único lugar",
+    ];
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setFade(false);
+
+            setTimeout(() => {
+                setCurrentPhraseIndex((prev) => (prev + 1) % phrases.length);
+                setFade(true);
+            }, 700);
+
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         setTimeout(() => { setApproved(false) }, 100);
@@ -103,9 +125,7 @@ export default function AuthPage() {
                     filterDark: 'low', filterBlur: 'low', filterColor: 'color'
                 });
                 setApproved(true)
-                authLoginUser({
-                    email: registerData.email, password: registerData.password, rememberMe: false
-                } as LoginData)
+                navigate('/email-sent')
             } catch (error) {
                 setSent(false)
                 console.error("❌ Ocorreu um erro durante o processo de registro:", error);
@@ -116,61 +136,90 @@ export default function AuthPage() {
 
     return (
         <>
-            <div className="pointer-events-none fixed z-50 flex justify-center items-center w-full min-h-screen">
-                <p className={`${approved ? 'opacity-100' : 'opacity-0'} control-text text-[50px] transition-all duration-500`}>Control</p>
+            <div className={`${approved ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500 pointer-events-none fixed z-50 flex justify-center items-center w-full min-h-screen bg-black`}>
+                <p className={` control-text text-[50px] `}>Control</p>
             </div>
-            <div className={`${approved ? 'scale-101 brightness-0' : 'scale-125'} min-h-screen w-full fixed bg-black 
-                bg-[url('/assets/images/authBG6.jpg')] bg-cover bg-center transition-all duration-1000 z-[-1]`}>
-            </div>
-            <div className="flex justify-center items-center p-4 w-full min-h-screen">
-                <div className={`${approved ? 'opacity-0' : 'opacity-100'} max-w-[550px] p-6 py-10 transition-all duration-500 select-none flex flex-col items-start w-full  bg-black/50 rounded-lg backdrop-blur-lg `}>
+            <p className="absolute right-10 top-10 text-lg">Control</p>
+            <p style={{
+                color: 'transparent',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                backgroundImage: 'linear-gradient(to right, #f1deff, #faded4, #f1deff)',
 
-                    <h1 className={`${error ? 'text-red-400 p-1 px-2 bg-red-700/20' : ''} rounded-md transition-all text-[30px]`}>{error ? error : loginForm ? 'Entrar com e-mail' : 'Crie sua conta'}</h1>
+                backgroundSize: '200% auto',
+
+                animation: 'gradient-x 15s linear infinite'
+            }}
+
+                className={`absolute self-center text-[4vi]/[5.5vi] w-[47vi] text-end transition-all duration-500 select-none
+                ${fade ? 'opacity-100 right-15' : 'opacity-0 right-12'}`}>
+                {phrases[currentPhraseIndex]}
+            </p>
+            <div className={`${approved ? 'scale-101 brightness-0' : 'scale-125'} 
+             min-h-screen w-full fixed bg-cover bg-center transition-all duration-1000 z-[-1] overflow-hidden brightness-75`}>
+
+                <div className="aurora-container">
+                    <div className="aurora-sphere aurora-1"></div>
+                    <div className="aurora-sphere aurora-2"></div>
+                    <div className="aurora-sphere aurora-3"></div>
+                    <div className="aurora-sphere aurora-4"></div>
+                </div>
+
+            </div>
+            <div className="flex justify-start items-center p-8 w-full min-h-screen">
+                <div className={`${approved ? 'opacity-0' : 'opacity-100'} max-w-[650px] p-8 py-10 transition-all duration-500 select-none flex flex-col 
+                items-center w-full h-full bg-linear-to-b from-white/9 to-white/1 backdrop-blur-md rounded-xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_4px_10px_rgba(0,0,0,0.3)]`}>
+
+                    <img src="assets/images/logo.png" className="w-18"></img>
+                    <h1 className={`${error ? 'text-red-400 p-1 px-2 bg-red-700/20' : ''} rounded-md mt-2 transition-all text-[35px]`}>{error ? error : loginForm ? 'Entrar com e-mail' : 'Crie sua conta'}</h1>
                     <form className="w-full mt-6 flex flex-col gap-4 items-start" id="loginForm" onSubmit={handleSubmit(handleFormSubmit)}>
-                        {!loginForm && (
-                            <input {...register("name")} type="text" name="name" placeholder="Nome"
-                                className={`p-3 w-full placeholder-white/80 rounded-md bg-black/30 text-white
-                         hover:bg-black/40 transition-all outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-blue-500`} />
-                        )}
+
+                        <input {...register("name")} type="text" name="name" placeholder="Nome"
+                            className={`${!loginForm ? 'h-12.5 py-3' : 'opacity-0 h-0 py-0 mt-[-8px]'} px-4 w-full placeholder-white/80 rounded-md bg-black/30 text-white overflow-hidden transition-all
+                         hover:bg-black/40 transition-all outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-rose-300`} />
+
 
                         <input {...register("email")} type="email" name="email" placeholder="E-mail"
-                            className="w-full p-3 placeholder-white/80 rounded-md bg-black/40 text-white hover:bg-black/50 transition-all outline-1 outline-transparent duration-400 
-                    cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-blue-500" />
+                            className="w-full p-3 px-4 placeholder-white/80 rounded-md bg-black/40 text-white hover:bg-black/50 transition-all outline-1 outline-transparent duration-400 
+                    cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-rose-300" />
                         <p className={`${errors.email?.message ? 'p-1 px-3' : 'opacity-0 mt-[-10px] '} text-red-500 bg-red-700/10  rounded-sm text-[15px] transition-all`}>{errors.email?.message}</p>
                         <div className="relative w-full">
                             <input {...register("password")} type={`${seePass ? 'text' : 'password'}`} name="password" placeholder="Senha"
-                                className="w-full p-3 placeholder-white/80 rounded-md bg-black/40 text-white hover:bg-black/50 transition-all 
-                            outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-blue-500" />
+                                className="w-full p-3 px-4 placeholder-white/80 rounded-md bg-black/40 text-white hover:bg-black/50 transition-all 
+                            outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-rose-300" />
                             {!seePass ?
-                                (<Eye onClick={() => setSeePass(true)} className="absolute top-2 text-blue-500 cursor-pointer right-2 rounded-sm w-8 h-8 p-1 transition-all hover:bg-blue-500 hover:text-white" />)
+                                (<Eye onClick={() => setSeePass(true)} className="absolute top-2 text-rose-300 cursor-pointer right-2 rounded-sm w-8 h-8 p-1 transition-all hover:bg-rose-400 hover:text-white" />)
                                 :
-                                (<EyeOff onClick={() => setSeePass(false)} className="absolute top-2 text-blue-500 cursor-pointer right-2 rounded-sm w-8 h-8 p-1 transition-all hover:bg-blue-500 hover:text-white" />)}
+                                (<EyeOff onClick={() => setSeePass(false)} className="absolute top-2 text-rose-300 cursor-pointer right-2 rounded-sm w-8 h-8 p-1 transition-all hover:bg-rose-400 hover:text-white" />)}
                         </div>
                         <p className={`${errors.password?.message ? 'p-1 px-3' : 'opacity-0 mt-[-10px] '} text-red-500 bg-red-700/10  rounded-sm text-[15px] transition-all`}>{errors.password?.message}</p>
-                        {!loginForm && (
-                            <input {...register("confirmPassword")} type={`${seePass ? 'text' : 'password'}`} name="confirmPassword" placeholder="Confirmar Senha"
-                                className={`p-3 w-full placeholder-white/80 rounded-md bg-black/30 text-white hover:bg-black/40 
-                        transition-all outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-blue-500`} />
-                        )}
-                        {loginForm && (
-                            <div className="select-none flex flex-row justify-between w-full gap-2 flex-wrap-reverse">
-                                <div className="flex flex-row gap-2 p-1 px-2 rounded-md transition-all items-center cursor-pointer hover:bg-blue-200/15" onClick={() => setRememberMe(!rememberMe)}>
-                                    <div className={`w-5 h-5 rounded-sm flex justify-center items-center border-[1px] transition-all ${rememberMe ? 'border-blue-500 bg-blue-500' : 'border-white'} `}>
-                                        {rememberMe && (
-                                            <Check className="w-full" />
-                                        )}
-                                    </div>
-                                    <p className={`${rememberMe ? 'text-blue-300' : 'text-white'} `}>Lembrar de mim</p>
+
+                        <input {...register("confirmPassword")} type={`${seePass ? 'text' : 'password'}`} name="confirmPassword" placeholder="Confirmar Senha"
+                            className={`${!loginForm ? 'h-12.5 py-3' : 'opacity-0 h-0 py-0 mt-[-8px]'} px-4 w-full placeholder-white/80 rounded-md bg-black/30 text-white hover:bg-black/40 
+                        transition-all outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-rose-300`} />
+
+
+                        <div className={`${loginForm ? 'h-10 opacity-100' : 'opacity-0 h-0'} transition-all select-none 
+                        flex flex-row justify-between w-full gap-2 flex-wrap-reverse overflow-hidden items-center`}>
+                            <div className="flex flex-row gap-2 p-1 px-2 rounded-md transition-all items-center cursor-pointer hover:bg-blue-200/15" onClick={() => setRememberMe(!rememberMe)}>
+                                <div className={`w-5 h-5 rounded-sm flex justify-center items-center border-[1px] transition-all ${rememberMe ? 'border-rose-500 bg-rose-500' : 'border-white'} `}>
+                                    {rememberMe && (
+                                        <Check className="w-full" />
+                                    )}
                                 </div>
-                                {/* <div className="text-blue-300 font-medium text-md cursor-pointer p-1 px-2 transition-all hover:bg-blue-500/40 rounded-lg">
-                                    Esqueci minha senha
-                                </div> */}
+                                <p className={`${rememberMe ? 'text-rose-400' : 'text-white'} `}>Lembrar de mim</p>
                             </div>
-                        )}
+                            <div className="text-rose-400 font-medium text-md cursor-pointer p-1 px-2 transition-all hover:bg-rose-500/20 rounded-lg">
+                                Esqueci minha senha
+                            </div>
+                        </div>
+
 
                         <button type="submit"
                             disabled={sent}
-                            className={`${loginForm ? '' : 'mt-4'} ${sent ? 'opacity-50' : 'hover:bg-blue-500 cursor-pointer'} flex justify-center items-center overflow-hidden p-3 w-full max-h-10 bg-blue-600 text-white font-bold rounded-lg  transition-all`}>
+                            className={`${loginForm ? '' : 'mt-4'} ${sent ? 'opacity-50' : 'cursor-pointer'} flex justify-center items-center hover:bg-rose-600
+                            overflow-hidden p-6.5 w-full max-h-10 self-center bg-linear-to-b bg-black from-black/50 to-zinc-800/50 shadow-2xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.28),0_2px_4px_rgba(0,0,0,0.5)]
+                             text-white font-medium rounded-3xl text-xl transition-all`}>
                             {sent ? (<DotLottieReact
                                 src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
                                 className="w-26 p-0"
@@ -185,18 +234,18 @@ export default function AuthPage() {
                 </div> */}
 
                     <button disabled={sent} onClick={() => setLoginForm(!loginForm)}
-                        className={`${sent ? 'opacity-50' : 'cursor-pointer hover:bg-blue-500/40'} underline text-blue-400 font-medium mt-5 text-md  p-1 px-2 transition-all  rounded-lg`}>
+                        className={`${sent ? 'opacity-50' : 'cursor-pointer hover:bg-rose-400/20'} underline text-rose-400 font-medium mt-5 text-md  p-1 px-2 transition-all  rounded-lg`}>
                         {loginForm ? 'Não possui uma conta?' : 'Já possui uma conta?'}
                     </button>
 
-                    {/* <div className="bg-white/50 w-full h-[1px] mt-8 mb-8"></div>
+                    <div className="bg-white/50 w-full h-[1px] mt-8 mb-8"></div>
 
                     <div className="flex flex-col gap-2 w-full items-center">
                         <p className="text-lg">Entrar com</p>
                         <button className="cursor-pointer p-3 w-full flex justify-center items-center max-w-[300px] bg-gray-200 text-white font-bold rounded-lg hover:bg-white transition-colors">
                             <img src="/assets/images/google.png" className="w-5 h-5" />
                         </button>
-                    </div> */}
+                    </div>
                 </div>
             </div>
 

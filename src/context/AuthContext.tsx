@@ -214,6 +214,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             const userData = await authLoginService(data)
             const { token } = userData
+            console.log('userData', userData)
             localStorage.setItem("accessToken", token);
             setUser(userData);
             setIsAuthenticated(true);

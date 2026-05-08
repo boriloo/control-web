@@ -1,4 +1,4 @@
-import './App.css'
+
 import { AppProvider } from "./context/AppContext";
 import { WindowProvider } from "./context/WindowContext";
 import { AuthProvider } from "./context/AuthContext";

@@ -1,7 +1,7 @@
     import axios from "axios";
 
     export const api = axios.create({
-        baseURL: `http://localhost:3000`,
+        baseURL: `http://127.0.0.1:8787`,
         withCredentials: true
     })
 
@@ -33,7 +33,7 @@
                 originalRequest._retry = true;
 
                 try {
-                    const response = await axios.post("http://localhost:3000/auth/refresh", {}, {
+                    const response = await axios.post("http://127.0.0.1:8787/auth/refresh", {}, {
                         withCredentials: true
                     });
 

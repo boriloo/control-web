@@ -16,6 +16,7 @@ interface PersonalProps {
 export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
     const { setBlackScreen } = useAppContext()
     const { user, authLogoutUser, changeCurrentDesktop, hasDesktops } = useUser();
+    const [start, setStart] = useState<boolean>(false)
     const [imageSelected, setImageSelected] = useState<File>()
     const [desktopName, setDesktopName] = useState<string | null>()
     const [loading, setLoading] = useState<boolean>(false)
@@ -26,6 +27,9 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
     useEffect(() => {
         if (!hasDesktops) {
             setBlackScreen(false)
+        }
+        if (user) {
+            setStart(true)
         }
     }, [hasDesktops])
 
@@ -71,16 +75,28 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                 <h1 className={`${done ? 'opacity-100 mt-0' : 'opacity-0 mt-7'} transition-all duration-700 text-[40px] text-center`}>Tudo pronto. <br /> Aproveite :)</h1>
             </div>
 
-            <div className={`${user ? 'opacity-0' : 'opacity-100'} bg-black transtion-all duration-500 pointer-events-none fixed z-50 flex 
+            <div className={`${start ? 'opacity-0' : 'opacity-100'} bg-black transtion-all duration-500 pointer-events-none fixed z-50 flex 
             flex-col justify-center items-center w-full min-h-screen`}>
-                <p className={`control-text text-[50px]`}>Control</p>
+                <p className={`control-text text-[50px] mt-17.5`}>Control</p>
                 <DotLottieReact
                     src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
                     className="w-20 p-0"
                     loop
                     autoplay
                 />
-                <p className={`control-text text-[20px] opacity-80`}>(Se essa tela persistir, recarregue a página)</p>
+                <p className={`opacity-80 control-text text-[20px] transition-all `}>(Se essa tela persistir, recarregue a página)</p>
+            </div>
+
+            <div className={`
+             min-h-screen w-full fixed bg-cover bg-black/80 bg-center transition-all duration-1000 z-[-1] overflow-hidden brightness-75`}>
+
+                <div className="aurora-container">
+                    <div className="aurora-sphere aurora-1"></div>
+                    <div className="aurora-sphere aurora-2"></div>
+                    <div className="aurora-sphere aurora-3"></div>
+                    <div className="aurora-sphere aurora-4"></div>
+                </div>
+
             </div>
             {loading ?
                 (<div className={`${done2 ? 'opacity-0' : ''} flex flex-col gap-2 items-center w-full max-w-[600px]`}>
