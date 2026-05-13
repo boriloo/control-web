@@ -2,14 +2,9 @@ import { api } from "../lib/axiosConfig"
 import { CreateDesktopData, UpdateDesktopData } from "../types/desktop";
 
 export const createDesktopService = async (data: CreateDesktopData) => {
-    const formData = new FormData();
 
-    formData.append('name', data.name);
-    formData.append('backgroundImage', data.backgroundImage);
-
-    const response = await api.post("/desktop", formData);
-
-    return (response).data;
+    const response = await api.post("/desktop", data);
+    return response.data;
 }
 
 export const getDesktopByIdService = async (id: string) => {

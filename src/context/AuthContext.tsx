@@ -55,14 +55,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
 
+
     useEffect(() => {
         const getColorB = async () => {
             const base64 = currentDesktop?.backgroundImage;
             if (!base64) return;
 
             const img = new Image();
-            img.src = base64;
-            await new Promise((resolve) => (img.onload = resolve));
+            img.crossOrigin = 'anonymous'
+            img.src = currentDesktop?.backgroundImage ?? '';
+            await new Promise((resolve, reject) => {
+                img.onload = resolve
+                img.onerror = reject
+            })
 
             const response = (await getSwatches(img)) as any;
             const color = response.Vibrant ? response.Vibrant.color : response.Muted.color;
@@ -131,8 +136,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const changeCurrentDesktop = useCallback((desktop: any) => {
         setCurrentDesktop({
             ...desktop,
-            backgroundImage: toBase64Image(desktop.backgroundImage) as string
-        })
+            backgroundImage: desktop.background_image ?? desktop.backgroundImage,
+            desktopType: desktop.desktop_type ?? desktop.desktopType,
+            createdAt: desktop.created_at ?? desktop.createdAt,
+            ownerId: desktop.owner_id ?? desktop.ownerId
+        }
+        )
         localStorage.setItem('last-desktop', desktop.id);
     }, [currentDesktop])
 
@@ -179,21 +188,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (localStorageDesktop) {
                     try {
                         const desktop = await getDesktopByIdService(localStorageDesktop);
-                        setCurrentDesktop({
-                            ...desktop,
-                            backgroundImage: toBase64Image(desktop.backgroundImage)
-                        });
+                        changeCurrentDesktop(desktop);
+                        console.log(desktop)
                     } catch (err) {
-                        setCurrentDesktop({
-                            ...firstDesktop,
-                            backgroundImage: toBase64Image(firstDesktop.backgroundImage)
-                        });
+                        changeCurrentDesktop(firstDesktop);
+                        console.log(firstDesktop)
                     }
                 } else {
-                    setCurrentDesktop({
-                        ...firstDesktop,
-                        backgroundImage: toBase64Image(firstDesktop.backgroundImage)
-                    });
+                    changeCurrentDesktop(firstDesktop);
                 }
             }
         } catch (err) {
@@ -214,10 +216,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             const userData = await authLoginService(data)
             const { token } = userData
-            console.log('userData', userData)
+
             localStorage.setItem("accessToken", token);
+
             setUser(userData);
             setIsAuthenticated(true);
+
             await initApp();
             return userData.user;
         } catch (err) {
@@ -243,7 +247,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsAuthenticated(false)
             setUser(null)
             setHasDesktops(false)
-            setCurrentDesktop(null)
+            changeCurrentDesktop(null)
             localStorage.clear();
         } catch (err) {
             throw err;

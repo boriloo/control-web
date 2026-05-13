@@ -22,10 +22,12 @@ export function ClickableImageInput({ onFileSelected, currentImageUrl }: Clickab
         }
     }, [onFileSelected]);
 
+    const maxSizeInMbs = 5
+
     const { getRootProps, getInputProps } = useDropzone({
-        maxSize: 10 * 1024 * 1024,
+        maxSize: maxSizeInMbs * 1024 * 1024,
         onDropRejected: () => {
-            setError('A imagem é grande demais! O limite é de 10 MB.');
+            setError(`A imagem é grande demais! O limite é de ${maxSizeInMbs} MB.`);
         },
         onDrop,
         accept: {
@@ -53,7 +55,7 @@ export function ClickableImageInput({ onFileSelected, currentImageUrl }: Clickab
             <div
                 {...getRootProps()}
                 className={`${preview ? 'min-h-[168px]' : ''} relative rounded-sm overflow-hidden cursor-pointer group 
-                    bg-(--color-regular) border-2 transition  border-(--color-light)/30 w-full max-w-[300px] hover:bg-(--color-light)/40`}
+                    bg-(--color-regular) border-2 transition bg-black/20  border-(--color-light)/30 w-full max-w-[300px] hover:bg-(--color-light)/40`}
             >
                 <input {...getInputProps()} />
                 {preview ? (
@@ -90,7 +92,7 @@ export function ClickableImageInput({ onFileSelected, currentImageUrl }: Clickab
                 )}
             </div>
 
-            <h1 className={`${errors ? 'bg-red-600/15 p-1 px-2' : 'opacity-0'} mt-2 transition-all self-start rounded-md text-red-500 `}>{errors}</h1>
+            <h1 className={`${errors ? 'bg-red-600/15 p-1 px-2' : 'opacity-0'} mt-2 transition-all self-center rounded-md text-red-500 `}>{errors}</h1>
 
         </>
     );

@@ -1,12 +1,16 @@
+type DesktopType = 'personal' | 'shared'
 
 export type CreateDesktopData = {
     name: string,
-    backgroundImage: File,
+    backgroundImage: string,
+    desktopType: DesktopType
+    members: string[]
 }
 
 export type UpdateDesktopData = {
     name?: string,
-    backgroundImage?: File,
+    backgroundImage?: string,
+    desktopType?: DesktopType,
 }
 
 export type DesktopData = {
@@ -14,7 +18,9 @@ export type DesktopData = {
     ownerId: string,
     name: string,
     backgroundImage: string,
-    createdAt: Date
+    createdAt: Date,
+    desktopType: DesktopType,
+    members: string[]
 }
 
 // import { Timestamp } from "firebase/firestore";

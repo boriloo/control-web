@@ -90,30 +90,10 @@ export default function AuthPage() {
                 setError(null);
                 setSent(true);
                 const loginData = data as z.infer<typeof loginSchema>
-                console.log('REMEMBER ME?', rememberMe)
-                const user = await authLoginUser({ email: loginData.email, password: loginData.password, rememberMe } as LoginData);
-
-                changeUser(user)
+                await authLoginUser({ email: loginData.email, password: loginData.password, rememberMe } as LoginData);
                 setApproved(true)
-
-                setTimeout(() => {
-                    navigate('/dashboard')
-                }, 1000)
-                console.log('oi')
             } catch (error) {
                 setSent(false)
-                // const fbError = error as FirebaseError
-                // switch (fbError.code) {
-                //     case 'auth/invalid-credential':
-                //         setError("Dados inválidos");
-                //         break;
-                //     case 'auth/too-many-requests':
-                //         setError("Muitas tentativas, espere um pouco");
-                //         break;
-                //     default:
-                //         setError("Ocorreu um erro inesperado");
-                //         break;
-                // }
             }
         } else {
             try {
@@ -137,9 +117,9 @@ export default function AuthPage() {
     return (
         <>
             <div className={`${approved ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500 pointer-events-none fixed z-50 flex justify-center items-center w-full min-h-screen bg-black`}>
-                <p className={` control-text text-[50px] `}>Control</p>
+                <p className={` control-text text-[50px] `}>CONTROLA</p>
             </div>
-            <p className="absolute right-10 top-10 text-lg">Control</p>
+            <p className="absolute right-10 top-10 text-lg control-text">Control</p>
             <p style={{
                 color: 'transparent',
                 backgroundClip: 'text',

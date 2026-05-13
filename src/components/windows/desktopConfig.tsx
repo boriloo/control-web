@@ -1,4 +1,4 @@
-import { ArrowRight, Maximize, X } from "lucide-react"
+import { ArrowRight, Copy, Maximize, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useUser } from "../../context/AuthContext";
 import { useWindowContext } from "../../context/WindowContext";
@@ -150,6 +150,15 @@ export default function DesktopConfigWindow() {
         }
     }
 
+    const copyDeleteText = async () => {
+        try {
+            await navigator.clipboard.writeText(`${formattedUserName}/${formattedDtName}`);
+            console.log('Text copied to clipboard');
+        } catch (err) {
+            console.error('Failed to copy: ', err);
+        }
+    }
+
 
     return (
         <div onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}
@@ -165,10 +174,16 @@ export default function DesktopConfigWindow() {
                         Esta ação removerá o desktop e <b className="font-medium text-red-500">excluirá permanentemente </b>
                         todos os arquivos presentes nele.
                     </p>
-                    <p className="text-lg mt-4">Digite <b className="font-medium">{formattedUserName}/{formattedDtName}</b> para seguir com a exclusão.</p>
-                    <input onChange={(e) => setDeleteInput(e.target.value)} value={deleteInput} autoCorrect="false" spellCheck={false} autoCapitalize="false" onPaste={(e) => e.preventDefault()} type="text"
+                    <div className="text-lg mt-4 flex flex-row gap-2 flex-wrap items-center">Digite
+                        <div onClick={copyDeleteText} className="text-md p-0.5 px-2 bg-white/20 rounded-md flex flex-row gap-2 items-center hover:bg-white/30 cursor-pointer transition-all">
+                            {formattedUserName}/{formattedDtName}<Copy size={20} />
+                        </div>
+                        para seguir com a exclusão.</div>
+
+                    <input onChange={(e) => setDeleteInput(e.target.value)} value={deleteInput} autoCorrect="false" spellCheck={false} autoCapitalize="false" type="text"
                         className="border-1 border-zinc-600 outline-none bg-zinc-900 p-1 px-2 rounded-lg w-full 
-                    transition-all hover:bg-zinc-800 focus:bg-zinc-950 focus:border-zinc-400" placeholder="Digite aqui" />
+                    transition-all hover:bg-zinc-800 focus:bg-zinc-950 focus:border-zinc-400 mt-2" placeholder="Digite aqui" />
+
                     <div className="flex flex-row gap-2 mt-4">
                         <button onClick={() => { setConfirmDelete(false); setDeleteInput('') }} className="flex-1 p-1 px-5 text-lg text-zinc-300 border-1
                          border-zinc-300 cursor-pointer transition-all hover:bg-zinc-300/10 hover:text-white rounded-md">

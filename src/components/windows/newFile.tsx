@@ -194,7 +194,7 @@ export default function NewFileWindow() {
                     </div>
                     <div className="flex flex-row w-[40%] hover:w-[60%] transition-all mt-2">
                         <button onClick={handleCreateFile} className="p-1.5 px-5 text-[20px] font-medium cursor-pointer transition-all 
-                         bg-(--color-light) hover:bg-(--color-lighter) hover:text-(--color-dark) rounded-md w-full">
+                         bg-(--color-light) hover:bg-(--color-lighter) hover:text-(--color-dark) rounded-md w-full flex flex-row justify-center items-center">
                             {loading ? <DotLottieReact
                                 src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
                                 className="w-15 p-0"

@@ -1,55 +1,56 @@
-    import axios from "axios";
+import axios from "axios";
 
-    export const api = axios.create({
-        baseURL: `http://127.0.0.1:8787`,
-        withCredentials: true
-    })
+export const api = axios.create({
+    baseURL: `http://localhost:8787`,
+    withCredentials: true
+})
 
 
-    api.interceptors.request.use(
-        (config) => {
-            const token = localStorage.getItem("accessToken");
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem("accessToken");
 
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-            }
-
-            return config;
-        },
-        (error) => {
-            return Promise.reject(error);
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
         }
-    );
 
-    api.interceptors.response.use(
-        (response) => response,
-        async (error) => {
-            const originalRequest = error.config;
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
-            if (error.response?.status === 401 &&
-                !originalRequest._retry &&
-                !originalRequest.url.includes('/auth/login')) {
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
 
-                originalRequest._retry = true;
+        if (error.response?.status === 401 &&
+            !originalRequest._retry &&
+            !originalRequest.url.includes('/auth/login')) {
 
-                try {
-                    const response = await axios.post("http://127.0.0.1:8787/auth/refresh", {}, {
-                        withCredentials: true
-                    });
+            originalRequest._retry = true;
 
-                    const { token } = response.data;
-                    localStorage.setItem("accessToken", token);
+            try {
+                const response = await axios.post("http://localhost:8787/auth/refresh", {}, {
+                    withCredentials: true
+                });
 
-                    originalRequest.headers.Authorization = `Bearer ${token}`;
+                const token = response.data.session?.access_token
 
-                    return axios(originalRequest);
-                } catch (refreshError) {
+                if (!token) throw new Error('No token in refresh response')
 
-                    localStorage.removeItem("accessToken");
-                    return Promise.reject(refreshError);
-                }
+                localStorage.setItem("accessToken", token);
+                originalRequest.headers.Authorization = `Bearer ${token}`;
+
+                return axios(originalRequest);
+            } catch (refreshError) {
+                localStorage.removeItem("accessToken");
+                return Promise.reject(refreshError);
             }
-
-            return Promise.reject(error);
         }
-    );
+
+        return Promise.reject(error);
+    }
+);

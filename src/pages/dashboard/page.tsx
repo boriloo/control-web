@@ -1,5 +1,4 @@
-import { useEffect, useState, useRef, useCallback, use } from "react";
-import { DraggableData, DraggableEvent } from 'react-draggable';
+import { useEffect, useState, useRef, useCallback } from "react";
 import { ArrowDownToLine, ArrowLeftToLine, ArrowRightToLine, ArrowUpToLine, CirclePlus, GripVertical } from "lucide-react";
 import { DraggableIcon } from "../../components/draggableIcon";
 import { useDraggableScroll } from "../../components/dragScroll";
@@ -141,7 +140,7 @@ export default function DashboardPage() {
 
     useEffect(() => {
         if (!user || !currentDesktop?.id) return;
-
+        console.log('IMANEGN', currentDesktop)
         setStart(false)
         setStart(true)
 
