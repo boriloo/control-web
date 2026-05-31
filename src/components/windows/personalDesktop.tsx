@@ -5,10 +5,12 @@ import { ClickableImageInput } from "../imageInput";
 import { useUser } from "../../context/AuthContext";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
-import { createDesktopService } from "../../services/desktopServices";
+import { createDesktopService, updateDesktopService } from "../../services/desktopServices";
 import { CreateDesktopData } from "../../types/desktop";
 import { useAppContext } from "../../context/AppContext";
 import { set } from "zod";
+import { getProxyStorageService, uploadStorageService } from "../../services/storageServices";
+import { UploadStorageData } from "../../types/storage";
 
 interface PersonalProps {
     onFinish: (boolean: true) => void;
@@ -100,20 +102,30 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
         }
     }, [hasDesktops])
 
+
+    const handleUpload = async (data: UploadStorageData) => {
+        try {
+            const { path } = await uploadStorageService(data)
+
+            return path
+        } catch (err) {
+            alert(err)
+            return undefined;
+        }
+
+    }
+
     const handleSubmit = async () => {
         try {
             setLoading(true)
 
-
-
             if (!user || !desktopName) return;
 
-            let wallpaperUrl = ''
-            let typeOfDesktop = ''
+            let wallpaperUrl = 'none';
+            let typeOfDesktop = '';
+            let path;
 
             switch (typaBackground) {
-                case 'upload':
-                    break;
                 case 'url':
                     wallpaperUrl = backgroundUrl
                     break;
@@ -131,24 +143,27 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                     break;
             }
 
-
-
             setPercentage(prev => (prev + 33.3))
 
-            const newDesktop = await createDesktopService({
+            let newDesktop = await createDesktopService({
                 name: desktopName,
                 backgroundImage: wallpaperUrl,
                 desktopType: typeOfDesktop as TypaDesktop,
                 members: [user.id]
             } as CreateDesktopData)
 
+            if (typaBackground === 'upload') {
+                path = await handleUpload({ file: imageSelected, typeOfUpload: 'desktop', desktopId: newDesktop.id } as UploadStorageData)
+                wallpaperUrl = path
 
+                newDesktop = await updateDesktopService(newDesktop.id, { name: newDesktop.name, backgroundImage: wallpaperUrl, })
+            }
 
             setPercentage(prev => (prev + 33.3))
 
             changeCurrentDesktop(newDesktop)
 
-            setPercentage(prev => (prev + 33.3))
+            setPercentage(prev => (prev + 33.4))
 
             setTimeout(() => {
                 setDone(true)
@@ -162,7 +177,6 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
             }, 1000)
         } catch (err) {
             console.log('Erro ao criar: ', err)
-        } finally {
             setLoading(false)
         }
     }
@@ -170,9 +184,9 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
 
     return (
         <div
-            className={`${done2 ? '' : 'bg-zinc-900'} ${hasDesktops ? 'opacity-0' : ''} transition-all absolute z-200 w-full min-h-screen flex justify-center items-center p-8`}>
+            className={`${done2 ? '' : 'bg-zinc-950'} ${hasDesktops ? 'opacity-0' : ''} transition-all absolute z-200 w-full min-h-screen flex justify-center items-center p-8`}>
             <div className={`${done2 ? 'opacity-0 pointer-events-none' : done ? 'opacity-100' : 'opacity-0 pointer-events-none'} transition-all duration-500 
-            absolute z-200 bg-zinc-900 w-full min-h-screen flex justify-center items-center p-4`}>
+            absolute z-200 bg-zinc-950 w-full min-h-screen flex justify-center items-center p-4`}>
                 <h1 className={`${done ? 'opacity-100 mt-0' : 'opacity-0 mt-7'} transition-all duration-700 text-[40px] text-center`}>Tudo pronto. <br /> Aproveite :)</h1>
             </div>
             <p className="absolute right-10 top-10 text-lg control-text">Control</p>
@@ -189,7 +203,7 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                 <p className={`opacity-80 control-text text-[20px] transition-all `}>(Se essa tela persistir, recarregue a página)</p>
             </div>
 
-            <div className={`
+            <div className={`${done2 ? 'opacity-0' : ''}
              min-h-screen w-full fixed bg-cover bg-black/80 bg-center top-0 transition-all duration-1000 z-[-1] overflow-hidden brightness-75`}>
 
                 <div className="aurora-container">

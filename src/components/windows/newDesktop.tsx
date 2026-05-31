@@ -6,12 +6,11 @@ import { useState } from "react";
 // import { createDesktop, updateDesktopBackground } from "../../services/desktop";
 // import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { ClickableImageInput } from "../imageInput";
-// import { DesktopType } from "../../types/desktop";
+import { DesktopType } from "../../types/desktop";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useAppContext } from "../../context/AppContext";
 import { createDesktopService } from "../../services/desktopServices";
 import { CreateDesktopData } from "../../types/desktop";
-
 
 export default function NewDesktopWindow() {
     const { callToast } = useAppContext();
@@ -21,10 +20,7 @@ export default function NewDesktopWindow() {
     const [desktopName, setDesktopName] = useState<string>('')
     const [loading, setLoading] = useState<boolean>(false)
 
-
-    // VERSAO LANCAMENTO
-
-    // const [desktopType, setDesktopType] = useState<DesktopType>('personal')
+    const [desktopType, setDesktopType] = useState<DesktopType>('personal')
 
 
     const handleSubmit = async () => {
@@ -73,35 +69,35 @@ export default function NewDesktopWindow() {
                         <p>(Caso não escolhida, será a padrão)</p>
                     )} */}
                 </div>
-                {/* <div className="flex flex-col gap-2 w-full items-start max-w-[1000px]">
+                <div className="flex flex-col gap-2 w-full items-start max-w-[1000px]">
                     <p className="text-lg">Tipo de Desktop</p>
                     <div className="flex flex-row gap-2 w-full">
                         <div className="flex-1 relative">
 
                             <button
                                 onClick={() => setDesktopType('personal')}
-                                className={`${desktopType === 'personal' ? 'bg-(--color-lighter)' : 'hover:bg-white/10'} 
-                                peer font-medium border border-(--color-lighter) rounded-md p-2 w-full transition-all cursor-pointer`}
+                                className={`${desktopType === 'personal' ? 'bg-(--color-light) hover:bg-(--color-lighter) hover:border-(--color-lighter)' : 'hover:bg-white/10'} 
+                                peer font-medium border border-(--color-light) rounded-md p-2 w-full transition-all cursor-pointer`}
                             >
                                 Pessoal
                             </button>
 
-                            <p className="bg-(--color-dark)/30 backdrop-blur-sm rounded-lg p-1 px-2 absolute top-0 left-[50%] mt-[-65px] 
-                            translate-x-[-50%] w-[90%] peer-hover:opacity-100 opacity-0 transition-opacity duration-400 text-center">Apenas para você, deixe tudo do seu jeito</p>
+                            <p className="bg-black/30 backdrop-blur-md rounded-lg p-1 px-2 absolute top-0 left-[50%] mt-[-65px] 
+                            translate-x-[-50%] w-[90%] peer-hover:opacity-100 opacity-0 transition-opacity duration-400 text-center">Apenas para você, deixe tudo do seu jeito.</p>
                         </div>
                         <div className="flex-1 relative">
 
 
-                            <button onClick={() => setDesktopType('team')} className={`${desktopType === 'team' ? 'bg-(--color-lighter)' : 'hover:bg-white/10'} 
-                              peer font-medium border-1 border-(--color-lighter) rounded-md p-2 w-full transition-all cursor-pointer `}>Equipe</button>
+                            <button onClick={() => setDesktopType('shared')} className={`${desktopType === 'shared' ? 'bg-(--color-light) hover:bg-(--color-lighter) hover:border-(--color-lighter)' : 'hover:bg-white/10'} 
+                              peer font-medium border-1 border-(--color-light) rounded-md p-2 w-full transition-all cursor-pointer `}>Compartilhado</button>
 
-                            <p className="bg-(--color-dark)/30 backdrop-blur-sm rounded-lg p-1 px-2 absolute top-0 left-[50%] mt-[-65px] 
-                            translate-x-[-50%] w-[90%] peer-hover:opacity-100 opacity-0 transition-opacity duration-400 text-center">Adicione membros, e compartilhe seus arquivos</p>
+                            <p className="bg-black/30 backdrop-blur-md rounded-lg p-1 px-2 absolute top-0 left-[50%] mt-[-65px] 
+                            translate-x-[-50%] w-[90%] peer-hover:opacity-100 opacity-0 transition-opacity duration-400 text-center">Adicione membros, e compartilhe seus arquivos.</p>
                         </div>
 
 
                     </div>
-                </div> */}
+                </div>
                 <button onClick={handleSubmit} disabled={!imageSelected || desktopName === '' || loading} className={`${!imageSelected || desktopName === '' ? 'pointer-events-none saturate-0 opacity-40' : ''}
                     bg-(--color-lighter) border-none text-xl ${loading ? 'saturate-0 pointer-events-none' : 'p-2'} flex justify-center px-6 font-medium cursor-pointer mt-2 rounded-sm transition-all hover:bg-(--color-light)`}>
                     {loading ? <DotLottieReact

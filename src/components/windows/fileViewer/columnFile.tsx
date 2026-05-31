@@ -14,37 +14,107 @@ export interface ColumnFileProps {
 }
 
 export default function ColumnFile({ file, animationKey, index, imageValidations }: ColumnFileProps) {
+
+
+
     const { root } = useRootContext();
     const { minimazeAllWindows } = useAppContext();
     const { newFile, imgViewer, openLink, fileViewer, deleteFile } = useWindowContext();
     const [imageSrc, setImageSrc] = useState<string | null>(null)
+    const [isValidImage, setIsValidImage] = useState<boolean | null>(null)
+    const [driveThumb, setDriveThumb] = useState<string | null>(null)
 
 
     function getDomainFromUrl(url: string): string {
         try {
-            return new URL(url).hostname;
+            const hostname = new URL(url).hostname;
+
+            const parts = hostname.split(".");
+
+            const isCompoundSuffix = parts.length > 2 && parts[parts.length - 2].length <= 3;
+            const rootDomain = isCompoundSuffix
+                ? parts.slice(-3).join(".")
+                : parts.slice(-2).join(".");
+            return rootDomain;
         } catch {
             return "";
         }
     }
 
+
     useEffect(() => {
-        switch (file.fileType) {
-            case ('folder'):
-                setImageSrc('/assets/images/open-folder.png')
-                break
-            case ('link'):
-                const domain = getDomainFromUrl(file.url as string);
-                if (domain) {
-                    setImageSrc(`https://www.google.com/s2/favicons?domain=${domain}&sz=256`)
-                } else {
-                    setImageSrc("/assets/images/file.png")
+        const validateImage = async (): Promise<boolean> => {
+            return new Promise((resolve) => {
+                if (!file.url || file.fileType !== 'link') return;
+                let convertedUrl = 'null'
+
+                if (file.url.startsWith('https://drive.google.com')) {
+                    const regex = /\/d\/([a-zA-Z0-9_-]+)/;
+                    const match = file.url.match(regex);
+
+                    if (match && match[1]) {
+                        const fileId = match[1];
+                        convertedUrl = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
+                        setDriveThumb(convertedUrl)
+                    } else {
+                        console.warn("Não foi possível extrair o ID do arquivo do Google Drive.");
+                    }
+                } else if (/\.(jpg|jpeg|webp|png)/i.test(file.url as string)) {
+                    convertedUrl = file.url
                 }
-                break;
-            default:
-                break
+
+                const img = new Image();
+
+
+                if (convertedUrl) {
+                    img.src = convertedUrl;
+                } else {
+                    img.src = file.url
+                }
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+            });
         }
-    }, [file]);
+
+
+        const callValidateFunction = async () => {
+            const isValid = await validateImage();
+
+            setIsValidImage(isValid)
+        }
+
+        callValidateFunction()
+
+    }, [file.url])
+
+
+    useEffect(() => {
+        function loadIcon() {
+            if (file.fileType === "folder") {
+                return setImageSrc("/assets/images/open-folder.png");
+            }
+
+            if (file.fileType === "link") {
+                if (isValidImage === null) return;
+
+                if (isValidImage) {
+                    if (driveThumb) {
+                        setImageSrc(driveThumb);
+                    } else {
+                        setImageSrc(file.url as string);
+                    }
+                } else {
+                    const domain = getDomainFromUrl(file.url as string);
+                    if (domain) {
+                        setImageSrc(`https://www.google.com/s2/favicons?domain=${domain}&sz=256`);
+                    } else {
+                        setImageSrc("/assets/images/file.png");
+                    }
+                }
+            }
+        }
+        loadIcon();
+    }, [file, isValidImage]);
 
     const handleDeleteFile = useCallback((e: React.MouseEvent) => {
         e.stopPropagation()
@@ -54,6 +124,7 @@ export default function ColumnFile({ file, animationKey, index, imageValidations
 
     const returnAction = useCallback(() => {
         if (!root.canOpenWindow) return;
+        console.log('receba', file)
         newFile.setFile(file)
         if (file.fileType === "link") {
             if (!file.url) return;

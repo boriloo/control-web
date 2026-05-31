@@ -14,6 +14,7 @@ import { getDesktopByIdService, getDesktopByOwnerService } from "../services/des
 import { DesktopData } from "../types/desktop";
 import { getSwatches } from 'colorthief';
 import { useWindowContext } from "./WindowContext";
+import { getProxyStorageService } from "../services/storageServices";
 
 
 interface UserContextProps {
@@ -54,57 +55,98 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         whity: ''
     });
 
+    useEffect(() => {
+        if (hasDesktops) return;
+
+        setBgColors({
+            darker: '',
+            dark: '',
+            regular: '',
+            light: '',
+            lighter: '',
+            whity: ''
+        });
+
+    }, [hasDesktops])
+
+
+
+    const DEFAULT_COLORS = {
+        darker: '#15171a',
+        dark: '#1e2126',
+        regular: '#262d33',
+        light: '#1b6ad1',
+        lighter: '#1d8af0',
+        whity: '#acdbfa',
+    };
+
+
+    const toHex = (r: number, g: number, b: number) =>
+        `#${[r, g, b].map(v => Math.min(255, Math.max(0, Math.round(v))).toString(16).padStart(2, '0')).join('')}`;
+
+    const getDesaturatedTone = (r: number, g: number, b: number, intensity: number, saturation: number = 0.15) => {
+        const gray = (r * 0.299 + g * 0.587 + b * 0.114);
+        return {
+            r: (gray * (1 - saturation) + r * saturation) * intensity,
+            g: (gray * (1 - saturation) + g * saturation) * intensity,
+            b: (gray * (1 - saturation) + b * saturation) * intensity,
+        };
+    };
 
 
     useEffect(() => {
+        let isMounted = true;
+        const imageUrl = currentDesktop?.backgroundImage;
+
+        if (!imageUrl) return;
+
         const getColorB = async () => {
-            const base64 = currentDesktop?.backgroundImage;
-            if (!base64) return;
-
             const img = new Image();
-            img.crossOrigin = 'anonymous'
-            img.src = currentDesktop?.backgroundImage ?? '';
-            await new Promise((resolve, reject) => {
-                img.onload = resolve
-                img.onerror = reject
-            })
+            img.crossOrigin = 'anonymous';
+            img.src = imageUrl;
 
-            const response = (await getSwatches(img)) as any;
-            const color = response.Vibrant ? response.Vibrant.color : response.Muted.color;
+            try {
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                });
 
-            const { _r: r, _g: g, _b: b } = color;
+                if (!isMounted) return;
 
-            const toHex = (r: number, g: number, b: number) =>
-                `#${[r, g, b].map(v => Math.min(255, Math.max(0, Math.round(v))).toString(16).padStart(2, '0')).join('')}`;
+                const response = (await getSwatches(img)) as any;
+                const swatch = response.Vibrant || response.Muted;
 
+                if (!swatch) {
+                    setBgColors(DEFAULT_COLORS);
+                    return;
+                }
 
-            const getDesaturatedTone = (r: number, g: number, b: number, intensity: number, saturation: number = 0.15) => {
-                const gray = (r * 0.299 + g * 0.587 + b * 0.114);
+                const { _r: r, _g: g, _b: b } = swatch.color;
 
-                const finalR = (gray * (1 - saturation) + r * saturation) * intensity;
-                const finalG = (gray * (1 - saturation) + g * saturation) * intensity;
-                const finalB = (gray * (1 - saturation) + b * saturation) * intensity;
+                const cDarker = getDesaturatedTone(r, g, b, 0.05, 0.10);
+                const cDark = getDesaturatedTone(r, g, b, 0.17, 0.25);
+                const cRegular = getDesaturatedTone(r, g, b, 0.30, 0.50);
+                const cWhity = getDesaturatedTone(r, g, b, 3, 0.5);
 
-                return { r: finalR, g: finalG, b: finalB };
-            };
-
-            const cDarker = getDesaturatedTone(r, g, b, 0.05, 0.10);
-            const cDark = getDesaturatedTone(r, g, b, 0.17, 0.25);
-            const cRegular = getDesaturatedTone(r, g, b, 0.30, 0.50);
-            const cWhity = getDesaturatedTone(r, g, b, 3, 0.5);
-
-            setBgColors({
-                darker: toHex(cDarker.r, cDarker.g, cDarker.b),
-                dark: toHex(cDark.r, cDark.g, cDark.b),
-                regular: toHex(cRegular.r, cRegular.g, cRegular.b),
-                light: toHex(r * 0.95, g * 0.85, b * 0.65),
-                lighter: toHex(r * 1.10, g * 1.10, b * 1.05),
-                whity: toHex(cWhity.r, cWhity.g, cWhity.b),
-            });
+                if (isMounted) {
+                    setBgColors({
+                        darker: toHex(cDarker.r, cDarker.g, cDarker.b),
+                        dark: toHex(cDark.r, cDark.g, cDark.b),
+                        regular: toHex(cRegular.r, cRegular.g, cRegular.b),
+                        light: toHex(r * 0.95, g * 0.85, b * 0.65),
+                        lighter: toHex(r * 1.10, g * 1.10, b * 1.05),
+                        whity: toHex(cWhity.r, cWhity.g, cWhity.b),
+                    });
+                }
+            } catch (err) {
+                if (isMounted) setBgColors(DEFAULT_COLORS);
+            }
         };
 
         getColorB();
-    }, [currentDesktop, dtConfig.desktop]);
+
+        return () => { isMounted = false; };
+    }, [currentDesktop?.backgroundImage]);
 
 
     useEffect(() => {
@@ -133,17 +175,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [])
 
 
-    const changeCurrentDesktop = useCallback((desktop: any) => {
-        setCurrentDesktop({
-            ...desktop,
-            backgroundImage: desktop.background_image ?? desktop.backgroundImage,
-            desktopType: desktop.desktop_type ?? desktop.desktopType,
-            createdAt: desktop.created_at ?? desktop.createdAt,
-            ownerId: desktop.owner_id ?? desktop.ownerId
+    const changeCurrentDesktop = useCallback(async (desktop: any) => {
+        console.log('DESKTOP SENDO ALTERADO 🐍🐍🐍🐍🐍🐍')
+        const background = desktop.backgroundImage ?? desktop.background_image
+        const useProxy = background.startsWith('desktops/')
+
+        let proxiedImage;
+
+        if (useProxy) {
+            proxiedImage = await getProxyStorageService(desktop.backgroundImage ?? desktop.background_image);
+            console.log('PROXY', proxiedImage)
         }
-        )
+
+        const {
+            background_image,
+            desktop_type,
+            created_at,
+            owner_id,
+            ...rest
+        } = desktop;
+
+        setCurrentDesktop({
+            ...rest,
+            backgroundImage: useProxy ? proxiedImage : background_image ?? desktop.backgroundImage,
+            desktopType: desktop_type ?? desktop.desktopType,
+            createdAt: created_at ?? desktop.createdAt,
+            ownerId: owner_id ?? desktop.ownerId
+        });
+
         localStorage.setItem('last-desktop', desktop.id);
-    }, [currentDesktop])
+    }, []);
 
 
     const changeUser = useCallback((user: UserData) => {
@@ -188,11 +249,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (localStorageDesktop) {
                     try {
                         const desktop = await getDesktopByIdService(localStorageDesktop);
+                        console.log('DESKTOP ❤️', desktop)
                         changeCurrentDesktop(desktop);
-                        console.log(desktop)
+
                     } catch (err) {
+                        console.log('DESKTOP ❤️', firstDesktop)
                         changeCurrentDesktop(firstDesktop);
-                        console.log(firstDesktop)
+
                     }
                 } else {
                     changeCurrentDesktop(firstDesktop);

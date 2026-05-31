@@ -14,7 +14,7 @@ import { useFileContext } from "../../context/FileContext";
 export type CreateFileType = "folder" | "link"
 
 export default function NewFileWindow() {
-    const { rootFiles, changeRootFiles, changeAllFiles, allFiles } = useFileContext()
+    const { rootFiles, changeRootFiles, changeAllFiles, allFiles, defaultFile } = useFileContext()
     const { callToast, nextIconPosition } = useAppContext();
     const { user, currentDesktop, userFilters } = useUser();
     const { newFile } = useWindowContext();
@@ -86,14 +86,14 @@ export default function NewFileWindow() {
         try {
             console.log(finalPayload)
             const fileCreated = await createFileService(currentDesktop.id, finalPayload as FileData);
+            const dftFile = defaultFile(fileCreated)
             if (finalPayload.parentId != 'root') {
-                changeAllFiles([...allFiles, fileCreated]);
+                changeAllFiles([...allFiles, dftFile]);
             } else {
-                changeRootFiles([...rootFiles, fileCreated]);
-                changeAllFiles([...allFiles, fileCreated]);
+                changeRootFiles([...rootFiles, dftFile]);
+                changeAllFiles([...allFiles, dftFile]);
             }
 
-            console.log('fileCreated ', fileCreated)
             setName(null)
         } catch (error) {
             console.error("Falha ao criar o ficheiro:", error);
@@ -147,7 +147,7 @@ export default function NewFileWindow() {
     return (
         <div onClick={handleAreaClick} className={`${newFile.currentStatus === 'open' ? returnFilterEffects() : 'pointer-events-none'} 
         transition-all duration-500 fixed z-200 w-full h-screen flex justify-center items-center p-4 pb-[50px] cursor-pointer`}>
-            <div className={`${newFile.currentStatus === 'open' ? 'scale-100' : 'scale-50 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-md p-4 w-full max-w-[600px] 
+            <div className={`${newFile.currentStatus === 'open' ? 'scale-100' : 'scale-70 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-md p-4 w-full max-w-[600px] 
             max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative`}>
                 <X onClick={closeWindow} size={35}
                     className="absolute top-0 right-0 p-2 rounded-bl-lg cursor-pointer transition-all hover:bg-red-500" />

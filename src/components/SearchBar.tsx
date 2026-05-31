@@ -11,7 +11,7 @@ import { useFileContext } from "../context/FileContext";
 import { getAllFilesFromDesktopService } from "../services/fileServices";
 
 export default function SearchBar() {
-    const { allFiles, changeAllFiles } = useFileContext()
+    const { allFiles, changeAllFiles, defaultFile } = useFileContext()
     const { t } = useTranslation();
     const { root } = useRootContext();
     const { minimazeAllWindows } = useAppContext();
@@ -42,8 +42,11 @@ export default function SearchBar() {
         const getAllFiles = async () => {
             try {
                 const files = await getAllFilesFromDesktopService(currentDesktop.id)
+                const defaultFiles = files.map((file: any) => {
+                    return defaultFile(file)
+                })
 
-                changeAllFiles(files)
+                changeAllFiles(defaultFiles)
 
             } catch (err) {
                 alert(err)

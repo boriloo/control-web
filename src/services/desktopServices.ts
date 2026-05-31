@@ -30,7 +30,11 @@ export const updateDesktopService = async (id: string, data: UpdateDesktopData) 
         formData.append('backgroundImage', data.backgroundImage);
     }
 
+
+
     const response = await api.patch(`/desktop/${id}`, formData);
+
+    console.log('POPEYE ⭐')
 
     return response.data;
 }

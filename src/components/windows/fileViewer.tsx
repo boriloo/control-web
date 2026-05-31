@@ -11,7 +11,7 @@ import { getFileByIdService, getFileParentNamesService, getFilesFromParentServic
 import { useFileContext } from "../../context/FileContext";
 
 export default function FileWindow() {
-    const { allFiles } = useFileContext()
+    const { allFiles, defaultFile } = useFileContext()
     const { minimazeAllWindows } = useAppContext();
     const { user, currentDesktop } = useUser()
     const { fileViewer, newFile, deleteFile } = useWindowContext();
@@ -24,27 +24,42 @@ export default function FileWindow() {
     const [loading, setLoading] = useState<boolean>(false)
     const [animKey, setAnimKey] = useState(0);
 
+    useEffect(() => {
+        console.log('Path', path)
+    }, [path])
+
 
     useEffect(() => {
-        if (!fileViewer.file?.desktopId || !fileViewer.file?.id || !user || !currentDesktop) return;
+        setLoading(true)
+        if (!fileViewer.file?.desktopId || !fileViewer.file?.id || !user || !currentDesktop) {
+            console.log('prinmeor block', fileViewer.file, fileViewer.file?.desktopId, fileViewer.file?.id,)
+            return
+        };
         setAnimKey(prev => prev + 1);
         const initInternalFiles = async () => {
 
             try {
                 const files = await getFilesFromParentService(currentDesktop?.id, fileViewer.file.id)
+                const defaultFiles = files.map((file: any) => {
+                    return defaultFile(file)
+                })
 
                 type FileType = "folder" | "link" | "file";
                 const typeOrder: Record<FileType, number> = { folder: 0, link: 1, file: 2 };
 
-                const sortedArray = files.sort((a: { fileType: FileType }, b: { fileType: FileType }) => {
+                const sortedArray = defaultFiles.sort((a: { fileType: FileType }, b: { fileType: FileType }) => {
                     return typeOrder[a.fileType] - typeOrder[b.fileType];
                 });
                 setInternalFiles(sortedArray);
 
                 const path = await getFileParentNamesService(currentDesktop.id, fileViewer.file.parentId)
+                console.log('path puxado', path)
+
                 setPath(path.reverse())
             } catch (err) {
                 alert(err)
+            } finally {
+                setLoading(false)
             }
         }
 
@@ -131,8 +146,9 @@ export default function FileWindow() {
         try {
             setLoading(true)
             const file = await getFileByIdService(pathId, currentDesktop?.id)
+            const dftFile = defaultFile(file)
 
-            fileViewer.setFile(file)
+            fileViewer.setFile(dftFile)
         } catch (err) {
             throw err
         } finally {
@@ -160,28 +176,31 @@ export default function FileWindow() {
                     <div className="flex row items-start gap-4 w-full flex-wrap">
                         <div className="flex-1 flex flex-col gap-2">
                             <p>Endereço</p>
-                            <div className=" p-1 px-2 flex flex-row bg-black/30 rounded-md border-1 border-(--color-light)/60 items-center">
+                            <div className=" p-1 px-2 flex flex-row bg-black/30 rounded-md border-1 border-(--color-light)/60 items-center relative overflow-hidden">
+                                {/* <div className={`${loading ? 'z-80' : 'opacity-0 pointer-events-none z-0'} absolute transition-all duration-500 w-full h-full bg-(--color-darker) 
+                                left-0 p-2 px-3 items-center text-(--color-light)`}>Carregando...</div> */}
                                 <FolderRoot size={16} className="mr-2 text-(--color-light)" />
                                 {path && path.map((pathSegment) => (
                                     <div className="flex flex-row items-center">
-                                        <p key={pathSegment.name} onClick={() => handlePathClick(pathSegment.id)} className="p-0.5 px-2 rounded-sm transition-all cursor-pointer leading-5 h-7 hover:bg-zinc-800 
-                                        hover:px-3 max-w-40 truncate">
+                                        <p key={pathSegment.name} onClick={() => handlePathClick(pathSegment.id)}
+                                            className={`${loading ? 'opacity-0 pointer-events-none' : ''} p-0.5 px-2 rounded-sm transition-all cursor-pointer h-7 hover:bg-zinc-800 
+                                        hover:px-3 max-w-40 truncate`}>
                                             {pathSegment.id ? pathSegment.name : currentDesktop?.name}
                                         </p>
-                                        <p className="ml-1 mr-1 text-(--color-light)">|</p>
+                                        <p className={`${loading ? 'opacity-0 pointer-events-none' : ''} ml-1 mr-1 text-(--color-light) transition-all`}>|</p>
                                     </div>
                                 ))}
-                                <p className="p-0.5 ml-2 px-2 rounded-sm bg-(--color-light)/10 leading-5.5 text-(--color-lighter) max-w-40 truncate animate-expand h-7"
+                                <p className={`${loading ? 'opacity-0 pointer-events-none' : ''} p-0.5 ml-2 px-2 transition-all rounded-sm bg-(--color-light)/10 leading-5.5 text-(--color-lighter) max-w-40 truncate h-7`}
                                     key={animKey}>
                                     {fileViewer.file?.name}
                                 </p>
                             </div>
                         </div>
-                        <div className="flex flex-row gap-4 flex-1 max-w-65">
+                        <div className="flex flex-row gap-4 flex-1 max-w-75">
                             <div onClick={handleCreateFile} className="flex flex-col items-center p-2 px-4 gap-1 bg-(--color-light)/80 flex-1 
                             cursor-pointer  transition-all rounded-md hover:bg-white hover:text-(--color-dark) hover:border-white/70 hover:scale-105">
                                 <Plus size={25} />
-                                Novo
+                                Novo Item
                             </div>
                             {/* <div className="flex flex-col items-center p-2 px-4 gap-1 bg-(--color-regular) flex-1 cursor-pointer 
                              transition-all rounded-md hover:bg-blue-600/10 hover:text-blue-500 hover:border-blue-500
@@ -201,23 +220,24 @@ export default function FileWindow() {
                 <div className="flex flex-row gap-1 rounded-md flex-1  mx-4 mb-4 overflow-hidden min-h-[200px]">
 
                     <div className={`${!seeFiles && 'opacity-0'} flex flex-1 flex-col relative gap-2 w-full rounded-md p-2 overflow-y-auto scroll-smooth bg-(--color-darker)`}>
-                        <div className={`${loading ? '' : 'opacity-0 pointer-events-none'} transition-all duration-500 flex flex-col gap-1 absolute z-10 justify-center 
-                        items-center bg-zinc-950/80 inset-0`}>
+                        <div className={`${loading ? '' : 'opacity-0 pointer-events-none mt-5 blur-sm'} transition-all duration-500 flex flex-col absolute z-10 justify-center 
+                        items-center bg-(--color-darker) inset-0`}>
                             <DotLottieReact
-                                src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
-                                className="w-40 p-0"
+                                src="https://lottie.host/5a94e208-39d4-465f-b461-6a6ddf34c8b8/OKF8N3dMFc.lottie"
+                                className="w-110 p-0 mt-[-80px]"
                                 loop
                                 autoplay
                             />
-                            <p>Carregando arquivos</p>
+                            <p className="text-xl font-medium mt-[-70px]">Carregando arquivos</p>
                         </div>
                         {internalFiles.length > 0 ?
                             internalFiles.map((file, index) => (
                                 <ColumnFile file={file} animationKey={animationKey} index={index} imageValidations={imageValidations} />
                             ))
                             :
-                            <div className="flex flex-1 justify-center items-center">
-                                Esta pasta está vazia.
+                            <div className="flex flex-1 justify-center items-center flex-col gap-6">
+                                <img src="/assets/images/empty.png" className="w-30 opacity-60" />
+                                <p className="text-xl font-medium opacity-70">Esta pasta está vazia.</p>
                             </div>
                         }
                     </div>

@@ -10,6 +10,7 @@ export type FileData = {
     xPos: number,
     yPos: number,
     url?: string,
+    createdAt: string
 }
 
 export type CreateFileBodyData = {

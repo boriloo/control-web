@@ -29,7 +29,7 @@ import DeleteFileWindow from "../../components/windows/deleteFile";
 
 
 export default function DashboardPage() {
-    const { rootFiles, changeRootFiles, allFiles } = useFileContext();
+    const { rootFiles, changeRootFiles, allFiles, defaultFile } = useFileContext();
     const { changeNextIconPosition, blackScreen } = useAppContext();
     const { t } = useTranslation();
     const { root } = useRootContext();
@@ -42,7 +42,6 @@ export default function DashboardPage() {
     const [isDraggin, setIsDraggin] = useState<boolean>(false);
     const [isMoving, setIsMoving] = useState<boolean>(false);
     const [lastDraggedId, setLastDraggedId] = useState<string>('');
-    const [filesBeforeReq, setFilesBeforeReq] = useState<FileData[]>([])
     const originalFilesRef = useRef<FileData[]>([]);
 
     useEffect(() => {
@@ -56,7 +55,7 @@ export default function DashboardPage() {
 
     useEffect(() => {
         if (isDraggin || filesMap.current.size === 0) {
-            setTimer(20);
+            setTimer(3);
             return;
         }
 
@@ -121,7 +120,7 @@ export default function DashboardPage() {
 
     useEffect(() => {
         if (!hasDesktops) return;
-        setTimeout(() => { setStart(true) }, 500);
+        setTimeout(() => { setStart(true) }, 300);
     }, [hasDesktops]);
 
 
@@ -134,21 +133,22 @@ export default function DashboardPage() {
             changeNextIconPosition(nextPosition);
         };
 
-        setTimer(20)
+        setTimer(3)
 
     }, [rootFiles]);
 
     useEffect(() => {
         if (!user || !currentDesktop?.id) return;
-        console.log('IMANEGN', currentDesktop)
-        setStart(false)
-        setStart(true)
 
         const getAllFiles = async () => {
             try {
                 const files = await getFilesFromDesktopService(currentDesktop.id)
-                changeRootFiles(files)
-                originalFilesRef.current = files;
+                const defaultFiles = files.map((file: any) => {
+                    return defaultFile(file)
+                })
+                console.log('root files', files)
+                changeRootFiles(defaultFiles)
+                originalFilesRef.current = defaultFiles;
 
             } catch (err) {
                 alert(err)
@@ -366,21 +366,22 @@ export default function DashboardPage() {
         <>
             <div className={`${blackScreen ? '' : 'opacity-0 pointer-none select-none'} transition-opacity duration-600 pointer-events-none z-201 absolute bg-black w-full h-screen`} />
 
-            <div className="pointer-events-none fixed z-[-3] flex justify-center items-center w-full min-h-screen">
+            <div className="pointer-events-none fixed z-[-3] flex justify-center flex-col gap-2 items-center w-full min-h-screen">
                 <DotLottieReact
                     src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
-                    className="w-20 p-0"
+                    className="w-30 p-0 opacity-60"
                     loop
                     autoplay
                 />
+                <p className={`${start ? 'opacity-60' : 'opacity-0'} text-center transition-all text-lg`}>Se seu plano de fundo não estiver carregando, <br /> pode ser um erro no link escolhido.</p>
             </div>
             <div className={`${start ? 'opacity-0' : 'opacity-100'} bg-black transtion-all duration-500 pointer-events-none fixed z-50 flex justify-center items-center w-full min-h-screen`}>
                 <p className={`control-text text-[50px]`}>Control</p>
             </div>
-            {hasDesktops && (<div className={`${start ? 'opacity-100 ' : 'blur-3xl opacity-0'} transition-[opacity,filter] duration-1500 scale-101 flex min-h-screen w-full fixed 
+            {/* {hasDesktops && (<div className={`${start ? 'opacity-100 ' : 'blur-3xl opacity-0'} transition-[opacity,filter] duration-1500 scale-101 flex min-h-screen w-full fixed 
                 bg-cover bg-center z-[-2]`}
-                style={{ backgroundImage: `url(${localStorage.getItem('background')})` }}></div>)}
-            {hasDesktops && (<div className={`${start ? 'opacity-100 ' : 'blur-3xl opacity-0'} transition-[opacity,filter] duration-1500 scale-101 flex min-h-screen w-full fixed 
+                style={{ backgroundImage: `url(${localStorage.getItem('background')})` }}></div>)} */}
+            {hasDesktops && (<div className={`${start ? 'opacity-100 ' : 'blur-xl opacity-0'} transition-all duration-1500 scale-101 flex min-h-screen w-full fixed 
                 bg-cover bg-center z-[-1]`}
                 style={{ backgroundImage: `url(${currentDesktop?.backgroundImage})` }}
             ></div>)}

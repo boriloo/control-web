@@ -1,4 +1,4 @@
-type DesktopType = 'personal' | 'shared'
+export type DesktopType = 'personal' | 'shared'
 
 export type CreateDesktopData = {
     name: string,

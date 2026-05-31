@@ -30,6 +30,8 @@ export default function DesktopConfigWindow() {
     const [bgVersion, setBgVersion] = useState(0)
     const mouseDownTarget = useRef<EventTarget | null>(null);
 
+
+
     const handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
         mouseDownTarget.current = e.target;
     };
@@ -120,35 +122,36 @@ export default function DesktopConfigWindow() {
     const deleteDesktopFunction = async () => {
         if (!windowDesktop) return;
 
+        setLoading(true);
+
         try {
             if (currentDesktop?.id === dtConfig.desktop?.id) {
-
                 const desktops = await getDesktopByOwnerService();
-
                 const otherDesktops = desktops.filter((d: any) => d.id !== dtConfig.desktop?.id);
 
                 if (otherDesktops.length === 0) {
-                    setBlackScreen(true)
+                    setBlackScreen(true);
                     setTimeout(() => {
                         setHasDesktops(false);
-                    }, 1000)
+                    }, 1000);
                 } else {
                     changeCurrentDesktop(otherDesktops[0]);
                 }
             }
 
-            await deleteDesktopService(windowDesktop.id)
+            await deleteDesktopService(windowDesktop.id);
 
-            setDeleteInput('')
+            setDeleteInput('');
             setConfirmDelete(false);
             dtConfig.closeWindow();
             dtConfig.setDesktop(null);
-
         } catch (err) {
             console.error("Erro ao deletar desktop:", err);
             callToast({ message: 'Erro ao excluir desktop.', type: 'error' });
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     const copyDeleteText = async () => {
         try {
@@ -175,7 +178,7 @@ export default function DesktopConfigWindow() {
                         todos os arquivos presentes nele.
                     </p>
                     <div className="text-lg mt-4 flex flex-row gap-2 flex-wrap items-center">Digite
-                        <div onClick={copyDeleteText} className="text-md p-0.5 px-2 bg-white/20 rounded-md flex flex-row gap-2 items-center hover:bg-white/30 cursor-pointer transition-all">
+                        <div onClick={copyDeleteText} className="text-md p-0.5 px-2 bg-white/12 rounded-md flex flex-row gap-2 items-center hover:bg-white/30 cursor-pointer transition-all">
                             {formattedUserName}/{formattedDtName}<Copy size={20} />
                         </div>
                         para seguir com a exclusão.</div>
@@ -185,14 +188,32 @@ export default function DesktopConfigWindow() {
                     transition-all hover:bg-zinc-800 focus:bg-zinc-950 focus:border-zinc-400 mt-2" placeholder="Digite aqui" />
 
                     <div className="flex flex-row gap-2 mt-4">
-                        <button onClick={() => { setConfirmDelete(false); setDeleteInput('') }} className="flex-1 p-1 px-5 text-lg text-zinc-300 border-1
-                         border-zinc-300 cursor-pointer transition-all hover:bg-zinc-300/10 hover:text-white rounded-md">
-                            Voltar
-                        </button>
-                        <button disabled={`${formattedUserName}/${formattedDtName}` != deleteInput} onClick={deleteDesktopFunction} className={`${`${formattedUserName}/${formattedDtName}` === deleteInput ? '' : 'pointer-events-none saturate-0 opacity-70'} flex-1 p-1 px-5 text-lg text-red-500 border-1 border-red-500 cursor-pointer transition-all 
-                        hover:bg-red-500 hover:text-white rounded-md`}>
-                            Excluir Desktop
-                        </button>
+                        {loading ? (
+                            <div className="flex-1 flex justify-center py-2">
+                                <DotLottieReact
+                                    src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                                    className="w-14"
+                                    loop
+                                    autoplay
+                                />
+                            </div>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={() => { setConfirmDelete(false); setDeleteInput('') }}
+                                    className="flex-1 p-1 px-5 text-lg text-zinc-300 border-1 border-zinc-300 cursor-pointer transition-all hover:bg-zinc-300/10 hover:text-white rounded-md"
+                                >
+                                    Voltar
+                                </button>
+                                <button
+                                    disabled={`${formattedUserName}/${formattedDtName}` !== deleteInput}
+                                    onClick={deleteDesktopFunction}
+                                    className={`${`${formattedUserName}/${formattedDtName}` === deleteInput ? '' : 'pointer-events-none saturate-0 opacity-70'} flex-1 p-1 px-5 text-lg text-red-500 border-1 border-red-500 cursor-pointer transition-all hover:bg-red-500 hover:text-white rounded-md`}
+                                >
+                                    Excluir Desktop
+                                </button>
+                            </>
+                        )}
                     </div>
                     <p className="self-center text-md text-white/60">*Esta ação é irreversível.</p>
                 </div>
@@ -265,7 +286,7 @@ export default function DesktopConfigWindow() {
 
                             {currentImage && !loading && (<p className="mb-[-5px] p-1 px-2 bg-white/10 rounded-lg">Prévia do Fundo</p>)}
 
-                            <div className={`${loading ? 'saturate-0 pointer-events-none opacity-50 scale-90' : ''} origin-left flex flex-col transition-all w-full`}>
+                            <div className={`${loading ? 'saturate-0 pointer-events-none opacity-50 scale-90' : ''} origin-left flex flex-col items-start transition-all w-full`}>
                                 <ClickableImageInput onFileSelected={(file) => {
                                     setCurrentImage(file)
                                 }} />
