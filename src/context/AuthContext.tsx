@@ -40,7 +40,7 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const { closeAllWindows } = useAppContext();
     const { dtConfig } = useWindowContext();
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
     const [currentDesktop, setCurrentDesktop] = useState<DesktopData | null>(null);
     const [user, setUser] = useState<UserData | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true)

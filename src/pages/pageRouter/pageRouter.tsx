@@ -23,40 +23,33 @@ const LoadingScreen = () => (
 export default function PageRouter() {
     const { isAuthenticated, isLoading } = useUser();
 
-    if (isLoading) {
-        return <LoadingScreen />;
-    }
-
     return (
         <BrowserRouter>
-            <Routes>
-                <Route
-                    path="/"
-                    element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <Navigate to='/auth' replace />}
-                />
-
-                <Route
-                    path="/auth"
-                    element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <AuthPage />}
-                />
-
-                <Route
-                    path="/email-sent"
-                    element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <EmailSentPage />}
-                />
-
-
-                <Route
-                    path="/dashboard"
-                    element={isAuthenticated ? <DashboardPage /> : <Navigate to='/auth' replace />}
-                />
-                {/* <DashboardPage /> */}
-            </Routes>
+            {isLoading ? (
+                <LoadingScreen />
+            ) : (
+                <Routes>
+                    <Route
+                        path="/"
+                        element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <Navigate to='/auth' replace />}
+                    />
+                    <Route
+                        path="/auth"
+                        element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <AuthPage />}
+                    />
+                    <Route
+                        path="/email-sent"
+                        element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <EmailSentPage />}
+                    />
+                    <Route
+                        path="/dashboard"
+                        element={isAuthenticated ? <DashboardPage /> : <Navigate to='/auth' replace />}
+                    />
+                </Routes>
+            )}
         </BrowserRouter>
     );
 }
-
-
 
 
 
