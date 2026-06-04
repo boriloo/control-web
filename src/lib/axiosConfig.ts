@@ -4,7 +4,11 @@ const API_URL = import.meta.env.VITE_API_URL
 
 export const api = axios.create({
     baseURL: API_URL,
-    withCredentials: true
+    withCredentials: true,
+    headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+    }
 })
 
 api.interceptors.request.use(
@@ -19,7 +23,7 @@ api.interceptors.request.use(
     },
     (error) => {
         return Promise.reject(error);
-    }
+    }   
 );
 
 api.interceptors.response.use(
