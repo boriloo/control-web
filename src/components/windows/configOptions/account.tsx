@@ -92,7 +92,7 @@ export default function AccountOption() {
 
             <h1 className="text-[25px] flex">Sua Conta</h1>
             <p className="text-md mt-[-12px] mb-1">Dados pessoais e segurança.</p>
-            <div className="w-full h-[1px] bg-white/40 mt-[-10px]"></div>
+            <div className="w-full h-[1px] bg-(--color-whity)/50"></div>
 
             <div className="w-full flex flex-col gap-1 px-2">
                 <p className="text-xl mt-2">Perfil</p>
@@ -132,7 +132,7 @@ export default function AccountOption() {
             hover:bg-(--color-lighter) p-2 px-4 rounded-sm font-medium`}>Salvar alterações</button>
             )}
 
-            <div className="w-full h-[1px] bg-white/40 mt-4"></div>
+            <div className="w-full h-[1px] bg-(--color-whity)/50 mt-2"></div>
 
             <div className="bg-zinc-950/50 p-4 gap-3 flex flex-col w-full max-w-[400px] rounded-lg items-start border-1 border-(--color-regular)">
                 <h1 className="text-2xl">Zona de risco</h1>

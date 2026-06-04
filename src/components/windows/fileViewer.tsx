@@ -30,19 +30,20 @@ export default function FileWindow() {
 
 
     useEffect(() => {
+        let ignore = false; 
+
         setLoading(true)
-        if (!fileViewer.file?.desktopId || !fileViewer.file?.id || !user || !currentDesktop) {
-            console.log('prinmeor block', fileViewer.file, fileViewer.file?.desktopId, fileViewer.file?.id,)
-            return
-        };
+        if (!fileViewer.file?.desktopId || !fileViewer.file?.id || !user || !currentDesktop) return;
+
         setAnimKey(prev => prev + 1);
         const initInternalFiles = async () => {
-
             try {
                 const files = await getFilesFromParentService(currentDesktop?.id, fileViewer.file.id)
-                const defaultFiles = files.map((file: any) => {
-                    return defaultFile(file)
-                })
+                const pathData = await getFileParentNamesService(currentDesktop.id, fileViewer.file.parentId)
+
+                if (ignore) return; 
+
+                const defaultFiles = files.map((file: any) => defaultFile(file))
 
                 type FileType = "folder" | "link" | "file";
                 const typeOrder: Record<FileType, number> = { folder: 0, link: 1, file: 2 };
@@ -50,20 +51,24 @@ export default function FileWindow() {
                 const sortedArray = defaultFiles.sort((a: { fileType: FileType }, b: { fileType: FileType }) => {
                     return typeOrder[a.fileType] - typeOrder[b.fileType];
                 });
+
                 setInternalFiles(sortedArray);
+                setPath(pathData.reverse())
 
-                const path = await getFileParentNamesService(currentDesktop.id, fileViewer.file.parentId)
-                console.log('path puxado', path)
-
-                setPath(path.reverse())
             } catch (err) {
+                if (ignore) return;
                 alert(err)
             } finally {
-                setLoading(false)
+                if (!ignore) setLoading(false)
             }
         }
 
         initInternalFiles()
+
+        
+        return () => {
+            ignore = true;
+        }
 
     }, [fileViewer.file, user?.id, allFiles]);
 

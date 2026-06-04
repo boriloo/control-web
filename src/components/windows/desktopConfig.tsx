@@ -30,6 +30,29 @@ export default function DesktopConfigWindow() {
     const [bgVersion, setBgVersion] = useState(0)
     const mouseDownTarget = useRef<EventTarget | null>(null);
 
+    const [copy, setCopy] = useState<boolean>(false);
+
+    const timeoutRef = useRef(null);
+
+    const copyDeleteText = async () => {
+        try {
+            await navigator.clipboard.writeText(`${formattedUserName}/${formattedDtName}`);
+            setCopy(true);
+
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+
+            timeoutRef.current = setTimeout(() => {
+                setCopy(false);
+            }, 3000);
+
+            console.log('Text copied to clipboard');
+        } catch (err) {
+            console.error('Failed to copy: ', err);
+        }
+    }
+
 
 
     const handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
@@ -153,14 +176,7 @@ export default function DesktopConfigWindow() {
         }
     };
 
-    const copyDeleteText = async () => {
-        try {
-            await navigator.clipboard.writeText(`${formattedUserName}/${formattedDtName}`);
-            console.log('Text copied to clipboard');
-        } catch (err) {
-            console.error('Failed to copy: ', err);
-        }
-    }
+
 
 
     return (
@@ -168,9 +184,12 @@ export default function DesktopConfigWindow() {
             className={`${isFullsceen ? 'pb-[40px]' : ' p-2 pb-[50px]'} ${dtConfig.currentStatus === "open" ? returnFilterEffects() : 'pointer-events-none'} 
         fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 cursor-pointer`}>
 
-            <div className={`${confirmDelete ? '' : 'pointer-events-none opacity-0'} transition-all cursor-default fixed top-0 bg-black/70 w-full h-full z-100 flex 
+            <div className={`${confirmDelete ? '' : 'pointer-events-none opacity-0'} transition-all cursor-default fixed top-0 bg-black/70 w-full h-full z-100 flex flex-col gap-5
             justify-center items-center p-2 pb-11`}>
-                <div className="bg-zinc-950 p-3 w-full max-w-[510px] h-full max-h-[370px] rounded-lg border-1 border-zinc-800 overflow-y-auto flex flex-col gap-1">
+
+                <div className={`${!copy ? '' : 'mt-[-65px]'} bg-white transition-all rounded-full p-2 text-black px-4 z-20`}>Texto copiado!</div>
+
+                <div className={`${!copy ? 'mt-[-70px]' : 'mt-[-5px]'} transition-all bg-zinc-950 p-3 w-full max-w-[510px] h-full max-h-[370px] rounded-lg border-1 border-zinc-800 overflow-y-auto flex flex-col gap-1 z-30`}>
                     <p className="text-lg">Atenção! Você está prestes a excluir um desktop </p>
                     <p className="text-xl text-red-500">{windowDesktop?.name}</p>
                     <p className="text-lg mt-4">
@@ -178,7 +197,7 @@ export default function DesktopConfigWindow() {
                         todos os arquivos presentes nele.
                     </p>
                     <div className="text-lg mt-4 flex flex-row gap-2 flex-wrap items-center">Digite
-                        <div onClick={copyDeleteText} className="text-md p-0.5 px-2 bg-white/12 rounded-md flex flex-row gap-2 items-center hover:bg-white/30 cursor-pointer transition-all">
+                        <div onClick={copyDeleteText} className="text-md p-0.5 px-2 select-none bg-white/12 rounded-md flex flex-row gap-2 items-center hover:bg-white/30 cursor-pointer transition-all">
                             {formattedUserName}/{formattedDtName}<Copy size={20} />
                         </div>
                         para seguir com a exclusão.</div>

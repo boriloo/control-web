@@ -19,10 +19,10 @@ export default function TaskBar() {
 
             {/* VERSAO LANCAMENTO */}
 
-            {/* <img onClick={() => {
+            <img onClick={() => {
                 minimazeAllWindows()
                 social.openWindow()
-            }} src="/assets/images/users.png" alt="users" className=" p-1.5 px-2 w-11 transition-all cursor-pointer hover:bg-zinc-500/30" /> */}
+            }} src="/assets/images/users.png" alt="users" className=" p-1.5 px-2 w-11 transition-all cursor-pointer hover:bg-zinc-500/30" />
         </div>
     )
 }

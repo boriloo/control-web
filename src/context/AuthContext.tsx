@@ -176,7 +176,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
     const changeCurrentDesktop = useCallback(async (desktop: any) => {
-        console.log('DESKTOP SENDO ALTERADO 🐍🐍🐍🐍🐍🐍')
         const background = desktop.backgroundImage ?? desktop.background_image
         const useProxy = background.startsWith('desktops/')
 
