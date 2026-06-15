@@ -120,7 +120,7 @@ export default function AccountOption() {
                 <div className={`
             p-0.5 px-3 rounded-sm font-medium`}>
                     <DotLottieReact
-                        src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                        src="assets/images/loader.lottie"
                         className="w-20 p-0"
                         loop
                         autoplay

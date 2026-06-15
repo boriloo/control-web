@@ -228,7 +228,7 @@ export default function FileWindow() {
                         <div className={`${loading ? '' : 'opacity-0 pointer-events-none mt-5 blur-sm'} transition-all duration-500 flex flex-col absolute z-10 justify-center 
                         items-center bg-(--color-darker) inset-0`}>
                             <DotLottieReact
-                                src="https://lottie.host/5a94e208-39d4-465f-b461-6a6ddf34c8b8/OKF8N3dMFc.lottie"
+                                src="assets/images/fileLoader.lottie"
                                 className="w-110 p-0 mt-[-80px]"
                                 loop
                                 autoplay
@@ -241,7 +241,7 @@ export default function FileWindow() {
                             ))
                             :
                             <div className="flex flex-1 justify-center items-center flex-col gap-6">
-                                <img src="/assets/images/empty.png" className="w-30 opacity-60" />
+                                <img src="/assets/images/empty.png" className="w-25 opacity-60" />
                                 <p className="text-xl font-medium opacity-70">Esta pasta está vazia.</p>
                             </div>
                         }

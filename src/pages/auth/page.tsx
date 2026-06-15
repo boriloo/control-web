@@ -83,7 +83,8 @@ export default function AuthPage() {
         clearErrors();
     }, [loginForm, clearErrors]);
 
-
+    const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+    
     const handleFormSubmit = async (data: FormData) => {
         if (loginForm) {
             try {
@@ -104,8 +105,10 @@ export default function AuthPage() {
                     name: registerData.name, email: registerData.email, password: registerData.password,
                     filterDark: 'low', filterBlur: 'low', filterColor: 'color'
                 });
-                setApproved(true)
-                navigate('/email-sent')
+
+                // await delay(1000);
+                
+                await authLoginUser({ email: registerData.email, password: registerData.password, rememberMe: false } as LoginData);
             } catch (error) {
                 setSent(false)
                 console.error("❌ Ocorreu um erro durante o processo de registro:", error);
@@ -201,7 +204,7 @@ export default function AuthPage() {
                             overflow-hidden p-6.5 w-full max-h-10 self-center bg-linear-to-b bg-black from-black/50 to-zinc-800/50 shadow-2xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.28),0_2px_4px_rgba(0,0,0,0.5)]
                              text-white font-medium rounded-3xl text-xl transition-all`}>
                             {sent ? (<DotLottieReact
-                                src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                                src="assets/images/loader.lottie"
                                 className="w-26 p-0"
                                 loop
                                 autoplay

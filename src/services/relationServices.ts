@@ -1,6 +1,8 @@
 import { api } from "../lib/axiosConfig"
 
 export const createRelationService = async (receiverId: string) => {
+    console.log('dentro da REQ', receiverId)
+
     const response = await api.post(`/relation/${receiverId}`);
 
     return response.data;

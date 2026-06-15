@@ -368,7 +368,7 @@ export default function DashboardPage() {
 
             <div className="pointer-events-none fixed z-[-3] flex justify-center flex-col gap-2 items-center w-full min-h-screen">
                 <DotLottieReact
-                    src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                    src="assets/images/loader.lottie"
                     className="w-30 p-0 opacity-60"
                     loop
                     autoplay

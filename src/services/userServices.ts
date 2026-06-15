@@ -7,6 +7,18 @@ export const getMeService = async () => {
     return (response).data;
 }
 
+export const getUserByEmailService = async (userEmail: string) => {
+    const response = await api.get(`/user/email/${userEmail}`);
+
+    return (response).data;
+}
+
+export const getUserByIdService = async (userId: string) => {
+    const response = await api.get(`/user/${userId}`);
+
+    return (response).data;
+}
+
 export const updateUserService = async (data: updateUserData) => {
     console.log(data)
     const formData = new FormData();

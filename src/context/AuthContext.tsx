@@ -248,11 +248,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (localStorageDesktop) {
                     try {
                         const desktop = await getDesktopByIdService(localStorageDesktop);
-                        console.log('DESKTOP ❤️', desktop)
                         changeCurrentDesktop(desktop);
 
                     } catch (err) {
-                        console.log('DESKTOP ❤️', firstDesktop)
                         changeCurrentDesktop(firstDesktop);
 
                     }

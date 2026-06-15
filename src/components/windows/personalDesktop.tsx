@@ -195,7 +195,7 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
             flex-col justify-center items-center w-full min-h-screen`}>
                 <p className={`control-text text-[50px] mt-17.5`}>Control</p>
                 <DotLottieReact
-                    src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                    src="assets/images/loader.lottie"
                     className="w-20 p-0"
                     loop
                     autoplay
@@ -218,7 +218,7 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
             {loading ?
                 (<div className={`${done2 ? 'opacity-0' : ''} flex flex-col gap-2 items-center w-full max-w-[600px]`}>
                     <DotLottieReact
-                        src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                        src="assets/images/loader.lottie"
                         className="w-26 p-0"
                         loop
                         autoplay

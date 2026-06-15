@@ -1,8 +1,11 @@
 import { Ban, Clipboard, Maximize, Minus, UserRoundX, X } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useUser } from "../../context/AuthContext";
 import { useWindowContext } from "../../context/WindowContext";
-import { returnFilterEffects } from "../../types/auth";
+import { returnFilterEffects, UserData } from "../../types/auth";
+import { getUserByEmailService, getUserByIdService } from "../../services/userServices";
+import { createRelationService, getAcceptedRelationsService, getBlockedRelationsService, getPendingRelationsService } from "../../services/relationServices";
+import { RelationData } from "../../types/relation";
 // import { userWithEmailExists } from "../../services/auth";
 // import { createRelation } from "../../services/relations";
 // import { getPublicUserByEmail } from "../../services/public";
@@ -12,17 +15,69 @@ type section = "friends" | "pending" | "blocked"
 export default function SocialWindow() {
     const { user } = useUser();
     const { social } = useWindowContext();
-    const [friendList, setFriendList] = useState<section>('friends')
+    const [friendListSection, setFriendListSection] = useState<section>('friends')
     const [isFullsceen, setIsFullscreen] = useState<boolean>(false)
     const [canSend, setCanSend] = useState<boolean>(false)
     const [emailReq, setEmailReq] = useState<string>('')
     const [error, setError] = useState<string | null>(null)
+    const [allFriends, setAllFriends] = useState<UserData[]>([])
+    const [allPending, setAllPending] = useState<UserData[]>([])
+    const [allReceived, setAllReceived] = useState<UserData[]>([])
+    const [allBlocked, setAllBlocked] = useState<UserData[]>([])
 
 
     const handleAreaClick = (e: React.MouseEvent<HTMLElement>) => {
         if (e.target != e.currentTarget) return;
         social.closeWindow();
     }
+
+    useEffect(() => {
+        const myId = user?.id
+        const getAllLists = async () => {
+            const friends = await getAcceptedRelationsService()
+            const pending = await getPendingRelationsService()
+            const blocked = await getBlockedRelationsService()
+
+            // friends — converte todos para o user que não é eu
+            const friendUsers = await Promise.all(
+                friends.map(async (relation: any) => {
+                    const otherId = relation.sender_id === myId
+                        ? relation.receiver_id
+                        : relation.sender_id
+                    return await getUserByIdService(otherId)
+                })
+            )
+            setAllFriends(friendUsers)
+
+
+            const receivedPending = pending.filter((r: any) => r.receiver_id === myId)
+            const sentPending = pending.filter((r: any) => r.sender_id === myId)
+
+            const receivedUsers = await Promise.all(
+                receivedPending.map(async (relation: any) => await getUserByIdService(relation.sender_id))
+            )
+            const sentUsers = await Promise.all(
+                sentPending.map(async (relation: any) => await getUserByIdService(relation.receiver_id))
+            )
+
+            setAllPending([...sentUsers])
+
+            setAllReceived([...receivedUsers])
+
+            // blocked — converte todos para o user que não é eu
+            const blockedUsers = await Promise.all(
+                blocked.map(async (relation: any) => {
+                    const otherId = relation.sender_id === myId
+                        ? relation.receiver_id
+                        : relation.sender_id
+                    return await getUserByIdService(otherId)
+                })
+            )
+            setAllBlocked(blockedUsers)
+        }
+
+        getAllLists()
+    }, [])
 
 
     useEffect(() => {
@@ -43,37 +98,110 @@ export default function SocialWindow() {
     const handleSendFriendRequest = async (email: string) => {
         try {
             setError(null)
-            // const receiver = await userWithEmailExists(email)
+            const friendUser = await getUserByEmailService(email)
 
-            // if (!receiver) {
-            //     setError("Este usuário não existe ou não aceita pedidos de amizade.")
-            //     return;
-            // }
+            console.log('FRIEND USER', friendUser)
 
-            // const UserReceiver = await getPublicUserByEmail(email)
+            if (!friendUser) {
+                setError("Este usuário não existe ou não aceita pedidos de amizade.")
+                return;
+            }
 
-            // if (!user) return;
-            // await createRelation({
-            //     sender: {
-            //         id: user.uid as string,
-            //         name: user.name as string,
-            //         imageUrl: user.profileImage as string
-            //     },
-            //     receiver: {
-            //         id: UserReceiver.uid as string,
-            //         name: UserReceiver.name as string,
-            //         imageUrl: UserReceiver.profileImage as string
-            //     },
-            //     blockerId: null,
-            //     status: 'pending'
-            // })
+            const newRelation = await createRelationService(friendUser)
+
+            setAllPending(prev => [...prev, newRelation])
 
         } catch (err) {
-
             console.log('ERRO!', err)
             throw err
         }
     }
+
+    const viewedList = useCallback(() => {
+
+        if (friendListSection === 'friends') {
+            if (allFriends.length > 0) {
+                return allFriends.map((relation) => {
+                    return (<div className="group flex flex-row items-center gap-2.5 p-3.5 rounded-sm bg-(--color-dark)">
+                        <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                        <h1 className="text-lg">{relation.id}</h1>
+                        <div className="flex flex-row gap-4 ml-auto">
+                            <UserRoundX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
+                                hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                            <Ban className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
+                                hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                        </div>
+                    </div>)
+                })
+            } else {
+                return (<p>blablaba</p>)
+            }
+
+
+        } else if (friendListSection === 'pending') {
+            if (allPending.length > 0) {
+                return (<>
+                    <div>Pedidos de amizade recebidos</div>
+                    {
+                        allPending.map((user) => {
+                            return (<div className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
+                                <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                                <div className="flex flex-col">
+                                    <h1 className="text-xl">{user.name}</h1>
+                                    <p className="text-[14px] opacity-75">{user.email}</p>
+                                </div>
+
+                                <div className="flex flex-row gap-4 ml-auto">
+                                    <UserRoundX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
+                                hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                                    <Ban className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
+                                hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                                </div>
+                            </div>)
+                        })
+                    }
+                    <div>Pedidos de amizade enviados</div>
+                    {
+                        allPending.map((relation) => {
+                            return (<div className="group flex flex-row items-center gap-2.5 p-3.5 rounded-sm bg-(--color-dark)">
+                                <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                                <h1 className="text-lg">{relation.id}</h1>
+                                <div className="flex flex-row gap-4 ml-auto">
+                                    <UserRoundX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
+                                hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                                    <Ban className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
+                                hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                                </div>
+                            </div>)
+                        })
+                    }
+                </>
+                )
+
+            } else {
+                return (<p>blablaba</p>)
+            }
+
+
+        } else if (friendListSection === 'blocked') {
+            if (allBlocked.length > 0) {
+                return allBlocked.map((relation) => {
+                    return (<div className="group flex flex-row items-center gap-2.5 p-3.5 rounded-sm bg-(--color-dark)">
+                        <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                        <h1 className="text-lg">{relation.id}</h1>
+                        <div className="flex flex-row gap-4 ml-auto">
+                            <UserRoundX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
+                                hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                            <Ban className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
+                                hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                        </div>
+                    </div>)
+                })
+            } else {
+                return (<p>blablaba</p>)
+            }
+        }
+    }, [friendListSection, allFriends, allPending, allBlocked])
 
 
     return (
@@ -92,34 +220,39 @@ export default function SocialWindow() {
                     </div>
                 </div>
 
-                <div className="flex flex-row w-full p-6 gap-6 items-start flex-wrap h-full">
-                    <div className="flex-1 flex flex-col gap-2 min-w-[300px]">
-                        <h1 className="text-[24px]">Suas Informações</h1>
-                        <div className="min-h-40 flex-1 bg-(--color-regular) rounded-md p-4 py-5 flex flex-col gap-4">
-                            <div className="flex flex-row gap-2 items-center">
-                                <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-12 h-12 rounded-full" />
-                                <div className="flex flex-col">
-                                    <h1>{user?.name as string}</h1>
-                                    <p>{user?.email as string}</p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <p>15 Amigos</p>
-                                <p>23 Colaboradores</p>
-                            </div>
+                <div className="flex flex-row w-full items-start flex-wrap h-full">
+                    <div className="flex-1 flex flex-col gap-2 p-8 border-1 h-full border-white/10 rounded-b-lg w-full max-w-[300px] bg-(--color-darker)/35 items-center">
 
-                            <button className="flex flex-row gap-2 items-center p-1 mt-2 text-[16px] 
-                            px-3 border-[1.5px] border-white/20 cursor-pointer rounded-md bg-(--color-dark) self-center text-white transition-all hover:border-(--color-lighter) hover:text-(--color-lighter) hover:bg-zinc-950">
-                                <p>Copiar Link de amizade</p>
-                                <Clipboard size={16} />
-                            </button>
-
+                        <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-23 h-23 rounded-full" />
+                        <div className="flex flex-col items-center mt-2">
+                            <h1 className="text-lg font-bold">{user?.name as string}</h1>
+                            <p className="opacity-60">{user?.email as string}</p>
                         </div>
+
+                        <div className="flex flex-row p-4 w-full justify-around rounded-lg bg-(--color-regular) gap-1 mt-2">
+                            <div className="flex flex-col items-center gap-1">
+                                <p>15</p>
+                                <p>Amigos</p>
+                            </div>
+                            <div className="h-full w-[1px] bg-white/20"></div>
+                            <div className="flex flex-col items-center gap-1">
+                                <p>15</p>
+                                <p>Colegas</p>
+                            </div>
+                        </div>
+
+                        <button className="flex flex-row gap-2 items-center p-1 mt-2 text-[16px] 
+                            px-3 border-[1.5px] border-white/20 cursor-pointer rounded-md bg-(--color-dark) self-center text-white transition-all hover:border-(--color-lighter) hover:text-(--color-lighter) hover:bg-zinc-950">
+                            <p>Copiar Link de amizade</p>
+                            <Clipboard size={16} />
+                        </button>
+
+
                     </div>
-                    <div className="flex-2 flex flex-col gap-2 h-full">
+                    <div className="flex-2 flex flex-col gap-2 p-6 h-full">
                         <div className="flex flex-row gap-2">
-                            <input value={emailReq} onChange={(e) => setEmailReq(e.target.value)} type="email" placeholder="Email do usuário" 
-                            className="bg-zinc-950/40 border-1 flex-1 rounded-sm p-1.5 px-3 border-zinc-800
+                            <input value={emailReq} onChange={(e) => setEmailReq(e.target.value)} type="email" placeholder="Email do usuário"
+                                className="bg-zinc-950/40 border-1 flex-1 rounded-sm p-1.5 px-3 border-zinc-800
                             hover:bg-zinc-950/60 transition-all outline-none focus:border-zinc-500 focus:bg-zinc-950/80" />
 
                             <button disabled={!canSend} onClick={() => handleSendFriendRequest(emailReq)}
@@ -129,37 +262,31 @@ export default function SocialWindow() {
 
                         <p className={`${error ? 'p-1 px-2' : 'p-0 px-0 opacity-0'} transition-all rounded-md text-red-500 bg-red-500/10 self-start`}>{error}</p>
 
-                        <div className="min-h-40 bg-(--color-darker) p-4 gap-3 rounded-md flex flex-col h-full">
+                        <div className="min-h-40 p-4 gap-3 rounded-md flex flex-col h-full">
 
-                            <div className="flex flex-row w-full">
+                            <div className="flex flex-row w-full relative select-none">
+                                <div className={`${friendListSection === 'friends' ? 'left-[1px]' : friendListSection === 'pending' ? 'left-[33.5%]' : 'left-[66.8%]'} w-[33%] transition-all h-full absolute
+                                 bg-(--color-light) z-[-1] rounded-md`}></div>
                                 <div className="flex-1 flex justify-center">
-                                    <h1 onClick={() => setFriendList('friends')} className={`${friendList === 'friends' ? 'border-(--color-light) text-(--color-light) w-full hover:bg-(--color-light)/10' :
-                                        'border-white hover:bg-zinc-300/5'}
-                                    border-b-1 p-1 text-lg w-26 hover:w-full  rounded-t-sm text-center transition-all cursor-pointer`}>Amigos</h1>
+                                    <h1 onClick={() => setFriendListSection('friends')} className={`${friendListSection === 'friends' ? 'text-white w-full' :
+                                        ' '}
+                                     p-1.5 text-lg w-26 hover:w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Amigos</h1>
                                 </div>
                                 <div className="flex-1 flex justify-center">
-                                    <h1 onClick={() => setFriendList('pending')} className={`${friendList === 'pending' ? 'border-(--color-light) text-(--color-light) w-full hover:bg-(--color-light)/10' :
-                                        'border-white hover:bg-zinc-300/5'}
-                                    border-b-1 p-1 text-lg w-26 hover:w-full rounded-t-sm text-center transition-all cursor-pointer`}>Pendente</h1>
+                                    <h1 onClick={() => setFriendListSection('pending')} className={`${friendListSection === 'friends' ? 'text-white w-full ' :
+                                        ' '}
+                                     p-1.5 text-lg w-26 hover:w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Pendentes</h1>
                                 </div>
                                 <div className="flex-1 flex justify-center items-center">
-                                    <h1 onClick={() => setFriendList('blocked')} className={`${friendList === 'blocked' ? 'border-(--color-light) text-(--color-light) w-full hover:bg-(--color-light)/10' :
-                                        'border-white hover:bg-zinc-300/5'}
-                                    border-b-1 p-1 text-lg w-26 hover:w-full rounded-t-sm text-center transition-all cursor-pointer`}>Bloqueados</h1>
+                                    <h1 onClick={() => setFriendListSection('blocked')} className={`${friendListSection === 'friends' ? 'text-white w-full' :
+                                        ' '}
+                                     p-1.5 text-lg w-26 hover:w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Bloqueados</h1>
                                 </div>
                             </div>
 
-                            <div className="group flex flex-row items-center gap-2.5 p-3.5 rounded-sm bg-(--color-dark)">
-                                <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
-                                <h1 className="text-lg">{user?.name as string}</h1>
-                                <div className="flex flex-row gap-4 ml-auto">
-                                    <UserRoundX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
-                                hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                                    <Ban className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
-                                hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                                </div>
+                            {viewedList()}
 
-                            </div>
+
                         </div>
                     </div>
 

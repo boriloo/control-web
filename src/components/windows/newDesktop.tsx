@@ -101,7 +101,7 @@ export default function NewDesktopWindow() {
                 <button onClick={handleSubmit} disabled={!imageSelected || desktopName === '' || loading} className={`${!imageSelected || desktopName === '' ? 'pointer-events-none saturate-0 opacity-40' : ''}
                     bg-(--color-lighter) border-none text-xl ${loading ? 'saturate-0 pointer-events-none' : 'p-2'} flex justify-center px-6 font-medium cursor-pointer mt-2 rounded-sm transition-all hover:bg-(--color-light)`}>
                     {loading ? <DotLottieReact
-                        src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                        src="assets/images/loader.lottie"
                         className="w-26 p-0"
                         loop
                         autoplay

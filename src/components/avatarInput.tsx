@@ -228,7 +228,7 @@ export function AvatarImageInput({ onFileSelected, currentImageUrl }: AvatarImag
                                     disabled={!crop.width || !crop.height}
                                 >
                                     <DotLottieReact
-                                        src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                                        src="assets/images/loader.lottie"
                                         className="w-15 p-0"
                                         loop
                                         autoplay

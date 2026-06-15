@@ -1,12 +1,8 @@
-type FriendUser = {
-    id: string,
-    name: string,
-    imageUrl: string
-}
-
 export interface RelationData {
-    sender: FriendUser,
-    receiver: FriendUser,
-    blockerId: string | null
-    status: 'accepted' | 'pending' | 'blocked'
+    id: string,
+    senderId: string,
+    receiverId: string,
+    blockerId: string | null,
+    status: 'accepted' | 'pending' | 'blocked',
+    createdAt: string,
 }

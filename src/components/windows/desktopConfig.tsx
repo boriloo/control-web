@@ -210,7 +210,7 @@ export default function DesktopConfigWindow() {
                         {loading ? (
                             <div className="flex-1 flex justify-center py-2">
                                 <DotLottieReact
-                                    src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                                    src="assets/images/loader.lottie"
                                     className="w-14"
                                     loop
                                     autoplay
@@ -252,7 +252,7 @@ export default function DesktopConfigWindow() {
                 <div className="absolute w-full h-[450px] z-2 bg-gradient-to-b from-zinc-(--color-dark)/30 from-0% to-(--color-dark) to-78%" />
                 <div className="absolute w-full top-0 h-[450px] z-0 flex justify-center items-center">
                     <DotLottieReact
-                        src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                        src="assets/images/loader.lottie"
                         className="w-20 p-0"
                         loop
                         autoplay
@@ -317,7 +317,7 @@ export default function DesktopConfigWindow() {
                                 <div className={`
             p-0.5 px-3 rounded-sm font-medium`}>
                                     <DotLottieReact
-                                        src="https://lottie.host/e580eaa4-d189-480f-a6ce-f8c788dff90d/MP2FjoJFFE.lottie"
+                                        src="assets/images/loader.lottie"
                                         className="w-20 p-0"
                                         loop
                                         autoplay
