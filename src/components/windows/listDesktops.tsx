@@ -27,10 +27,7 @@ export default function ListDesktopsWindow() {
     }
 
     useEffect(() => {
-        if (!user) {
-            setAllDesktops([]);
-            return;
-        };
+        setAllDesktops([]);
 
         const getAllDesktops = async () => {
             const responseDesktops = await getDesktopByOwnerService();

@@ -146,18 +146,17 @@ export default function DashboardPage() {
                 const defaultFiles = files.map((file: any) => {
                     return defaultFile(file)
                 })
-                console.log('root files', files)
                 changeRootFiles(defaultFiles)
                 originalFilesRef.current = defaultFiles;
 
             } catch (err) {
-                alert(err)
+                console.log(err)
             }
         }
 
         getAllFiles()
 
-    }, [currentDesktop?.id, user?.id]);
+    }, [currentDesktop, user]);
 
     const desktopRef = useRef<HTMLDivElement>(null);
     const [contentToRight, setContentToRight] = useState<boolean>(false)

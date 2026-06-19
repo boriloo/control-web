@@ -157,7 +157,6 @@ export function AvatarImageInput({ onFileSelected, currentImageUrl }: AvatarImag
                 setIsCropping(false);
             } catch (error) {
                 console.error('Erro ao processar crop:', error);
-                alert('Erro ao processar a imagem. Tente novamente.');
             } finally {
                 setLoading(false)
             }

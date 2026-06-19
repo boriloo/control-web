@@ -12,15 +12,17 @@ function App() {
     <RootProvider>
       <WindowProvider>
         <AppProvider>
-          <AuthProvider>
-            <FileProvider>
+          <FileProvider>
+            <AuthProvider>
+
               <div
                 className="flex min-h-screen w-full">
                 <PageRouter />
               </div >
               <Toast />
-            </FileProvider>
-          </AuthProvider>
+
+            </AuthProvider>
+          </FileProvider>
         </AppProvider>
       </WindowProvider>
     </RootProvider >

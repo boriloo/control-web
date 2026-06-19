@@ -101,7 +101,6 @@ export default function ImageViewerWindow() {
 
             } catch (error) {
                 console.error('Erro ao baixar a imagem:', error);
-                alert('Não foi possível baixar a imagem. Verifique o console para mais detalhes.');
             } finally {
                 setDownLoading(false)
             }

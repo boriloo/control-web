@@ -54,7 +54,6 @@ export default function DesktopConfigWindow() {
     }
 
 
-
     const handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
         mouseDownTarget.current = e.target;
     };

@@ -114,16 +114,23 @@ export default function Icon({ icon, beingDragged }: IconProps) {
 
         if (!root.canOpenWindow || beingDragged) return;
         newFile.setFile(icon)
+
         if (icon.fileType === "link") {
             if (!icon.url) return;
             if (isValidImage) {
                 imgViewer.setFile(icon);
                 imgViewer.openWindow();
             } else {
-                openLink.setName(icon.name as string);
-                openLink.setUrl(icon.url as string);
-                openLink.setBackPath(false);
-                openLink.openWindow();
+                const dontWarning = localStorage.getItem('dont-show-warning')
+
+                if (dontWarning === 'true') {
+                    window.open(icon.url as string, '_blank')?.focus();
+                } else {
+                    openLink.setName(icon.name as string);
+                    openLink.setUrl(icon.url as string);
+                    openLink.setBackPath(false);
+                    openLink.openWindow();
+                }
             }
         }
 

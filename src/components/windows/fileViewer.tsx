@@ -30,7 +30,7 @@ export default function FileWindow() {
 
 
     useEffect(() => {
-        let ignore = false; 
+        let ignore = false;
 
         setLoading(true)
         if (!fileViewer.file?.desktopId || !fileViewer.file?.id || !user || !currentDesktop) return;
@@ -41,7 +41,7 @@ export default function FileWindow() {
                 const files = await getFilesFromParentService(currentDesktop?.id, fileViewer.file.id)
                 const pathData = await getFileParentNamesService(currentDesktop.id, fileViewer.file.parentId)
 
-                if (ignore) return; 
+                if (ignore) return;
 
                 const defaultFiles = files.map((file: any) => defaultFile(file))
 
@@ -57,7 +57,6 @@ export default function FileWindow() {
 
             } catch (err) {
                 if (ignore) return;
-                alert(err)
             } finally {
                 if (!ignore) setLoading(false)
             }
@@ -65,7 +64,7 @@ export default function FileWindow() {
 
         initInternalFiles()
 
-        
+
         return () => {
             ignore = true;
         }
@@ -184,7 +183,7 @@ export default function FileWindow() {
                             <div className=" p-1 px-2 flex flex-row bg-black/30 rounded-md border-1 border-(--color-light)/60 items-center relative overflow-hidden">
                                 {/* <div className={`${loading ? 'z-80' : 'opacity-0 pointer-events-none z-0'} absolute transition-all duration-500 w-full h-full bg-(--color-darker) 
                                 left-0 p-2 px-3 items-center text-(--color-light)`}>Carregando...</div> */}
-                                <FolderRoot size={16} className="mr-2 text-(--color-light)" />
+                                <FolderRoot size={16} className="mr-2 ml-1 text-(--color-light)" />
                                 {path && path.map((pathSegment) => (
                                     <div className="flex flex-row items-center">
                                         <p key={pathSegment.name} onClick={() => handlePathClick(pathSegment.id)}
@@ -224,7 +223,7 @@ export default function FileWindow() {
                 </div>
                 <div className="flex flex-row gap-1 rounded-md flex-1  mx-4 mb-4 overflow-hidden min-h-[200px]">
 
-                    <div className={`${!seeFiles && 'opacity-0'} flex flex-1 flex-col relative gap-2 w-full rounded-md p-2 overflow-y-auto scroll-smooth bg-(--color-darker)`}>
+                    <div className={`${!seeFiles && 'opacity-0'} flex flex-1 flex-col relative gap-2 w-full rounded-md p-2 overflow-y-auto scroll-smooth`}>
                         <div className={`${loading ? '' : 'opacity-0 pointer-events-none mt-5 blur-sm'} transition-all duration-500 flex flex-col absolute z-10 justify-center 
                         items-center bg-(--color-darker) inset-0`}>
                             <DotLottieReact

@@ -15,6 +15,7 @@ import { DesktopData } from "../types/desktop";
 import { getSwatches } from 'colorthief';
 import { useWindowContext } from "./WindowContext";
 import { getProxyStorageService } from "../services/storageServices";
+import { useFileContext } from "./FileContext";
 
 
 interface UserContextProps {
@@ -40,6 +41,7 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const { closeAllWindows } = useAppContext();
     const { dtConfig } = useWindowContext();
+    const { changeAllFiles, changeRootFiles } = useFileContext();
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
     const [currentDesktop, setCurrentDesktop] = useState<DesktopData | null>(null);
     const [user, setUser] = useState<UserData | null>(null);
@@ -123,18 +125,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                 const { _r: r, _g: g, _b: b } = swatch.color;
 
-                const cDarker = getDesaturatedTone(r, g, b, 0.05, 0.10);
-                const cDark = getDesaturatedTone(r, g, b, 0.17, 0.25);
-                const cRegular = getDesaturatedTone(r, g, b, 0.30, 0.50);
-                const cWhity = getDesaturatedTone(r, g, b, 3, 0.5);
+                // Saturação reduzida em todos (último parâmetro)
+                const cDarker = getDesaturatedTone(r, g, b, 0.05, 0.05);
+                const cDark = getDesaturatedTone(r, g, b, 0.17, 0.15);
+                const cRegular = getDesaturatedTone(r, g, b, 0.30, 0.25);
+
+                // Usando getDesaturatedTone para light e lighter com saturação bem baixa
+                const cLight = getDesaturatedTone(r, g, b, 0.85, 0.85);
+                const cLighter = getDesaturatedTone(r, g, b, 1.05, 0.80);
+
+                const cWhity = getDesaturatedTone(r, g, b, 3.0, 0.15);
 
                 if (isMounted) {
                     setBgColors({
                         darker: toHex(cDarker.r, cDarker.g, cDarker.b),
                         dark: toHex(cDark.r, cDark.g, cDark.b),
                         regular: toHex(cRegular.r, cRegular.g, cRegular.b),
-                        light: toHex(r * 0.95, g * 0.85, b * 0.65),
-                        lighter: toHex(r * 1.10, g * 1.10, b * 1.05),
+                        light: toHex(cLight.r, cLight.g, cLight.b),
+                        lighter: toHex(cLighter.r, cLighter.g, cLighter.b),
                         whity: toHex(cWhity.r, cWhity.g, cWhity.b),
                     });
                 }
@@ -237,15 +245,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 ...currentUser,
                 profileImage: toBase64Image(currentUser.profileImage)
             });
+
+            console.log('CURRENT USER: ', currentUser)
             setIsAuthenticated(true);
 
             const desktops = await getDesktopByOwnerService();
             if (desktops && desktops.length > 0) {
                 setHasDesktops(true);
+                console.log('Desktops: ', desktops)
                 const localStorageDesktop = localStorage.getItem('last-desktop');
+
+
                 const firstDesktop = desktops[0];
 
                 if (localStorageDesktop) {
+                    console.log("peguei local storage")
                     try {
                         const desktop = await getDesktopByIdService(localStorageDesktop);
                         changeCurrentDesktop(desktop);
@@ -255,6 +269,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                     }
                 } else {
+                    console.log("sem local storage")
                     changeCurrentDesktop(firstDesktop);
                 }
             }
@@ -274,6 +289,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     async function authLoginUser(data: LoginData) {
         try {
+            changeAllFiles([])
+            changeRootFiles([])
+
+            setCurrentDesktop(null);
+            setHasDesktops(false);
+            localStorage.removeItem("last-desktop");
+
             const userData = await authLoginService(data)
             const { token } = userData
 
@@ -309,6 +331,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setHasDesktops(false)
             changeCurrentDesktop(null)
             localStorage.clear();
+            changeAllFiles([])
+            changeRootFiles([])
         } catch (err) {
             throw err;
         }

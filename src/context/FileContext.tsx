@@ -9,6 +9,7 @@ interface FileContextType {
     rootFiles: FileData[];
     changeRootFiles: (files: FileData[]) => void;
     defaultFile: (file: any) => FileData;
+    
 };
 
 const FileContext = createContext<FileContextType | undefined>(undefined);

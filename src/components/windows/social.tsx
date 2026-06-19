@@ -1,4 +1,4 @@
-import { Ban, Clipboard, Maximize, Minus, UserRoundX, X } from "lucide-react"
+import { Ban, Check, Clipboard, Maximize, Minus, UserRoundX, X } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import { useUser } from "../../context/AuthContext";
 import { useWindowContext } from "../../context/WindowContext";
@@ -121,65 +121,93 @@ export default function SocialWindow() {
 
         if (friendListSection === 'friends') {
             if (allFriends.length > 0) {
-                return allFriends.map((relation) => {
-                    return (<div className="group flex flex-row items-center gap-2.5 p-3.5 rounded-sm bg-(--color-dark)">
-                        <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
-                        <h1 className="text-lg">{relation.id}</h1>
-                        <div className="flex flex-row gap-4 ml-auto">
-                            <UserRoundX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
-                                hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                            <Ban className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
-                                hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                        </div>
-                    </div>)
-                })
-            } else {
-                return (<p>blablaba</p>)
-            }
+                return (
+                    <>
+                        <div className="text-md opacity-75 mt-2">Amigos</div>
+                        {
+                            allPending.map((user) => {
+                                return (<div className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
+                                    <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                                    <div className="flex flex-col">
+                                        <h1 className="text-lg">{user.name}</h1>
+                                        <p className="text-[14px] opacity-75">{user.email}</p>
+                                    </div>
 
-
-        } else if (friendListSection === 'pending') {
-            if (allPending.length > 0) {
-                return (<>
-                    <div>Pedidos de amizade recebidos</div>
-                    {
-                        allPending.map((user) => {
-                            return (<div className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
-                                <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
-                                <div className="flex flex-col">
-                                    <h1 className="text-xl">{user.name}</h1>
-                                    <p className="text-[14px] opacity-75">{user.email}</p>
-                                </div>
-
-                                <div className="flex flex-row gap-4 ml-auto">
-                                    <UserRoundX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
+                                    <div className="flex flex-row gap-4 ml-auto">
+                                        <UserRoundX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
                                 hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                                    <Ban className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
+                                        <Ban className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
                                 hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                                </div>
-                            </div>)
-                        })
-                    }
-                    <div>Pedidos de amizade enviados</div>
-                    {
-                        allPending.map((relation) => {
-                            return (<div className="group flex flex-row items-center gap-2.5 p-3.5 rounded-sm bg-(--color-dark)">
-                                <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
-                                <h1 className="text-lg">{relation.id}</h1>
-                                <div className="flex flex-row gap-4 ml-auto">
-                                    <UserRoundX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
-                                hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                                    <Ban className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
-                                hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                                </div>
-                            </div>)
-                        })
-                    }
-                </>
+                                    </div>
+                                </div>)
+                            })
+                        }
+                    </>
                 )
 
             } else {
-                return (<p>blablaba</p>)
+                return (<div className="flex flex-1 justify-center items-center flex-col gap-6">
+                    <img src="/assets/images/ghost.png" className="w-25 opacity-60" />
+                    <p className="text-xl font-regular opacity-70">Você ainda não tem amigos.</p>
+                </div>)
+            }
+
+        } else if (friendListSection === 'pending') {
+            if (allPending.length > 0 || allReceived.length > 0) {
+                return (<div className="w-full h-full flex flex-col gap-3 mt-2">
+                    {allReceived.length > 0 && (
+                        <>
+                            <div className="text-md opacity-75">Pedidos de amizade recebidos</div>
+                            {
+                                allReceived.map((user, index) => {
+                                    return (
+                                        <div key={user.id || index} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
+                                            <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                                            <div className="flex flex-col">
+                                                <h1 className="text-lg">{user.name}</h1>
+                                                <p className="text-[14px] opacity-75">{user.email}</p>
+                                            </div>
+
+                                            <div className="flex flex-row gap-4 ml-auto">
+                                                <Check className="cursor-pointer transition-all hover:bg-green-500/10 hover:border-green-500 hover:text-green-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                                                <X className="cursor-pointer transition-all hover:bg-red-300/15 hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                                                <Ban className="cursor-pointer transition-all hover:bg-red-500/15 hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </>
+                    )}
+                    {allPending.length > 0 && (
+                        <>
+                            <div className={`${allReceived.length > 0 ? 'mt-3' : ''}  text-md opacity-75`}>Pedidos de amizade enviados</div>
+                            {
+                                allPending.map((user) => {
+                                    return (<div className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
+                                        <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                                        <div className="flex flex-col">
+                                            <h1 className="text-lg">{user.name}</h1>
+                                            <p className="text-[14px] opacity-75">{user.email}</p>
+                                        </div>
+
+                                        <div className="flex flex-row gap-4 ml-auto">
+                                            <X className="cursor-pointer transition-all hover:bg-red-300/15 
+                                hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                                        </div>
+                                    </div>)
+                                })
+                            }
+                        </>
+                    )}
+                </div>
+                )
+
+            } else {
+                return (<div className="flex flex-1 justify-center items-center flex-col gap-6">
+                    <img src="/assets/images/cat.png" className="w-25 opacity-60" />
+                    <p className="text-xl font-regular opacity-70">Você não tem pedidos pendentes.</p>
+                </div>)
             }
 
 
@@ -198,7 +226,10 @@ export default function SocialWindow() {
                     </div>)
                 })
             } else {
-                return (<p>blablaba</p>)
+                return (<div className="flex flex-1 justify-center items-center flex-col gap-6">
+                    <img src="/assets/images/happy-ghost.png" className="w-25 opacity-60" />
+                    <p className="text-xl font-regular opacity-70">Você não tem pessoas bloqueadas.</p>
+                </div>)
             }
         }
     }, [friendListSection, allFriends, allPending, allBlocked])
@@ -231,7 +262,7 @@ export default function SocialWindow() {
 
                         <div className="flex flex-row p-4 w-full justify-around rounded-lg bg-(--color-regular) gap-1 mt-2">
                             <div className="flex flex-col items-center gap-1">
-                                <p>15</p>
+                                <p>{allFriends.length}</p>
                                 <p>Amigos</p>
                             </div>
                             <div className="h-full w-[1px] bg-white/20"></div>
@@ -251,7 +282,7 @@ export default function SocialWindow() {
                     </div>
                     <div className="flex-2 flex flex-col gap-2 p-6 h-full">
                         <div className="flex flex-row gap-2">
-                            <input value={emailReq} onChange={(e) => setEmailReq(e.target.value)} type="email" placeholder="Email do usuário"
+                            <input value={emailReq} onChange={(e) => setEmailReq(e.target.value)} type="email" placeholder="usuario@email.com"
                                 className="bg-zinc-950/40 border-1 flex-1 rounded-sm p-1.5 px-3 border-zinc-800
                             hover:bg-zinc-950/60 transition-all outline-none focus:border-zinc-500 focus:bg-zinc-950/80" />
 
@@ -270,17 +301,17 @@ export default function SocialWindow() {
                                 <div className="flex-1 flex justify-center">
                                     <h1 onClick={() => setFriendListSection('friends')} className={`${friendListSection === 'friends' ? 'text-white w-full' :
                                         ' '}
-                                     p-1.5 text-lg w-26 hover:w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Amigos</h1>
+                                     p-1.5 text-lg w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Amigos</h1>
                                 </div>
                                 <div className="flex-1 flex justify-center">
                                     <h1 onClick={() => setFriendListSection('pending')} className={`${friendListSection === 'friends' ? 'text-white w-full ' :
                                         ' '}
-                                     p-1.5 text-lg w-26 hover:w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Pendentes</h1>
+                                     p-1.5 text-lg w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Pendentes</h1>
                                 </div>
                                 <div className="flex-1 flex justify-center items-center">
                                     <h1 onClick={() => setFriendListSection('blocked')} className={`${friendListSection === 'friends' ? 'text-white w-full' :
                                         ' '}
-                                     p-1.5 text-lg w-26 hover:w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Bloqueados</h1>
+                                     p-1.5 text-lg w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Bloqueados</h1>
                                 </div>
                             </div>
 

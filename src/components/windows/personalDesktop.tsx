@@ -109,7 +109,6 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
 
             return path
         } catch (err) {
-            alert(err)
             return undefined;
         }
 
