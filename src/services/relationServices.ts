@@ -31,3 +31,13 @@ export const deleteRelationService = async (relationId: string) => {
 
     return response.data;
 }
+
+export const acceptRelationService = async (relationId: string) => {
+    const response = await api.put(`/relation/accept/${relationId}`);
+    return response.data;
+}
+
+export const blockRelationService = async (relationId: string) => {
+    const response = await api.put(`/relation/block/${relationId}`);
+    return response.data;
+}

@@ -259,3 +259,20 @@ input:-webkit-autofill:active {
   /* Mantém a transição de cor suave */
   transition: background-color 5000s ease-in-out 0s;
 }
+
+@keyframes click-ping {
+  0% {
+    background-color: rgba(255, 255, 255, 0.552);
+        filter: blur(1px);
+  }
+
+  100% {
+    transform: scale(20);
+    filter: blur(4px);
+    background-color: rgba(255, 255, 255, 0);
+  }
+}
+
+.clickPing {
+  animation: click-ping 1s forwards;
+}

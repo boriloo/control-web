@@ -4,11 +4,16 @@ import { useUser } from "../../context/AuthContext";
 import { useWindowContext } from "../../context/WindowContext";
 import { returnFilterEffects, UserData } from "../../types/auth";
 import { getUserByEmailService, getUserByIdService } from "../../services/userServices";
-import { createRelationService, getAcceptedRelationsService, getBlockedRelationsService, getPendingRelationsService } from "../../services/relationServices";
-import { RelationData } from "../../types/relation";
-// import { userWithEmailExists } from "../../services/auth";
-// import { createRelation } from "../../services/relations";
-// import { getPublicUserByEmail } from "../../services/public";
+import {
+    createRelationService,
+    getAcceptedRelationsService,
+    getBlockedRelationsService,
+    getPendingRelationsService,
+    deleteRelationService,
+    acceptRelationService,
+    blockRelationService
+} from "../../services/relationServices";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 type section = "friends" | "pending" | "blocked"
 
@@ -20,100 +25,165 @@ export default function SocialWindow() {
     const [canSend, setCanSend] = useState<boolean>(false)
     const [emailReq, setEmailReq] = useState<string>('')
     const [error, setError] = useState<string | null>(null)
-    const [allFriends, setAllFriends] = useState<UserData[]>([])
-    const [allPending, setAllPending] = useState<UserData[]>([])
-    const [allReceived, setAllReceived] = useState<UserData[]>([])
-    const [allBlocked, setAllBlocked] = useState<UserData[]>([])
-
+    const [allFriends, setAllFriends] = useState<any[]>([])
+    const [allPending, setAllPending] = useState<any[]>([])
+    const [allReceived, setAllReceived] = useState<any[]>([])
+    const [allBlocked, setAllBlocked] = useState<any[]>([])
+    const [sendLoading, setSendLoading] = useState<boolean>(false)
 
     const handleAreaClick = (e: React.MouseEvent<HTMLElement>) => {
         if (e.target != e.currentTarget) return;
         social.closeWindow();
     }
 
-    useEffect(() => {
+    const loadAllLists = useCallback(async () => {
         const myId = user?.id
-        const getAllLists = async () => {
-            const friends = await getAcceptedRelationsService()
-            const pending = await getPendingRelationsService()
-            const blocked = await getBlockedRelationsService()
 
-            // friends — converte todos para o user que não é eu
-            const friendUsers = await Promise.all(
-                friends.map(async (relation: any) => {
-                    const otherId = relation.sender_id === myId
-                        ? relation.receiver_id
-                        : relation.sender_id
-                    return await getUserByIdService(otherId)
-                })
-            )
-            setAllFriends(friendUsers)
+        const friends = await getAcceptedRelationsService()
+        const pending = await getPendingRelationsService()
+        const blocked = await getBlockedRelationsService()
 
+        const friendItems = await Promise.all(
+            friends.map(async (relation: any) => {
+                const otherId = relation.sender_id === myId
+                    ? relation.receiver_id
+                    : relation.sender_id
+                const otherUser = await getUserByIdService(otherId)
+                return { relationId: relation.id, ...otherUser }
+            })
+        )
+        setAllFriends(friendItems)
 
-            const receivedPending = pending.filter((r: any) => r.receiver_id === myId)
-            const sentPending = pending.filter((r: any) => r.sender_id === myId)
+        const receivedPending = pending.filter((r: any) => r.receiver_id === myId)
+        const sentPending = pending.filter((r: any) => r.sender_id === myId)
 
-            const receivedUsers = await Promise.all(
-                receivedPending.map(async (relation: any) => await getUserByIdService(relation.sender_id))
-            )
-            const sentUsers = await Promise.all(
-                sentPending.map(async (relation: any) => await getUserByIdService(relation.receiver_id))
-            )
+        const receivedItems = await Promise.all(
+            receivedPending.map(async (relation: any) => {
+                const otherUser = await getUserByIdService(relation.sender_id)
+                return { relationId: relation.id, ...otherUser }
+            })
+        )
+        const sentItems = await Promise.all(
+            sentPending.map(async (relation: any) => {
+                const otherUser = await getUserByIdService(relation.receiver_id)
+                return { relationId: relation.id, ...otherUser }
+            })
+        )
 
-            setAllPending([...sentUsers])
+        setAllPending(sentItems)
+        setAllReceived(receivedItems)
 
-            setAllReceived([...receivedUsers])
+        const blockedItems = await Promise.all(
+            blocked.map(async (relation: any) => {
+                const otherId = relation.sender_id === myId
+                    ? relation.receiver_id
+                    : relation.sender_id
+                const otherUser = await getUserByIdService(otherId)
+                return { relationId: relation.id, ...otherUser }
+            })
+        )
+        setAllBlocked(blockedItems)
+    }, [user?.id])
 
-            // blocked — converte todos para o user que não é eu
-            const blockedUsers = await Promise.all(
-                blocked.map(async (relation: any) => {
-                    const otherId = relation.sender_id === myId
-                        ? relation.receiver_id
-                        : relation.sender_id
-                    return await getUserByIdService(otherId)
-                })
-            )
-            setAllBlocked(blockedUsers)
-        }
-
-        getAllLists()
-    }, [])
-
+    useEffect(() => {
+        if (!user?.id) return
+        loadAllLists()
+    }, [user?.id, loadAllLists])
 
     useEffect(() => {
         if (!user) return;
         const regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
         if (regex.test(emailReq.toLowerCase())) {
-            if (emailReq === user.email) {
-                setCanSend(false)
-            } else {
-                setCanSend(true)
-            }
+            setCanSend(emailReq !== user.email)
         } else {
             setCanSend(false)
         }
     }, [emailReq])
 
-
     const handleSendFriendRequest = async (email: string) => {
         try {
+            setSendLoading(true)
             setError(null)
-            const friendUser = await getUserByEmailService(email)
+            const friendId = await getUserByEmailService(email)
 
-            console.log('FRIEND USER', friendUser)
-
-            if (!friendUser) {
+            if (!friendId) {
                 setError("Este usuário não existe ou não aceita pedidos de amizade.")
                 return;
             }
 
-            const newRelation = await createRelationService(friendUser)
-
-            setAllPending(prev => [...prev, newRelation])
+            await createRelationService(friendId)
+            setEmailReq('')
+            await loadAllLists()
 
         } catch (err) {
-            console.log('ERRO!', err)
-            throw err
+            console.log('ERRO', err)
+            setError("Não foi possível enviar o pedido.")
+        } finally {
+            setSendLoading(false)
+        }
+    }
+
+    const handleRemoveFriend = async (relationId: string) => {
+        try {
+            await deleteRelationService(relationId)
+            setAllFriends(prev => prev.filter(f => f.relationId !== relationId))
+        } catch (err) {
+            console.log('Erro ao remover amigo:', err)
+        }
+    }
+
+    const handleAcceptRequest = async (relationId: string) => {
+        try {
+            await acceptRelationService(relationId)
+            const accepted = allReceived.find(r => r.relationId === relationId)
+            setAllReceived(prev => prev.filter(r => r.relationId !== relationId))
+            if (accepted) setAllFriends(prev => [...prev, accepted])
+        } catch (err) {
+            console.log('Erro ao aceitar pedido:', err)
+        }
+    }
+
+    const handleRejectRequest = async (relationId: string) => {
+        try {
+            await deleteRelationService(relationId)
+            setAllReceived(prev => prev.filter(r => r.relationId !== relationId))
+        } catch (err) {
+            console.log('Erro ao recusar pedido:', err)
+        }
+    }
+
+    const handleCancelSent = async (relationId: string) => {
+        try {
+            await deleteRelationService(relationId)
+            setAllPending(prev => prev.filter(r => r.relationId !== relationId))
+        } catch (err) {
+            console.log('Erro ao cancelar pedido:', err)
+        }
+    }
+
+    const handleBlock = async (relationId: string, fromList: 'friends' | 'received') => {
+        try {
+            await blockRelationService(relationId)
+            if (fromList === 'friends') {
+                const blocked = allFriends.find(f => f.relationId === relationId)
+                setAllFriends(prev => prev.filter(f => f.relationId !== relationId))
+                if (blocked) setAllBlocked(prev => [...prev, blocked])
+            } else {
+                const blocked = allReceived.find(r => r.relationId === relationId)
+                setAllReceived(prev => prev.filter(r => r.relationId !== relationId))
+                if (blocked) setAllBlocked(prev => [...prev, blocked])
+            }
+        } catch (err) {
+            console.log('Erro ao bloquear:', err)
+        }
+    }
+
+    const handleUnblock = async (relationId: string) => {
+        try {
+            await deleteRelationService(relationId)
+            setAllBlocked(prev => prev.filter(b => b.relationId !== relationId))
+        } catch (err) {
+            console.log('Erro ao desbloquear:', err)
         }
     }
 
@@ -124,27 +194,28 @@ export default function SocialWindow() {
                 return (
                     <>
                         <div className="text-md opacity-75 mt-2">Amigos</div>
-                        {
-                            allPending.map((user) => {
-                                return (<div className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
-                                    <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
-                                    <div className="flex flex-col">
-                                        <h1 className="text-lg">{user.name}</h1>
-                                        <p className="text-[14px] opacity-75">{user.email}</p>
-                                    </div>
+                        {allFriends.map((friend) => (
+                            <div key={friend.relationId} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
+                                <img src={`${friend?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                                <div className="flex flex-col">
+                                    <h1 className="text-lg">{friend.name}</h1>
+                                    <p className="text-[14px] opacity-75">{friend.email}</p>
+                                </div>
 
-                                    <div className="flex flex-row gap-4 ml-auto">
-                                        <UserRoundX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
+                                <div className="flex flex-row gap-4 ml-auto">
+                                    <UserRoundX
+                                        onClick={() => handleRemoveFriend(friend.relationId)}
+                                        className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
                                 hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                                        <Ban className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
+                                    <Ban
+                                        onClick={() => handleBlock(friend.relationId, 'friends')}
+                                        className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
                                 hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                                    </div>
-                                </div>)
-                            })
-                        }
+                                </div>
+                            </div>
+                        ))}
                     </>
                 )
-
             } else {
                 return (<div className="flex flex-1 justify-center items-center flex-col gap-6">
                     <img src="/assets/images/ghost.png" className="w-25 opacity-60" />
@@ -154,55 +225,57 @@ export default function SocialWindow() {
 
         } else if (friendListSection === 'pending') {
             if (allPending.length > 0 || allReceived.length > 0) {
-                return (<div className="w-full h-full flex flex-col gap-3 mt-2">
-                    {allReceived.length > 0 && (
-                        <>
-                            <div className="text-md opacity-75">Pedidos de amizade recebidos</div>
-                            {
-                                allReceived.map((user, index) => {
-                                    return (
-                                        <div key={user.id || index} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
-                                            <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
-                                            <div className="flex flex-col">
-                                                <h1 className="text-lg">{user.name}</h1>
-                                                <p className="text-[14px] opacity-75">{user.email}</p>
-                                            </div>
-
-                                            <div className="flex flex-row gap-4 ml-auto">
-                                                <Check className="cursor-pointer transition-all hover:bg-green-500/10 hover:border-green-500 hover:text-green-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                                                <X className="cursor-pointer transition-all hover:bg-red-300/15 hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                                                <Ban className="cursor-pointer transition-all hover:bg-red-500/15 hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                                            </div>
-                                        </div>
-                                    )
-                                })
-                            }
-                        </>
-                    )}
-                    {allPending.length > 0 && (
-                        <>
-                            <div className={`${allReceived.length > 0 ? 'mt-3' : ''}  text-md opacity-75`}>Pedidos de amizade enviados</div>
-                            {
-                                allPending.map((user) => {
-                                    return (<div className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
-                                        <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                return (
+                    <div className="w-full h-full flex flex-col gap-3 mt-2">
+                        {allReceived.length > 0 && (
+                            <>
+                                <div className="text-md opacity-75">Pedidos de amizade recebidos</div>
+                                {allReceived.map((req) => (
+                                    <div key={req.relationId} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
+                                        <img src={`${req?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
                                         <div className="flex flex-col">
-                                            <h1 className="text-lg">{user.name}</h1>
-                                            <p className="text-[14px] opacity-75">{user.email}</p>
+                                            <h1 className="text-lg">{req.name}</h1>
+                                            <p className="text-[14px] opacity-75">{req.email}</p>
                                         </div>
 
                                         <div className="flex flex-row gap-4 ml-auto">
-                                            <X className="cursor-pointer transition-all hover:bg-red-300/15 
+                                            <Check
+                                                onClick={() => handleAcceptRequest(req.relationId)}
+                                                className="cursor-pointer transition-all hover:bg-green-500/10 hover:border-green-500 hover:text-green-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                                            <X
+                                                onClick={() => handleRejectRequest(req.relationId)}
+                                                className="cursor-pointer transition-all hover:bg-red-300/15 hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                                            <Ban
+                                                onClick={() => handleBlock(req.relationId, 'received')}
+                                                className="cursor-pointer transition-all hover:bg-red-500/15 hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </>
+                        )}
+                        {allPending.length > 0 && (
+                            <>
+                                <div className={`${allReceived.length > 0 ? 'mt-3' : ''} text-md opacity-75`}>Pedidos de amizade enviados</div>
+                                {allPending.map((req) => (
+                                    <div key={req.relationId} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
+                                        <img src={`${req?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                                        <div className="flex flex-col">
+                                            <h1 className="text-lg">{req.name}</h1>
+                                            <p className="text-[14px] opacity-75">{req.email}</p>
+                                        </div>
+
+                                        <div className="flex flex-row gap-4 ml-auto">
+                                            <X
+                                                onClick={() => handleCancelSent(req.relationId)}
+                                                className="cursor-pointer transition-all hover:bg-red-300/15 
                                 hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
                                         </div>
-                                    </div>)
-                                })
-                            }
-                        </>
-                    )}
-                </div>
+                                    </div>
+                                ))}
+                            </>
+                        )}
+                    </div>
                 )
-
             } else {
                 return (<div className="flex flex-1 justify-center items-center flex-col gap-6">
                     <img src="/assets/images/cat.png" className="w-25 opacity-60" />
@@ -210,21 +283,23 @@ export default function SocialWindow() {
                 </div>)
             }
 
-
         } else if (friendListSection === 'blocked') {
             if (allBlocked.length > 0) {
-                return allBlocked.map((relation) => {
-                    return (<div className="group flex flex-row items-center gap-2.5 p-3.5 rounded-sm bg-(--color-dark)">
-                        <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
-                        <h1 className="text-lg">{relation.id}</h1>
-                        <div className="flex flex-row gap-4 ml-auto">
-                            <UserRoundX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
-                                hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
-                            <Ban className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
-                                hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                return allBlocked.map((blocked) => (
+                    <div key={blocked.relationId} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
+                        <img src={`${blocked?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                        <div className="flex flex-col">
+                            <h1 className="text-lg">{blocked.name}</h1>
+                            <p className="text-[14px] opacity-75">{blocked.email}</p>
                         </div>
-                    </div>)
-                })
+                        <div className="flex flex-row gap-4 ml-auto">
+                            <UserRoundX
+                                onClick={() => handleUnblock(blocked.relationId)}
+                                className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-green-500/10 
+                                hover:border-green-300 hover:text-green-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                        </div>
+                    </div>
+                ))
             } else {
                 return (<div className="flex flex-1 justify-center items-center flex-col gap-6">
                     <img src="/assets/images/happy-ghost.png" className="w-25 opacity-60" />
@@ -232,11 +307,9 @@ export default function SocialWindow() {
                 </div>)
             }
         }
-    }, [friendListSection, allFriends, allPending, allBlocked])
-
+    }, [friendListSection, allFriends, allPending, allReceived, allBlocked])
 
     return (
-
         <div onClick={handleAreaClick} className={`${isFullsceen ? 'pb-[40px]' : ' p-2 pb-[50px]'} ${social.currentStatus === "open" ? returnFilterEffects() : 'pointer-events-none'} 
         fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 cursor-pointer`}>
             <div className={`${isFullsceen ? 'max-w-full max-h-full' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${social.currentStatus === "open" ? 'scale-100' : 'scale-0 '} 
@@ -278,7 +351,6 @@ export default function SocialWindow() {
                             <Clipboard size={16} />
                         </button>
 
-
                     </div>
                     <div className="flex-2 flex flex-col gap-2 p-6 h-full">
                         <div className="flex flex-row gap-2">
@@ -288,7 +360,15 @@ export default function SocialWindow() {
 
                             <button disabled={!canSend} onClick={() => handleSendFriendRequest(emailReq)}
                                 className={`${!canSend && 'pointer-events-none saturate-0 opacity-80'} p-1 px-2 border-1 rounded-sm text-(--color-light) border-(--color-light) hover:bg-(--color-light) hover:text-white
-                            transition-all cursor-pointer`}>Enviar pedido</button>
+                            transition-all cursor-pointer`}>{
+                                    !sendLoading ? 'Enviar pedido' :
+                                        <DotLottieReact
+                                            src="assets/images/loader.lottie"
+                                            className={`select-none w-15 transition-all`}
+                                            loop
+                                            autoplay
+                                        />
+                                }</button>
                         </div>
 
                         <p className={`${error ? 'p-1 px-2' : 'p-0 px-0 opacity-0'} transition-all rounded-md text-red-500 bg-red-500/10 self-start`}>{error}</p>
@@ -299,24 +379,20 @@ export default function SocialWindow() {
                                 <div className={`${friendListSection === 'friends' ? 'left-[1px]' : friendListSection === 'pending' ? 'left-[33.5%]' : 'left-[66.8%]'} w-[33%] transition-all h-full absolute
                                  bg-(--color-light) z-[-1] rounded-md`}></div>
                                 <div className="flex-1 flex justify-center">
-                                    <h1 onClick={() => setFriendListSection('friends')} className={`${friendListSection === 'friends' ? 'text-white w-full' :
-                                        ' '}
+                                    <h1 onClick={() => setFriendListSection('friends')} className={`${friendListSection === 'friends' ? 'text-white w-full' : ' '}
                                      p-1.5 text-lg w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Amigos</h1>
                                 </div>
                                 <div className="flex-1 flex justify-center">
-                                    <h1 onClick={() => setFriendListSection('pending')} className={`${friendListSection === 'friends' ? 'text-white w-full ' :
-                                        ' '}
+                                    <h1 onClick={() => setFriendListSection('pending')} className={`${friendListSection === 'pending' ? 'text-white w-full' : ' '}
                                      p-1.5 text-lg w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Pendentes</h1>
                                 </div>
                                 <div className="flex-1 flex justify-center items-center">
-                                    <h1 onClick={() => setFriendListSection('blocked')} className={`${friendListSection === 'friends' ? 'text-white w-full' :
-                                        ' '}
+                                    <h1 onClick={() => setFriendListSection('blocked')} className={`${friendListSection === 'blocked' ? 'text-white w-full' : ' '}
                                      p-1.5 text-lg w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Bloqueados</h1>
                                 </div>
                             </div>
 
                             {viewedList()}
-
 
                         </div>
                     </div>

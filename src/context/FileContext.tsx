@@ -9,7 +9,7 @@ interface FileContextType {
     rootFiles: FileData[];
     changeRootFiles: (files: FileData[]) => void;
     defaultFile: (file: any) => FileData;
-    
+
 };
 
 const FileContext = createContext<FileContextType | undefined>(undefined);
@@ -18,6 +18,7 @@ export const FileProvider = ({ children }: { children: ReactNode }) => {
     const [allFiles, setAllFiles] = useState<FileData[]>([])
     const [rootFiles, setRootFiles] = useState<FileData[]>([])
     const [nextIconPosition, setNextIconPosition] = useState<{ x: number; y: number } | null>(null)
+    const [hoverUrl, setHoverUrl] = useState<string>('')
 
 
     const defaultFile = (file: any): FileData => {

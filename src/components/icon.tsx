@@ -16,7 +16,7 @@ export default function Icon({ icon, beingDragged }: IconProps) {
     // const [loading, setLoading] = useState<>
     const [isValidImage, setIsValidImage] = useState<boolean | null>(null)
     const [driveThumb, setDriveThumb] = useState<string | null>(null)
-
+    const [clickEffects, setClickEffects] = useState<{ id: number, x: number, y: number }[]>([])
 
     function getDomainFromUrl(url: string): string {
         try {
@@ -140,11 +140,37 @@ export default function Icon({ icon, beingDragged }: IconProps) {
         }
     }, [icon.url, isValidImage, root])
 
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const id = Date.now();
+
+        setClickEffects(prev => [...prev, { id, x, y }]);
+
+        setTimeout(() => {
+            setClickEffects(prev => prev.filter(effect => effect.id !== id));
+        }, 1500);
+    };
+
 
     return (
-        <div onDoubleClick={returnAction} className={`${contextMenu.selectedIconId === icon.id ? 'bg-blue-500/30  border-blue-500' : `border-transparent ${beingDragged ? 'scale-105 bg-blue-500/25' : 'hover:bg-white/15'}`} 
-        border-2  transition-all p-1 px-2 duration-300 group select-none flex flex-col justify-center 
-        items-center gap-2 w-20 h-full max-h-40  rounded-sm cursor-pointer `}>
+        <div onClick={handleClick} onDoubleClick={returnAction} className={`${contextMenu.selectedIconId === icon.id ? 'bg-blue-500/30  border-blue-500' : `border-transparent ${beingDragged ? 'scale-105 bg-blue-500/25' : 'hover:bg-white/15'}`} 
+        border-2  transition-all p-1 px-2 duration-300 group select-none flex flex-col justify-center overflow-hidden
+        items-center gap-2 w-20 h-full max-h-40  rounded-sm cursor-pointer relative `}>
+
+            {clickEffects.map(effect => (
+                <span
+                    key={effect.id}
+                    className="absolute w-3 h-3 bg-white/60 clickPing rounded-full pointer-events-none origin-center"
+                    style={{
+                        left: effect.x,
+                        top: effect.y,
+                        transform: 'translate(-50%, -50%)'
+                    }}
+                />
+            ))}
+
             <div style={{
                 backgroundImage: `url(${imageSrc})`,
                 backgroundSize: 'contain',

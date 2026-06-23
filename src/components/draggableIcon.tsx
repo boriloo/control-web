@@ -17,7 +17,7 @@ export function DraggableIcon({ index, icon, beingDragged, position }: Draggable
 
   return (
     <div
-      className='animate-scale origin-center select-none'
+      className='animate-scale origin-center select-none '
       ref={elementRef}
       data-id={icon.id}
       data-name={icon}
