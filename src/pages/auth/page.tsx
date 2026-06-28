@@ -83,8 +83,6 @@ export default function AuthPage() {
         clearErrors();
     }, [loginForm, clearErrors]);
 
-    const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-    
     const handleFormSubmit = async (data: FormData) => {
         if (loginForm) {
             try {
@@ -93,7 +91,8 @@ export default function AuthPage() {
                 const loginData = data as z.infer<typeof loginSchema>
                 await authLoginUser({ email: loginData.email, password: loginData.password, rememberMe } as LoginData);
                 setApproved(true)
-            } catch (error) {
+            } catch (error: any) {
+                if (error.response.data.error === 'Invalid email or password.') setError('Dados Inválidos')
                 setSent(false)
             }
         } else {
@@ -106,12 +105,12 @@ export default function AuthPage() {
                     filterDark: 'low', filterBlur: 'low', filterColor: 'color'
                 });
 
-                // await delay(1000);
-                
+
                 await authLoginUser({ email: registerData.email, password: registerData.password, rememberMe: false } as LoginData);
-            } catch (error) {
+            } catch (error: any) {
+                if (error.response.data.error === 'User already exists.') setError('Usuário já existente')
                 setSent(false)
-                console.error("❌ Ocorreu um erro durante o processo de registro:", error);
+
             }
         }
     };
@@ -120,7 +119,7 @@ export default function AuthPage() {
     return (
         <>
             <div className={`${approved ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500 pointer-events-none fixed z-50 flex justify-center items-center w-full min-h-screen bg-black`}>
-                <p className={` control-text text-[50px] `}>CONTROLA</p>
+                <p className={` control-text text-[50px] `}>Control</p>
             </div>
             <p className="absolute right-10 top-10 text-lg control-text">Control</p>
             <p style={{
@@ -216,7 +215,7 @@ export default function AuthPage() {
                     <p className={`${error ? 'p-1 px-3' : 'opacity-0 mt-[-10px] '} text-red-500 bg-red-700/10  rounded-sm text-[18px] font-medium transition-all`}>{error}</p>
                 </div> */}
 
-                    <button disabled={sent} onClick={() => setLoginForm(!loginForm)}
+                    <button disabled={sent} onClick={() => {setLoginForm(!loginForm); setError('')}}
                         className={`${sent ? 'opacity-50' : 'cursor-pointer hover:bg-rose-400/20'} underline text-rose-400 font-medium mt-5 text-md  p-1 px-2 transition-all  rounded-lg`}>
                         {loginForm ? 'Não possui uma conta?' : 'Já possui uma conta?'}
                     </button>

@@ -25,15 +25,15 @@ export default function ProfileWindow() {
         fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 cursor-pointer`}>
             <div className={`${isFullsceen ? 'max-w-full max-h-full' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${profile.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0 '} 
                 bg-(--color-dark) cursor-default origin-bottom relative transition-all duration-250 flex flex-col w-full h-full overflow-y-auto`}>
-                <div className="z-50 sticky select-none top-0 w-full bg-black/50 h-8 flex flex-row justify-between items-center backdrop-blur-[2px]">
-                    <p className="p-2">Seu Perfil</p>
+
+                <div className="z-50 absolute select-none top-0 right-0 flex flex-row justify-end items-center">
                     <div className="flex flex-row h-full">
-                        <Minus onClick={profile.minimizeWindow} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-white/20" />
-                        <Maximize onClick={() => setIsFullscreen(!isFullsceen)} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-white/20" />
-                        <X onClick={profile.closeWindow} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-red-500" />
+                        <Maximize onClick={() => setIsFullscreen(!isFullsceen)} className="transition-colors rounded-bl-md cursor-pointer p-[9px] w-10 h-full hover:bg-white/20" />
+                        <X onClick={profile.closeWindow} className="transition-colors cursor-pointer p-2 w-10 h-full  hover:bg-red-500" />
                     </div>
                 </div>
-                <div className="flex flex-col w-full p-4 gap-4 items-center">
+
+                <div className="flex flex-col w-full p-4 gap-4 items-center mt-5">
                     <button onClick={() => {
                         config.setCurrentTab('account');
                         minimazeAllWindows();
@@ -65,7 +65,7 @@ export default function ProfileWindow() {
 
                         {/* <h1 className="text-[28px] bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-600 to-blue-400">{user.name as string} </h1> */}
                         <p className="text-[14px]">{user.email as string}</p>
-                       
+
                         {/* <p className="mt-2 text-(--color-lighter) bg-gradient-to-r from-black via-black to-blue-950 text-[16px] p-[1px] px-2 rounded-sm font-bold">PRO</p> */}
                     </div>
                     <div className="w-[90%] h-[1px] bg-white/40"></div>

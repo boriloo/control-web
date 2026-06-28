@@ -1,22 +1,21 @@
-import { ExternalLink, FolderRoot, Maximize, Minus, Plus, Trash, Trash2, X } from "lucide-react"
+import { Plus, Trash2, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useWindowContext } from "../../context/WindowContext"
 import { useUser } from "../../context/AuthContext";
 import { returnFilterEffects } from "../../types/auth";
-import ColumnFile from "./fileViewer/columnFile";
 import { useAppContext } from "../../context/AppContext";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { FileData, FilePathData } from "../../types/file";
 import { getFileByIdService, getFileParentNamesService, getFilesFromParentService } from "../../services/fileServices";
 import { useFileContext } from "../../context/FileContext";
 import IconFile from "./fileViewer/iconFile";
+import FluidGlass from './FluidGlass'
 
 export default function FileWindow() {
     const { allFiles, defaultFile } = useFileContext()
     const { minimazeAllWindows } = useAppContext();
     const { user, currentDesktop } = useUser()
     const { fileViewer, newFile, deleteFile } = useWindowContext();
-    const [isFullsceen, setIsFullscreen] = useState<boolean>(false)
     const [internalFiles, setInternalFiles] = useState<FileData[]>([])
     const [imageValidations, setImageValidations] = useState<Record<string, boolean>>({});
 
@@ -168,16 +167,17 @@ export default function FileWindow() {
     return (
         <>
             <div className={`flex-1 w-full h-screen absolute z-[20] transition-all duration-500  ${fileViewer.currentStatus === "open" ? returnFilterEffects() : 'pointer-events-none'} `}></div>
-            <div onClick={handleAreaClick} className={`${isFullsceen ? 'pb-[40px]' : ' p-2 pb-[50px]'} ${fileViewer.currentStatus === "open" ? '' : 'pointer-events-none'} 
+            <div onClick={handleAreaClick} className={`${fileViewer.currentStatus === "open" ? '' : 'pointer-events-none'} 
         fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 cursor-pointer group`}>
-                <div className={` ${fileViewer.currentStatus === "open" ? 'scale-100' : 'scale-0 opacity-0'} hover:scale-100 hover:opacity-100 group-hover:scale-95 
-                group-hover:opacity-90 group-hover:bg-red-800/10 hover:bg-transparent
-                ${loading ? 'max-w-[60px] max-h-[60px] rounded-[50px]' : 'rounded-[10px] max-w-[1200px] max-h-[700px]'} bg-linear-to-b from-black/50 to-black/15 border-t-1 border-white/30 cursor-default 
-                relative 
+
+
+
+                <div className={` ${fileViewer.currentStatus === "open" ? 'scale-100' : 'scale-0 opacity-0'} hover:scale-100 hover:opacity-100 
+                group-hover:scale-95 group-hover:opacity-95 group-hover:bg-red-800/10 hover:bg-transparent
+                ${loading ? 'max-w-[60px] max-h-[60px] rounded-[50px]' : 'rounded-[10px] max-w-[1200px] max-h-[700px]'}  bg-linear-to-b from-(--color-dark)/80 to-(--color-regular)/10
+                border-t-1 border-white/20 cursor-default relative 
                 transition-all duration-300 flex flex-col w-full h-full
-                 select-none backdrop-blur-[2vi]`}>
-
-
+                 select-none backdrop-blur-[2.2vi]`}>
 
                     <DotLottieReact
                         src="assets/images/loader.lottie"
@@ -185,11 +185,10 @@ export default function FileWindow() {
                         loop
                         autoplay
                     />
-                    <div className={`${loading ? 'opacity-0' : ''} transition-all flex flex-col items-center w-full h-full gap-4 p-4 relative `}>
+                    <div className={`${loading ? 'opacity-0 select-none pointer-events-none' : ''} transition-all flex flex-col items-center w-full h-full gap-4 p-4 relative `}>
 
-
-                        <div onClick={fileViewer.closeWindow} className="flex absolute right-0 top-0 justify-center cursor-pointer items-center transition-all p-3 
-                             text-white hover:bg-red-500 rounded-bl-md rounded-tr-md">
+                        <div onClick={fileViewer.closeWindow} className={`flex absolute right-0 top-0 justify-center cursor-pointer items-center transition-all p-3 
+                             text-white hover:bg-red-500 rounded-bl-md rounded-tr-md`}>
                             <X strokeWidth={3} size={22} />
                         </div>
 
@@ -234,17 +233,16 @@ export default function FileWindow() {
 
                         <div className={`${!seeFiles && 'opacity-0'} flex justify-start items-start flex-row relative gap-4 gap-y-4 content-start w-full h-full rounded-md p-2 overflow-y-auto scroll-smooth flex-wrap`}>
 
-                            {internalFiles.length > 0 ?
+                            {
                                 internalFiles.map((file, index) => (
                                     <IconFile file={file} animationKey={animationKey} index={index} imageValidations={imageValidations} />
                                 ))
-                                :
-                                <div className="flex flex-1 justify-center h-full items-center flex-col gap-6 mt-[-10px]">
-                                    <img src="/assets/images/empty.png" className="w-25 opacity-60" />
-                                    <p className="text-xl opacity-70">Esta pasta está vazia.</p>
-                                </div>
                             }
 
+                            <div className={`${!loading && internalFiles.length === 0 ? '' : 'opacity-0 scale-80'} flex flex-1 justify-center h-full transition-all duration-400 delay-200 items-center flex-col gap-6 mt-[-10px]`}>
+                                <img src="/assets/images/empty.png" className="w-25 opacity-60" />
+                                <p className="text-xl opacity-70">Esta pasta está vazia.</p>
+                            </div>
                         </div>
 
                     </div>

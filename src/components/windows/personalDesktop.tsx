@@ -129,7 +129,7 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                     wallpaperUrl = backgroundUrl
                     break;
                 case 'color':
-                    wallpaperUrl = `https://pub-3d67913b35604dddb266c3ef46ab6bda.r2.dev/default/${colorSelected}.png`
+                    wallpaperUrl = `assets/colors/default_${colorSelected}.png`
                     break;
             }
 

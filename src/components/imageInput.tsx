@@ -52,6 +52,7 @@ export function ClickableImageInput({ onFileSelected, currentImageUrl }: Clickab
 
     return (
         <>
+            <h1 className={`${errors ? 'bg-red-950/45 p-1 px-2 mb-2' : 'opacity-0'} z-20 transition-all rounded-md text-red-500 backdrop-blur-lg `}>{errors}</h1>
             <div
                 {...getRootProps()}
                 className={`${preview ? 'min-h-[168px]' : ''} relative rounded-sm overflow-hidden cursor-pointer group 
@@ -92,7 +93,7 @@ export function ClickableImageInput({ onFileSelected, currentImageUrl }: Clickab
                 )}
             </div>
 
-            <h1 className={`${errors ? 'bg-red-950/45 p-1 px-2' : 'opacity-0'} absolute mt-[-20px] z-20 transition-all self-center rounded-md text-red-500 backdrop-blur-lg `}>{errors}</h1>
+
 
         </>
     );

@@ -243,7 +243,7 @@ export default function DashboardPage() {
                 {
                     label: 'Alterar Desktop',
                     action: () => {
-                        dtConfig.setDesktop(currentDesktop)
+                        dtConfig.changeDesktop(currentDesktop)
                         dtConfig.openWindow()
                         contextMenu.setIsVisible(false)
                     }
@@ -380,9 +380,9 @@ export default function DashboardPage() {
             {/* {hasDesktops && (<div className={`${start ? 'opacity-100 ' : 'blur-3xl opacity-0'} transition-[opacity,filter] duration-1500 scale-101 flex min-h-screen w-full fixed 
                 bg-cover bg-center z-[-2]`}
                 style={{ backgroundImage: `url(${localStorage.getItem('background')})` }}></div>)} */}
-            {hasDesktops && (<div className={`${start ? 'opacity-100 ' : 'blur-xl opacity-0'} transition-all duration-1500 scale-101 flex min-h-screen w-full fixed 
+            {hasDesktops && (<div className={`${start ? 'opacity-100 ' : 'blur-xl opacity-0'} scale-101 flex min-h-screen w-full fixed 
                 bg-cover bg-center z-[-1]`}
-                style={{ backgroundImage: `url(${currentDesktop?.backgroundImage})` }}
+                style={{ backgroundImage: `url(${currentDesktop?.backgroundImage})`, transition: 'opacity 0.3s, filter 0.3s' }}
             ></div>)}
             {hasDesktops ? '' : (<PersonalDesktopWindow onFinish={(bool) => setHasDesktops(bool)} />)}
 
@@ -407,8 +407,8 @@ export default function DashboardPage() {
                             newFile.setFile(null)
                             newFile.openWindow()
                         }}
-                            className="flex flex-row items-center justify-start gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md hover:bg-black/65 border-[1px] 
-                    border-transparent hover:text-(--color-lighter) hover:border-(--color-lighter) transition-all select-none">
+                            className="flex flex-row items-center justify-start gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md hover:bg-(--color-lighter) border-[1px] 
+                    border-transparent hover:text-white hover:border-(--color-lighter) transition-all select-none hover:scale-102">
                             <CirclePlus />
                             <p className="text-lg">{t("dashboard.create")}</p>
                         </button>
@@ -423,8 +423,9 @@ export default function DashboardPage() {
                             <GripVertical />
                         </div> */}
 
-                    <div onClick={listdt.openWindow} className="flex flex-row items-center justify-between gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md hover:bg-black/65 border-[1px] 
-                    border-white hover:text-(--color-lighter) hover:border-(--color-lighter) transition-all w-full max-w-50 select-none">
+                    <div onClick={listdt.openWindow} className="flex flex-row items-center justify-between gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md
+                    hover:bg-(--color-lighter) hover:scale-102
+                     hover:text-white hover:border-(--color-lighter) transition-all w-full max-w-50 select-none">
                         <p className="text-lg truncate">{currentDesktop?.name}</p>
                         <GripVertical />
                     </div>

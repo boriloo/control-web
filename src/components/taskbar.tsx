@@ -7,7 +7,7 @@ export default function TaskBar() {
     const { minimazeAllWindows } = useAppContext();
 
     return (
-        <div className="max-h-10 z-100 fixed bottom-0 flex flex-row justify-center items-center gap-2 h-10 w-full backdrop-blur-sm bg-black/60 overflow-hidden transition-all duration-600 select-none">
+        <div className="max-h-10 z-100 fixed bottom-0 relative flex flex-row justify-center items-center gap-2 h-10 w-full backdrop-blur-sm bg-black/60 overflow-hidden transition-all duration-600 select-none">
             <img onClick={() => {
                 minimazeAllWindows()
                 config.openWindow()
@@ -23,6 +23,10 @@ export default function TaskBar() {
                 minimazeAllWindows()
                 social.openWindow()
             }} src="/assets/images/users.png" alt="users" className=" p-1.5 px-2 w-11 transition-all cursor-pointer hover:bg-zinc-500/30" />
+
+            <div onClick={minimazeAllWindows} className="p-2 hover:px-4 cursor-pointer absolute right-0 hover:bg-white/20 transition-all text-white">
+                |
+            </div>
         </div>
     )
 }

@@ -36,17 +36,16 @@ export default function ConfigWindow() {
         config.currentStatus != "closed" && (<div onClick={handleAreaClick} className={`${isFullsceen ? 'pb-[40px]' : ' p-2 pb-[50px]'} 
             ${config.currentStatus === "open" ? returnFilterEffects() : 'pointer-events-none'} 
         fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 cursor-pointer`}>
-            <div className={`${isFullsceen ? 'max-w-full max-h-full' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${config.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0'} 
+            <div className={`${isFullsceen ? 'max-w-full max-h-full rounded-none' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${config.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0'} 
                 cursor-default origin-bottom relative transition-all rounded-lg duration-250 flex flex-col bg-(--color-dark) w-full h-full overflow-hidden`}
             >
-                <div className="z-50 sticky select-none top-0 w-full bg-black/50 h-8 flex flex-row justify-between items-center backdrop-blur-[2px]">
-                    <p className="p-2">Configurações</p>
+                <div className="z-50 absolute select-none top-0 right-0 flex flex-row justify-end items-center">
                     <div className="flex flex-row h-full">
-                        <Minus onClick={config.minimizeWindow} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-white/20" />
-                        <Maximize onClick={() => setIsFullscreen(!isFullsceen)} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-white/20" />
-                        <X onClick={config.closeWindow} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-red-500" />
+                        <Maximize onClick={() => setIsFullscreen(!isFullsceen)} className="transition-colors rounded-bl-md cursor-pointer p-[9px] w-10 h-full hover:bg-white/20" />
+                        <X onClick={config.closeWindow} className="transition-colors cursor-pointer p-2 w-10 h-full  hover:bg-red-500" />
                     </div>
                 </div>
+
                 <div className="flex flex-row w-full h-full">
                     <div className="group bg-(--color-darker)/70 h-auto flex flex-col gap-2 p-4 select-none">
                         <div onClick={() => config.setCurrentTab('account')} className={`${config.currentTab === 'account' ? 'bg-(--color-light) hover:bg-(--color-lighter)' : 'hover:bg-zinc-800'} 

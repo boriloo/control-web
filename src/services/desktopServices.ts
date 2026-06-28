@@ -20,19 +20,16 @@ export const getDesktopByOwnerService = async () => {
 }
 
 export const updateDesktopService = async (id: string, data: UpdateDesktopData) => {
-    const formData = new FormData();
+    const body: any = {}
 
-    if (data.name) {
-        formData.append('name', data.name);
-    }
+    if (data.name) body.name = data.name
+    if (data.backgroundImage) body.backgroundImage = data.backgroundImage
+    if (data.desktopType) body.desktopType = data.desktopType
 
-    if (data.backgroundImage) {
-        formData.append('backgroundImage', data.backgroundImage);
-    }
+    console.log('BODY PRA REQ', body)
 
-    const response = await api.patch(`/desktop/${id}`, formData);
-
-    return response.data;
+    const response = await api.patch(`/desktop/${id}`, body)
+    return response.data
 }
 
 export const deleteDesktopService = async (id: string) => {

@@ -26,6 +26,7 @@ interface UserContextProps {
     changeUser: (user: UserData) => void;
     currentDesktop: DesktopData | null;
     changeCurrentDesktop: (desktop: DesktopData) => void;
+    standartDesktop: (desktop: any) => DesktopData;
     authLoginUser: (data: LoginData) => Promise<UserData>;
     authRegisterUser: (data: RegisterData) => Promise<void>;
     authLogoutUser: () => Promise<void>;
@@ -40,7 +41,6 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const { closeAllWindows } = useAppContext();
-    const { dtConfig } = useWindowContext();
     const { changeAllFiles, changeRootFiles } = useFileContext();
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
     const [currentDesktop, setCurrentDesktop] = useState<DesktopData | null>(null);
@@ -182,8 +182,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, [])
 
-
-    const changeCurrentDesktop = useCallback(async (desktop: any) => {
+    const standartDesktop = async (desktop: any) => {
         const background = desktop.backgroundImage ?? desktop.background_image
         const useProxy = background.startsWith('desktops/')
 
@@ -191,7 +190,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (useProxy) {
             proxiedImage = await getProxyStorageService(desktop.backgroundImage ?? desktop.background_image);
-            console.log('PROXY', proxiedImage)
         }
 
         const {
@@ -202,13 +200,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             ...rest
         } = desktop;
 
-        setCurrentDesktop({
+        const returnDesktop = {
             ...rest,
             backgroundImage: useProxy ? proxiedImage : background_image ?? desktop.backgroundImage,
             desktopType: desktop_type ?? desktop.desktopType,
             createdAt: created_at ?? desktop.createdAt,
             ownerId: owner_id ?? desktop.ownerId
-        });
+        };
+
+        return returnDesktop;
+    }
+
+
+    const changeCurrentDesktop = useCallback(async (desktop: any) => {
+        const finalDesktop = await standartDesktop(desktop)
+
+        setCurrentDesktop(finalDesktop);
 
         localStorage.setItem('last-desktop', desktop.id);
     }, []);
@@ -349,6 +356,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 changeUser,
                 currentDesktop,
                 changeCurrentDesktop,
+                standartDesktop,
                 authLoginUser,
                 authRegisterUser,
                 isLoading,

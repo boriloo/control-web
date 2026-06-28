@@ -158,7 +158,7 @@ export default function IconFile({ file, animationKey, index, imageValidations }
                 onClick={handleClick}
                 onDoubleClick={() => returnAction()}
                 className={`group/inner flex flex-col p-3 gap-4 rounded-md transition-all cursor-pointer justify-center
-                hover:bg-white/10 hover:to-(--color-light)/15 animate-slideIn opacity-0 items-center relative
+                hover:bg-white/10 hover:to-(--color-light)/15 animate-slideIn opacity-0 items-center relative select-none
              w-full max-w-[112px] h-[112px]`}
                 style={{
                     animationDelay: `${index * 100}ms`,
@@ -186,9 +186,9 @@ export default function IconFile({ file, animationKey, index, imageValidations }
                     <Trash2 size={18} />
                 </div>
 
-                <img src={imageSrc as string} alt="" className="h-10 w-10 object-contain transition-all relative z-10" />
+                <img src={imageSrc as string} alt="" className=" h-10 w-10 object-contain transition-all relative z-10" />
                 <div className="flex flex-col mt-[-5px] w-full relative z-10">
-                    <p className="text-[18px] w-full text-center truncate transition-all">{file.name}</p>
+                    <p className="text-[18px]/[22px] w-full text-center truncate-2 transition-all">{file.name}</p>
                 </div>
 
             </div>

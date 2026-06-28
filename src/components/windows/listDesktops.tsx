@@ -15,7 +15,7 @@ import { useFileContext } from "../../context/FileContext";
 export default function ListDesktopsWindow() {
     const { t } = useTranslation();
     const { changeRootFiles } = useFileContext();
-    const { user, currentDesktop, changeCurrentDesktop, toBase64Image } = useUser();
+    const { user, currentDesktop, changeCurrentDesktop } = useUser();
     const { minimazeAllWindows } = useAppContext();
     const { listdt, newdt, dtConfig } = useWindowContext();
     const [loading, setLoading] = useState<boolean>(false);
@@ -76,12 +76,13 @@ export default function ListDesktopsWindow() {
                     <div onClick={() => {
                         minimazeAllWindows()
                         dtConfig.openWindow()
-                        dtConfig.setDesktop(currentDesktop)
+                        dtConfig.changeDesktop(currentDesktop)
                     }} className="group flex flex-row w-full p-4 justify-start bg-(--color-light) items-center rounded-sm  transition-all hover:bg-(--color-lighter) overflow-hidden cursor-pointer relative gap-2">
                         <div className="gap-1 flex flex-row text-lg white font-medium h-7.5 group-hover:scale-105 transition-all">
                             <p>Atual -</p>
                             {currentDesktop?.name}
                         </div>
+                        <div></div>
                         <h1 className="text-lg">
 
 
@@ -119,11 +120,6 @@ export default function ListDesktopsWindow() {
                                     {desktop.name}
 
 
-                                    {/* VERSÃO LANÇAMENTO */}
-
-                                    {/* ({desktop.type}) */}
-
-
                                 </h1>
 
                                 <p className="transition-all opacity-0 ml-[-10px] group-hover:opacity-100 group-hover:ml-0 text-(--color-lighter)">Clique para abrir</p>
@@ -137,18 +133,15 @@ export default function ListDesktopsWindow() {
                                     </p> */}
 
 
-                                    <div onClick={(e) => {
+                                    <div onClick={async (e) => {
                                         e.stopPropagation();
-                                        minimazeAllWindows()
-                                        dtConfig.openWindow()
-                                        dtConfig.setDesktop({
-                                            ...desktop,
-                                            backgroundImage: toBase64Image(desktop.backgroundImage) ?? desktop.backgroundImage
-                                        })
+                                        minimazeAllWindows();
+                                        dtConfig.openWindow();
 
+                                        dtConfig.changeDesktop(desktop);
                                     }}
                                         className="absolute right-0 h-full cursor-pointer transition-all opacity-0 group-hover:opacity-100 group-hover:w-28
-                                    hover:border-(--color-lighter)  w-0 p-2 hover:bg-(--color-lighter) hover:text-(--color-dark)
+                                    hover:border-(--color-lighter)  w-0 p-2 hover:bg-white hover:text-(--color-dark)
                                     bg-(--color-light) flex flex-row items-center gap-2 justify-center">
                                         <Menu size={28} />
                                         <p className="text-[18px]">Editar</p>
@@ -167,7 +160,7 @@ export default function ListDesktopsWindow() {
                     <button onClick={() => {
                         minimazeAllWindows();
                         newdt.openWindow();
-                        dtConfig.setDesktop(null)
+                        dtConfig.changeDesktop(null)
                     }} className={`sticky max-w-55 mt-5 bottom-0 left-[50%] bg-(--color-light) translate-x-[-50%]  transition-all cursor-pointer 
             hover:bg-white hover:text-(--color-regular) p-2 px-3 rounded-sm font-medium`}>{t("listdt.create")}</button>
                 </div>

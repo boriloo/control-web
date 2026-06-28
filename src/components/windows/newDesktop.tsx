@@ -60,7 +60,7 @@ export default function NewDesktopWindow() {
                                 cursor-pointer focus:cursor-text p-1 px-2.5 rounded-sm focus:border-(--color-light) focus:bg-(--color-light)/40 text-(--color-lighter) focus:text-white w-full" />
                 </div>
                 <div className="flex flex-col gap-2 w-full items-start max-w-[1000px]">
-                    <p className="text-lg">Tela de fundo</p>
+                    <p className="text-lg">Plano de fundo</p>
                     <ClickableImageInput onFileSelected={(file) => {
                         setImageSelected(file)
                         console.log(imageSelected)

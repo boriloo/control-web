@@ -181,7 +181,7 @@ export default function Icon({ icon, beingDragged }: IconProps) {
                 {/* <img src={imageSrc} alt={icon.name} className="w-full h-full object-contain pointer-events-none select-none " /> */}
             </div>
             <p className={`${contextMenu.selectedIconId === icon.id ? 'bg-black/70' : `group-hover:bg-black/60 bg-black/40 ${beingDragged ? 'scale-106' : 'group-hover:scale-103'}`}  
-             text-[14px]/5 p-1  backdrop-blur-sm rounded-md line-clamp-2 text-center truncate
+             text-[14px]/[18px] p-1  backdrop-blur-sm rounded-md line-clamp-2 text-center truncate-2
             max-w-19 transition-all origin-top text-shadow-sm text-shadow-black/40`}>{icon.name}</p>
         </div>
     );
