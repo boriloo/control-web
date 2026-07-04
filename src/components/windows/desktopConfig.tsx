@@ -136,6 +136,8 @@ export default function DesktopConfigWindow() {
         setFormattedUserName((user?.name as string).replace(/ /g, ''))
         setFormattedDtName((dtConfig.desktop.name).replace(/ /g, ''))
         setDesktopName(dtConfig.desktop.name)
+        setTypaBackgroundCount(1)
+        setTypaDesktop(dtConfig.desktop.desktopType)
 
         if (dtConfig.desktop.backgroundImage.startsWith('assets/colors')) {
             const match = dtConfig.desktop.backgroundImage.match(/(?<=_)[^.]+(?=\.)/);
@@ -200,7 +202,7 @@ export default function DesktopConfigWindow() {
             setDeleteInput('');
             setConfirmDelete(false);
             dtConfig.closeWindow();
-            dtConfig.setDesktop(null);
+            dtConfig.changeDesktop(null);
         } catch (err) {
             console.error("Erro ao deletar desktop:", err);
             callToast({ message: 'Erro ao excluir desktop.', type: 'error' });
@@ -248,9 +250,7 @@ export default function DesktopConfigWindow() {
             }
 
             if (typaBackgroundCount === 3) {
-                console.log('estamos no tres')
                 updateData.backgroundImage = `assets/colors/default_${colorSelected}.png`
-                console.log('atualizou', updateData)
             }
 
 
@@ -400,18 +400,19 @@ export default function DesktopConfigWindow() {
                         <div className="flex flex-col gap-1 items-start">
                             <p className="text-[15px] opacity-80">Criado em {new Date(windowDesktop?.createdAt as Date)?.toLocaleDateString('pt-BR')}</p>
                             <h1 className="text-[38px] mt-[-10px]">{windowDesktop?.name}</h1>
-                            <p className="text-[18px]">Desktop {windowDesktop?.type}</p>
+                            <p className="text-[18px] mt-[-5px]">Desktop {windowDesktop?.desktopType === 'personal' ? 'pessoal' : 'compartilhado'}</p>
                             <p className="p-1 px-3 mt-5 bg-zinc-950/50 border-1 border-zinc-600 rounded-full">{windowDesktop?.members.length}
                                 {windowDesktop?.members.length && windowDesktop?.members.length > 1 ? ' Membros' : ' Membro'}</p>
                         </div>
-                        <div className="p-2 pb-3 flex flex-col bg-zinc-950/60 backdrop-blur-[2px] border-1 border-zinc-800 rounded-lg min-w-[300px]">
+                        <div className="p-2 px-3 flex flex-col bg-zinc-950/60 backdrop-blur-[2px] border-1 border-zinc-800 rounded-lg min-w-[300px]">
                             <p>Espaço Ocupado</p>
-                            <h1 className="text-[30px]">{allFiles.length} / 10 mil items</h1>
-                            <div className="w-full bg-zinc-950 h-1 mt-2 rounded-md overflow-hidden">
+                            <h1 className="text-[30px]">{allFiles.length} items</h1>
+                            {/* <div className="w-full bg-zinc-950 h-1 mt-2 rounded-md overflow-hidden">
                                 <div className="bg-(--color-light) w-[34%] h-full"></div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
+
                     <div className="flex flex-row gap-6 p-2 mt-[20px] items-start">
 
                         <div className="flex flex-col w-full items-start gap-4">
@@ -543,10 +544,10 @@ export default function DesktopConfigWindow() {
 
                                 {desktopMembers.map((member) =>
                                     <div key={member.id} className="flex flex-row w-full justify-between items-center bg-(--color-regular)/80
-                                    p-3 px-3 rounded-md group hover:bg-(--color-regular) transition-all select-none shadow-md">
-                                        <div className="flex flex-row gap-2 items-center">
+                                    p-3.5 px-4 rounded-md group hover:bg-(--color-regular) border-2 border-(--color-light)/15 transition-all select-none shadow-md">
+                                        <div className="flex flex-row gap-3 items-center">
                                             <img src={`${member.profileImage ?? 'assets/images/profile.png'}`} className={`
-                                                ${member.id === windowDesktop?.ownerId && 'shadow-[0px_0px_10px_1px_var(--color-light)]  border-2 border-(--color-lighter)'} 
+                                                ${member.id === windowDesktop?.ownerId && 'shadow-[0px_0px_10px_1px_var(--color-light)] border-2 border-(--color-lighter)'} 
                                                 rounded-full w-12 h-12`} />
                                             <div className="flex flex-col">
                                                 <p className="text-lg flex gap-1 items-end">{member.name} {member.id === user.id && (

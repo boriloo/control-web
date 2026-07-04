@@ -51,12 +51,17 @@ export default function OpenLinkWindow({ url }: { url: string | null }) {
         <div onClick={handleAreaClick} className={`${openLink.currentStatus === 'open' ? returnFilterEffects() : 'pointer-events-none '} 
         transition-all duration-500 fixed z-110 w-full h-screen flex justify-center items-center p-4 pb-[50px] cursor-pointer`}>
             <div className={`${openLink.currentStatus === 'open' ? 'scale-100' : 'scale-50 opacity-0'} items-start cursor-default bg-(--color-dark)
-             origin-center rounded-md p-4 w-full max-w-[700px] max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative`}>
+             origin-center rounded-md p-4 w-full max-w-[700px] max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative justify-start`}>
                 <div className="p-1.5 bg-(--color-regular) border border-(--color-light)/50 rounded-md absolute top-4 right-4">
                     <img src={imageSrc as string} className="w-10 object-contain pointer-events-none select-none" />
                 </div>
-                <h1 className="text-[25px] truncate max-w-[85%] flex flex-row">Acessar <p className="ml-2 text-[25px] truncate text-blue-400">{openLink.name}</p>?</h1>
-                <p className="mt-[-10px] text-[18px] text-red-400 p-1 px-2 rounded-md bg-red-600/15">Aviso - Você será redirecionado à outra página</p>
+                <h1 className="text-[25px] truncate max-w-[85%] flex flex-row shrink-0">
+                    Acessar <p className="ml-2 text-[25px] truncate text-blue-400">{openLink.name}</p>?
+                </h1>
+
+                <p className="mt-[-10px] text-[18px] text-red-400 p-1 px-2 rounded-md bg-red-600/15 shrink-0">
+                    Aviso - Você será redirecionado à outra página
+                </p>
                 <div className="flex flex-col gap-1 w-full">
                     {url && (
                         <>

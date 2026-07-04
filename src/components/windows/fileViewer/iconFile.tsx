@@ -188,7 +188,9 @@ export default function IconFile({ file, animationKey, index, imageValidations }
 
                 <img src={imageSrc as string} alt="" className=" h-10 w-10 object-contain transition-all relative z-10" />
                 <div className="flex flex-col mt-[-5px] w-full relative z-10">
-                    <p className="text-[18px]/[22px] w-full text-center truncate-2 transition-all">{file.name}</p>
+                    <p className="text-[18px]/[22px] w-full text-center line-clamp-2 transition-all">
+                        {file.name}
+                    </p>
                 </div>
 
             </div>

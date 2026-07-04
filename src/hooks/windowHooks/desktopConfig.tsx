@@ -8,6 +8,8 @@ export const useDesktopConfigHook = () => {
     const [desktop, setDesktop] = useState<DesktopData | null>(null)
 
     const standartDesktop = async (desktop: any) => {
+        if (desktop === null) return null;
+
         const background = desktop.backgroundImage ?? desktop.background_image
         const useProxy = background.startsWith('desktops/')
 

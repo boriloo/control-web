@@ -9,7 +9,6 @@ import { FileData, FilePathData } from "../../types/file";
 import { getFileByIdService, getFileParentNamesService, getFilesFromParentService } from "../../services/fileServices";
 import { useFileContext } from "../../context/FileContext";
 import IconFile from "./fileViewer/iconFile";
-import FluidGlass from './FluidGlass'
 
 export default function FileWindow() {
     const { allFiles, defaultFile } = useFileContext()
@@ -173,10 +172,10 @@ export default function FileWindow() {
 
 
                 <div className={` ${fileViewer.currentStatus === "open" ? 'scale-100' : 'scale-0 opacity-0'} hover:scale-100 hover:opacity-100 
-                group-hover:scale-95 group-hover:opacity-95 group-hover:bg-red-800/10 hover:bg-transparent
+                group-hover:scale-95 group-hover:opacity-98 group-hover:bg-red-800/10 hover:bg-transparent
                 ${loading ? 'max-w-[60px] max-h-[60px] rounded-[50px]' : 'rounded-[10px] max-w-[1200px] max-h-[700px]'}  bg-linear-to-b from-(--color-dark)/80 to-(--color-regular)/10
-                border-t-1 border-white/20 cursor-default relative 
-                transition-all duration-300 flex flex-col w-full h-full
+                border-t-1 border-white/20 cursor-default relative ${loading ? '' : 'overflow-y-auto'}
+                transition-all duration-300 flex flex-col w-full h-full shadow-black/10 shadow-lg
                  select-none backdrop-blur-[2.2vi]`}>
 
                     <DotLottieReact
@@ -193,7 +192,7 @@ export default function FileWindow() {
                         </div>
 
                         {/* ENDERECO */}
-                        <div className="p-1.5 bg-zinc-900/70 px-2 rounded-full flex flex-row mt-1">
+                        <div className="p-1.5 bg-zinc-900/70 px-2 rounded-full flex flex-row mt-1 ">
                             {path && path.map((pathSegment) => (
                                 <div className="flex flex-row items-center">
                                     <p key={pathSegment.name} onClick={() => handlePathClick(pathSegment.id)}
@@ -220,7 +219,7 @@ export default function FileWindow() {
 
                             <div className="flex flex-col items-center gap-2">
 
-                                <p className="text-[37px] text-shadow-zinc-700/20 text-shadow-sm">{fileViewer.file?.name ?? 'Pasta'}</p>
+                                <p className="text-[37px] text-center text-shadow-zinc-700/20 w-full max-w-[700px] line-clamp-2 text-shadow-sm">{fileViewer.file?.name ?? 'Erro ao carregar nome do arquivo'}</p>
                                 <p className="text-[15px] mt-[-5px] opacity-80">Criado em {new Date(fileViewer.file?.createdAt as Date)?.toLocaleDateString('pt-BR')}</p>
 
                             </div>
@@ -231,7 +230,8 @@ export default function FileWindow() {
                             </div>
                         </div>
 
-                        <div className={`${!seeFiles && 'opacity-0'} flex justify-start items-start flex-row relative gap-4 gap-y-4 content-start w-full h-full rounded-md p-2 overflow-y-auto scroll-smooth flex-wrap`}>
+                        <div className={`${!seeFiles && 'opacity-0'} flex justify-start items-start flex-row relative gap-4 gap-y-4 
+                         content-start w-full h-full rounded-md p-2 overflow-y-auto scroll-smooth flex-wrap min-h-[400px]`}>
 
                             {
                                 internalFiles.map((file, index) => (

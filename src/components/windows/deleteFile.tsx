@@ -4,6 +4,7 @@ import { returnFilterEffects } from "../../types/auth";
 import { deleteFileService } from "../../services/fileServices";
 import { useFileContext } from "../../context/FileContext";
 import { useAppContext } from "../../context/AppContext";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 // import { createFile } from "../../services/file";
 
 
@@ -63,6 +64,8 @@ export default function DeleteFileWindow() {
         if (!deleteFile.file?.id) return
 
         try {
+            setLoading(true)
+
             await deleteFileService(deleteFile.file?.id as string)
 
             deleteFile.closeWindow();
@@ -86,9 +89,10 @@ export default function DeleteFileWindow() {
             callToast({ message: 'Arquivo excluído com sucesso.', type: 'success' })
 
         } catch (err) {
-
             callToast({ message: 'Erro ao excluir arquivo.', type: 'error' })
             console.log(err)
+        } finally {
+            setLoading(false)
         }
     }, [deleteFile.file, rootFiles, allFiles])
 
@@ -119,8 +123,14 @@ export default function DeleteFileWindow() {
                         transition-all hover:bg-(--color-lighter) hover:text-white rounded-md">
                             Voltar
                         </button>
-                        <button onClick={handleDelete} className="flex-1 p-1 px-6 text-lg text-white bg-(--color-regular) cursor-pointer transition-all hover:bg-red-500 rounded-md">
-                            Excluir
+                        <button onClick={handleDelete} className="flex-1 p-1 px-6 text-lg text-white bg-(--color-regular) cursor-pointer transition-all hover:bg-red-500 rounded-md flex justify-center items-center">
+                            {loading ?
+                                <DotLottieReact
+                                    src="assets/images/loader.lottie"
+                                    className={`${loading ? '' : 'opacity-0 z-[-1] pointer-events-none'} select-none w-16 transition-all self-center`}
+                                    loop
+                                    autoplay
+                                /> : 'Excluir'}
                         </button>
                     </div>
                 </div>
