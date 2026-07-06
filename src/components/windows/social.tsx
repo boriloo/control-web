@@ -19,7 +19,7 @@ type section = "friends" | "pending" | "blocked"
 
 export default function SocialWindow() {
     const { user } = useUser();
-    const { social } = useWindowContext();
+    const { social, sendInvite } = useWindowContext();
     const [friendListSection, setFriendListSection] = useState<section>('friends')
     const [isFullsceen, setIsFullscreen] = useState<boolean>(false)
     const [canSend, setCanSend] = useState<boolean>(false)
@@ -53,6 +53,7 @@ export default function SocialWindow() {
             })
         )
         setAllFriends(friendItems)
+        sendInvite.setFriends(friendItems)
 
         const receivedPending = pending.filter((r: any) => r.receiver_id === myId)
         const sentPending = pending.filter((r: any) => r.sender_id === myId)
@@ -231,9 +232,9 @@ export default function SocialWindow() {
                             <>
                                 <div className="text-md opacity-75">Pedidos de amizade recebidos</div>
                                 {allReceived.map((req) => (
-                                    <div key={req.relationId} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
+                                    <div key={req.relationId} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-(--color-light)/10">
                                         <img src={`${req?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
-                                        <div className="flex flex-col">
+                                        <div className="flex flex-col text-(--color-whity)">
                                             <h1 className="text-lg">{req.name}</h1>
                                             <p className="text-[14px] opacity-75">{req.email}</p>
                                         </div>
@@ -384,7 +385,12 @@ export default function SocialWindow() {
                                 </div>
                                 <div className="flex-1 flex justify-center">
                                     <h1 onClick={() => setFriendListSection('pending')} className={`${friendListSection === 'pending' ? 'text-white w-full' : ' '}
-                                     p-1.5 text-lg w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Pendentes</h1>
+                                     p-1.5 text-lg w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer relative`}>
+                                        {allReceived.length > 0 && (
+                                            <div className="w-4 h-4 rounded-full bg-(--color-lighter) bg-linear-to-b from-(--color-lighter) to-(--color-whity)/60 absolute top-[-5px] right-[-5px]"></div>
+                                        )}
+                                        Pendentes
+                                    </h1>
                                 </div>
                                 <div className="flex-1 flex justify-center items-center">
                                     <h1 onClick={() => setFriendListSection('blocked')} className={`${friendListSection === 'blocked' ? 'text-white w-full' : ' '}

@@ -20,9 +20,9 @@ type TypaDesktop = 'personal' | 'shared'
 
 export default function DesktopConfigWindow() {
     const { changeRootFiles, allFiles } = useFileContext();
-    const { callToast, setBlackScreen } = useAppContext();
+    const { callToast, setBlackScreen, minimazeAllWindows } = useAppContext();
     const { user, currentDesktop, changeCurrentDesktop, setHasDesktops } = useUser();
-    const { dtConfig } = useWindowContext();
+    const { dtConfig, sendInvite } = useWindowContext();
 
     const [loading, setLoading] = useState<boolean>(false)
 
@@ -535,7 +535,14 @@ export default function DesktopConfigWindow() {
                         <div className="flex flex-col w-full max-w-[600px] p-4 rounded-xl gap-3 bg-zinc-950/70">
                             <div className="flex flex-row justify-between gap-2 items-center">
                                 <p className="text-xl">Membros</p>
-                                <Plus size={35} className="p-1 rounded-full hover:bg-zinc-800 cursor-pointer transition-all" />
+                                <Plus size={35} onClick={() => {
+                                    minimazeAllWindows();
+                                    sendInvite.setDesktop({
+                                        id: dtConfig.desktop?.id as string,
+                                        name: dtConfig.desktop?.name as string
+                                    })
+                                    sendInvite.openWindow();
+                                }} className="p-1 rounded-full hover:bg-zinc-800 cursor-pointer transition-all" />
                             </div>
 
                             <div className="w-[100%] h-[1px] bg-zinc-400/40" />

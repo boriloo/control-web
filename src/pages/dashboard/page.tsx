@@ -26,6 +26,7 @@ import { useAppContext } from "../../context/AppContext";
 import { useFileContext } from "../../context/FileContext";
 import ContextMenu from "../../components/contextMenu";
 import DeleteFileWindow from "../../components/windows/deleteFile";
+import SendInviteWindow from "../../components/windows/sendInvite";
 
 
 export default function DashboardPage() {
@@ -389,6 +390,7 @@ export default function DashboardPage() {
 
             <ConfigWindow />
             <NewFileWindow />
+            <SendInviteWindow />
             <ProfileWindow />
             <FileWindow />
             <ListDesktopsWindow />

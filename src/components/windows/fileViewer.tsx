@@ -192,7 +192,7 @@ export default function FileWindow() {
                         </div>
 
                         {/* ENDERECO */}
-                        <div className="p-1.5 bg-zinc-900/70 px-2 rounded-full flex flex-row mt-1 ">
+                        <div className="p-1.5 bg-zinc-950/70 px-2 rounded-full flex flex-row mt-1 ">
                             {path && path.map((pathSegment) => (
                                 <div className="flex flex-row items-center">
                                     <p key={pathSegment.name} onClick={() => handlePathClick(pathSegment.id)}

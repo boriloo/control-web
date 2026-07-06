@@ -1,168 +1,150 @@
-import { Bot, ExternalLink, Menu, X } from "lucide-react"
+import { UserPlus, X } from "lucide-react"
 import { useWindowContext } from "../../context/WindowContext";
 import { returnFilterEffects } from "../../types/auth";
-import { useUser } from "../../context/AuthContext";
-import { useAppContext } from "../../context/AppContext";
 import { useEffect, useState } from "react";
-// import { getDesktopById } from "../../services/desktop";
 import { useTranslation } from "react-i18next";
-import { getDesktopByIdService, getDesktopByOwnerService } from "../../services/desktopServices";
-import { DesktopData } from "../../types/desktop";
+import {
+    createDesktopInviteService,
+    getPendingDesktopInvitesService,
+    deleteDesktopInviteService
+} from "../../services/desktopServices";
 import { useFileContext } from "../../context/FileContext";
-// import { collection, onSnapshot, query, where } from "firebase/firestore";
-// import { db } from "../../firebase/config";
+import { getUserByIdService } from "../../services/userServices";
 
-export default function ListDesktopsWindow() {
+export default function SendInviteWindow() {
     const { t } = useTranslation();
     const { changeRootFiles } = useFileContext();
-    const { user, currentDesktop, changeCurrentDesktop } = useUser();
-    const { minimazeAllWindows } = useAppContext();
-    const { listdt, newdt, dtConfig } = useWindowContext();
+    const { sendInvite } = useWindowContext();
     const [loading, setLoading] = useState<boolean>(false);
-    const [allDesktops, setAllDesktops] = useState<DesktopData[]>([]);
+    const [pendingInvites, setPendingInvites] = useState<any[]>([]);
 
-    const handleAreaClick = (e: React.MouseEvent<HTMLElement>) => {
-        if (e.target != e.currentTarget) return;
-        listdt.minimizeWindow();
-    }
+    const availableFriends = sendInvite.friends.filter(
+        (friend) => !pendingInvites.some((invite) => invite.userId === friend.id)
+    );
+
 
     useEffect(() => {
-        setAllDesktops([]);
+        const fetchPendingInvites = async () => {
+            try {
+                const data = await getPendingDesktopInvitesService(sendInvite.desktop?.id as string);
+                const pendingData = await Promise.all(
+                    data.map(async (invite: any) => {
+                        const user = await getUserByIdService(invite.receiver_id);
+                        console.log('PEGUEI USER', user)
+                        return {
+                            id: invite.id,
+                            userId: user.id,
+                            name: user.name,
+                            email: user.email,
+                            profileImage: user.profile_image,
+                            desktopId: invite.desktop_id
+                        };
+                    })
+                );
+                setPendingInvites(pendingData);
+            } catch (err) {
+                console.error("Erro ao buscar convites pendentes", err);
+            }
+        };
 
-        const getAllDesktops = async () => {
-            const responseDesktops = await getDesktopByOwnerService();
+        fetchPendingInvites();
 
-            const otherDesktops = responseDesktops.filter((desktop: DesktopData) => desktop.id !== currentDesktop?.id);
+    }, [sendInvite.desktop]);
 
-            setAllDesktops(otherDesktops)
-        }
+    const handleAreaClick = (e: React.MouseEvent<HTMLElement>) => {
+        if (e.target !== e.currentTarget) return;
+        sendInvite.minimizeWindow();
+    }
 
-        getAllDesktops();
-
-    }, [user, dtConfig.desktop, currentDesktop?.id]);
-
-    const handleChangeDesktop = async (id: string) => {
-        setLoading(true)
+    const createInvite = async (receiverId: string) => {
         try {
-
-            changeRootFiles([])
-
-            const response = await getDesktopByIdService(id)
-
-            changeCurrentDesktop(response)
-
-            localStorage.setItem('last-desktop', response.id);
-
-            // listdt.closeWindow()
+            await createDesktopInviteService(sendInvite.desktop?.id as string, receiverId);
+            const data = await getPendingDesktopInvitesService(sendInvite.desktop?.id as string);
+            const pendingData = await Promise.all(
+                data.map(async (invite: any) => {
+                    const user = await getUserByIdService(invite.receiver_id);
+                    console.log('PEGUEI USER', user)
+                    return {
+                        id: invite.id,
+                        userId: user.id,
+                        name: user.name,
+                        email: user.email,
+                        profileImage: user.profile_image,
+                        desktopId: invite.desktop_id
+                    };
+                })
+            );
+            setPendingInvites(pendingData);
         } catch (err) {
-            console.log(err)
-            throw err
-        } finally {
-            setTimeout(() => {
-                setLoading(false)
-            }, 1000)
+            console.error(err);
+        }
+    }
+
+    const cancelInvite = async (inviteId: string) => {
+        try {
+            await deleteDesktopInviteService(inviteId);
+            setPendingInvites(prev => prev.filter(inv => inv.id !== inviteId));
+        } catch (err) {
+            console.error(err);
         }
     }
 
     return (
-        listdt.currentStatus != 'closed' && <div onClick={handleAreaClick} className={`${listdt.currentStatus === 'open' ? returnFilterEffects() : 'pointer-events-none '} 
+        sendInvite.currentStatus !== 'closed' && <div onClick={handleAreaClick} className={`${sendInvite.currentStatus === 'open' ? returnFilterEffects() : 'pointer-events-none '} 
         transition-all duration-500 fixed z-100 w-full h-screen flex justify-center items-center p-4 pb-[50px] cursor-pointer`}>
-            <div style={{ transition: 'background-color 1s, scale 0.2s, opacity 0.2s' }} className={`${listdt.currentStatus === 'open' ? 'scale-100' : 'scale-50 opacity-0'} 
+            <div style={{ transition: 'background-color 1s, scale 0.2s, opacity 0.2s' }} className={`${sendInvite.currentStatus === 'open' ? 'scale-100' : 'scale-50 opacity-0'} 
             cursor-default bg-(--color-dark) origin-center rounded-md p-4 w-full 
                 max-w-[700px] max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative pb-10 `}>
-                <X onClick={listdt.minimizeWindow} size={35} className="absolute top-0 right-0 p-2 rounded-bl-lg cursor-pointer transition-all hover:bg-red-500" />
-                <h1 className="text-[24px]">{t("listdt.title")}</h1>
-                <div className={`${loading ? 'opacity-20 saturate-0 pointer-events-none' : ''} transition-all flex flex-col gap-3 w-full max-h-[500px] items-center overflow-y-auto`}>
-                    <div onClick={() => {
-                        minimazeAllWindows()
-                        dtConfig.openWindow()
-                        dtConfig.changeDesktop(currentDesktop)
-                    }} className="group flex flex-row w-full p-4 justify-start bg-(--color-light) items-center rounded-sm  transition-all hover:bg-(--color-lighter) overflow-hidden cursor-pointer relative gap-2">
-                        <div className="gap-1 flex flex-row text-lg white font-medium h-7.5 group-hover:scale-105 transition-all">
-                            <p>Atual -</p>
-                            {currentDesktop?.name}
-                        </div>
-                        <div></div>
-                        <h1 className="text-lg">
+                <X onClick={sendInvite.minimizeWindow} size={35} className="absolute top-0 right-0 p-2 rounded-bl-lg cursor-pointer transition-all hover:bg-red-500" />
 
+                <h1 className="text-[24px]">Convidar para <span className="text-(--color-whity) font-medium">{sendInvite.desktop?.name} (desktop)</span></h1>
 
-                            {/* VERSÃO LANÇAMENTO */}
+                <div className="flex flex-col gap-2 h-full max-h-[400px] overflow-y-auto">
 
-                            {/* ({currentDesktop?.type}) */}
-                        </h1>
-
-                        <p className="transition-all opacity-0 ml-[-10px] group-hover:opacity-100 group-hover:ml-1 text-white bg-black/30 p-1 px-2 rounded-sm">Clique para editar</p>
-
-                        <div className="flex flex-row gap-2 items-center">
-                            <p className="transition-all opacity-0 group-hover:opacity-100 mr-[-5px] group-hover:mr-1">
-
-                                {/* VERSÃO LANÇAMENTO */}
-
-                                {/* {currentDesktop?.members.length} {''}
-                                {currentDesktop?.members.length && currentDesktop?.members.length > 1 ? t("listdt.members") : t("listdt.member")} */}
-                            </p>
-                            {/* <div
-                                className="absolute right-0 h-full cursor-pointer transition-all opacity-0 group-hover:opacity-100 group-hover:w-28
-                                    hover:border-(--color-lighter)  w-0 p-2 bg-(--color-lighter) text-white
-                                    flex flex-row items-center gap-2 justify-center">
-                                <Menu size={28} />
-                                <p className="text-[18px]">Editar</p>
-                            </div> */}
-
-                        </div>
-                    </div>
-                    {allDesktops.length >= 1 ?
-                        allDesktops.map((desktop) => (
-                            <div key={desktop.id} onClick={() => handleChangeDesktop(desktop.id)} className="group flex flex-row w-[98%] p-3 items-center bg-(--color-darker) border-2 border-transparent 
-                            cursor-pointer hover:bg-(--color-regular)/40 hover:scale-102 hover:border-(--color-light) relative overflow-hidden
-                            rounded-sm transition-all justify-start gap-4">
-                                <h1 className="text-lg group-hover:scale-105 transition-all h-7.5">
-                                    {desktop.name}
-
-
-                                </h1>
-
-                                <p className="transition-all opacity-0 ml-[-10px] group-hover:opacity-100 group-hover:ml-0 text-(--color-lighter)">Clique para abrir</p>
-                                <div className="flex flex-row gap-2 items-center">
-
-
-                                    {/* VERSÃO LANÇAMENTO */}
-
-                                    {/* <p className="transition-all opacity-0 group-hover:opacity-100 mr-[-5px] group-hover:mr-1">
-                                        {desktop.members.length} {desktop.members.length > 1 ? t("listdt.members") : t("listdt.member")}
-                                    </p> */}
-
-
-                                    <div onClick={async (e) => {
-                                        e.stopPropagation();
-                                        minimazeAllWindows();
-                                        dtConfig.openWindow();
-
-                                        dtConfig.changeDesktop(desktop);
-                                    }}
-                                        className="absolute right-0 h-full cursor-pointer transition-all opacity-0 group-hover:opacity-100 group-hover:w-28
-                                    hover:border-(--color-lighter)  w-0 p-2 hover:bg-white hover:text-(--color-dark)
-                                    bg-(--color-light) flex flex-row items-center gap-2 justify-center">
-                                        <Menu size={28} />
-                                        <p className="text-[18px]">Editar</p>
+                    {availableFriends.length > 0 && (
+                        <>
+                            <div className="text-md opacity-75 mb-2">Amigos disponíveis</div>
+                            {availableFriends.map((friend) => (
+                                <div key={friend.relationId} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md bg-white/6">
+                                    <img src={`${friend?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                                    <div className="flex flex-col">
+                                        <h1 className="text-lg">{friend.name}</h1>
+                                        <p className="text-[14px] opacity-75">{friend.email}</p>
                                     </div>
 
+                                    <div className="flex flex-row gap-4 ml-auto">
+                                        <UserPlus
+                                            onClick={() => createInvite(friend.id)}
+                                            className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-green-500/10 hover:border-green-300 hover:text-green-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        )) :
-                        <div className="p-2 w-full flex flex-col items-center gap-2 mt-6">
-                            <Bot size={60} />
-                            <h1 className="text-center text-xl">{t("listdt.lost_1")}</h1>
-                            <h1 className="text-center text-xl">{t("listdt.lost_2")}</h1>
-                        </div>
-                    }
+                            ))}
+                        </>
+                    )}
 
-                    <button onClick={() => {
-                        minimazeAllWindows();
-                        newdt.openWindow();
-                        dtConfig.changeDesktop(null)
-                    }} className={`sticky max-w-55 mt-5 bottom-0 left-[50%] bg-(--color-light) translate-x-[-50%]  transition-all cursor-pointer 
-            hover:bg-white hover:text-(--color-regular) p-2 px-3 rounded-sm font-medium`}>{t("listdt.create")}</button>
+
+                    {pendingInvites.length > 0 && (
+                        <>
+                            <div className="text-md opacity-75">Pendente</div>
+                            {pendingInvites.map((invite) => (
+                                <div key={invite.id} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md bg-white/6">
+                                    <img src={`${invite.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
+                                    <div className="flex flex-col">
+                                        <h1 className="text-lg">{invite.name}</h1>
+                                        <p className="text-[14px] opacity-75">{invite.email}</p>
+                                    </div>
+
+                                    <div className="flex flex-row gap-4 ml-auto">
+                                        <X
+                                            onClick={() => cancelInvite(invite.id)}
+                                            className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
+                                hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
+                                    </div>
+                                </div>
+                            ))}
+                        </>
+                    )}
                 </div>
             </div>
         </div>

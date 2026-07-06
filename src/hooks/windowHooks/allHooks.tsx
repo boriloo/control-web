@@ -9,6 +9,7 @@ import { useNewDesktopHook } from "./newDesktopHook";
 import { useNewFileHook } from "./newFileHook";
 import { useOpenLinkHook } from "./openLinkHook";
 import { useProfileHook } from "./profileHook";
+import { useSendInviteHook } from "./sendInviteHook";
 import { useSocialHook } from "./socialHook";
 
 export function useAllWindows() {
@@ -25,5 +26,6 @@ export function useAllWindows() {
         social: useSocialHook(),
         contextMenu: useContextMenuHook(),
         deleteFile: useDeleteFileHook(),
+        sendInvite: useSendInviteHook(),
     };
 }

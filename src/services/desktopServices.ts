@@ -26,7 +26,6 @@ export const updateDesktopService = async (id: string, data: UpdateDesktopData) 
     if (data.backgroundImage) body.backgroundImage = data.backgroundImage
     if (data.desktopType) body.desktopType = data.desktopType
 
-    console.log('BODY PRA REQ', body)
 
     const response = await api.patch(`/desktop/${id}`, body)
     return response.data
@@ -37,3 +36,28 @@ export const deleteDesktopService = async (id: string) => {
 
     return (response).data;
 }
+
+export const createDesktopInviteService = async (desktopId: string, receiverId: string) => {
+    const response = await api.post(`/desktop/invite/${desktopId}/${receiverId}`);
+    return response.data;
+};
+
+export const getPendingDesktopInvitesService = async (desktopId: string) => {
+    const response = await api.get(`/desktop/invite/${desktopId}`);
+    return response.data;
+};
+
+export const getPendingInvitesService = async () => {
+    const response = await api.get("/desktop/invite");
+    return response.data;
+};
+
+export const acceptDesktopInviteService = async (inviteId: string) => {
+    const response = await api.put(`/desktop/accept/${inviteId}`);
+    return response.data;
+};
+
+export const deleteDesktopInviteService = async (inviteId: string) => {
+    const response = await api.delete(`/desktop/invite/${inviteId}`);
+    return response.data;
+};
