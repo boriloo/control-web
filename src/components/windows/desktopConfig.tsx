@@ -363,7 +363,7 @@ export default function DesktopConfigWindow() {
             </div>
 
             <div className={`${isFullsceen ? 'max-w-full max-h-full' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${dtConfig.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0'} 
-                bg-(--color-dark) cursor-default origin-center relative transition-all duration-250 flex flex-col w-full h-full overflow-y-auto`}>
+                bg-(--color-dark) border-1 border-(--color-whity)/10 cursor-default origin-center relative transition-all duration-250 flex flex-col w-full h-full overflow-y-auto`}>
 
 
                 <div className="bg-(--color-light)/40 blur-[190px] w-120 h-120 right-0 bottom-[-450px] rounded-tl-full fixed"></div>
@@ -569,29 +569,6 @@ export default function DesktopConfigWindow() {
                                     </div>
                                 )}
 
-
-
-                                {/* {windowDesktop?.members.map((member) =>
-                                    <div key={member.d} className="flex flex-row w-full justify-between items-center bg-zinc-900 
-                                    p-3 px-3 rounded-md group hover:bg-zinc-800/70 transition-all select-none inset-shadow-sm inset-shadow-zinc-800 shadow-md">
-                                        <div className="flex flex-row gap-2 items-center">
-                                            <img src={`${member.userImage ?? 'assets/images/profile.png'}`} className={`
-                                                ${member.role === 'owner' && 'shadow-[0px_0px_10px_5px] shadow-(--color-light)/30 border-2 border-blue-400'} 
-                                                rounded-full w-12 h-12`} />
-                                            <div className="flex flex-col">
-                                                <p className="text-lg flex gap-1 items-end">{member.name} {member.userId === user.uid && (
-                                                    <span className="text-[15px] opacity-60 mb-0.5">(você)</span>)}</p>
-                                                <p className="text-md opacity-80 mt-[-5px]">{member.role}</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-row gap-3">
-                                            <Menu className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-(--color-light)/15 
-                                        hover:border-(--color-light) hover:text-(--color-light) w-9 h-9 p-1 bg-white/5 border border-white/40 rounded-md" />
-                                            <UserRound className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-(--color-light)/15 
-                                        hover:border-(--color-light) hover:text-(--color-light) w-9 h-9 p-1 bg-white/5 border border-white/40 rounded-md" />
-                                        </div>
-                                    </div>
-                                )} */}
 
                             </div>
                         </div>

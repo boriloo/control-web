@@ -109,13 +109,13 @@ export default function DeleteFileWindow() {
         <div onClick={handleAreaClick} className={`${deleteFile.currentStatus == 'open' ? returnFilterEffects() : 'pointer-events-none'} 
         transition-all duration-500 fixed z-200 w-full h-screen flex justify-center items-center p-4 pb-[50px] cursor-pointer`}>
             <div className={`${deleteFile.currentStatus == 'open' ? 'scale-100' : 'scale-50 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-md p-4 w-full max-w-[600px] 
-            max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative`}>
+            max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative  border-1 border-(--color-whity)/10`}>
                 <div className="p-1.5 bg-(--color-regular) border border-(--color-light)/50 rounded-md absolute top-4 right-4">
                     <img src={imageSrc as string} className="w-10 object-contain pointer-events-none select-none" />
                 </div>
-                <h1 className="text-[20px] flex gap-1.5">Deseja excluir <p className="text-(--color-lighter) max-w-70 truncate">
+                <h1 className="text-[24px] flex gap-1.5">Deseja excluir <p className="text-(--color-whity) font-medium max-w-70 truncate">
                     {`${deleteFile.file?.name} (${deleteFile.file?.fileType})?`}</p></h1>
-                <p className="mt-[-10px] text-lg text-white/60">Essa ação não pode ser desfeita</p>
+                <p className="mt-[-10px] text-[16px] text-white/60">Essa ação não pode ser desfeita</p>
                 <div className={`${loading && 'saturate-0 pointer-events-none opacity-60'} flex flex-col gap-3 items-center`}>
 
                     <div className="flex flex-row gap-2 w-full">

@@ -50,7 +50,7 @@ export default function NewDesktopWindow() {
         newdt.currentStatus != 'closed' && <div className={`${newdt.currentStatus === 'open' ? returnFilterEffects() : 'pointer-events-none '} 
         transition-all duration-500 fixed z-100 w-full h-screen flex justify-center items-center p-4 pb-[50px] cursor-pointer`}>
             <div className={`${newdt.currentStatus === 'open' ? 'scale-100' : 'scale-50 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-md p-4 w-full 
-                max-w-[600px] max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative pb-5 `}>
+                max-w-[600px] max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative pb-5  border-1 border-(--color-whity)/10`}>
                 <X onClick={newdt.closeWindow} size={35} className="absolute top-0 right-0 p-2 rounded-bl-lg cursor-pointer transition-all hover:bg-red-500" />
                 <h1 className="text-[24px]">Criar novo Desktop</h1>
                 <div className="flex flex-col gap-1 w-full">

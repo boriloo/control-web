@@ -314,7 +314,7 @@ export default function SocialWindow() {
         <div onClick={handleAreaClick} className={`${isFullsceen ? 'pb-[40px]' : ' p-2 pb-[50px]'} ${social.currentStatus === "open" ? returnFilterEffects() : 'pointer-events-none'} 
         fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 cursor-pointer`}>
             <div className={`${isFullsceen ? 'max-w-full max-h-full' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${social.currentStatus === "open" ? 'scale-100' : 'scale-0 '} 
-                bg-(--color-dark) cursor-default origin-bottom relative transition-all duration-300 flex flex-col w-full h-full overflow-y-auto`}>
+                bg-(--color-dark) cursor-default origin-bottom relative transition-all duration-300 flex flex-col w-full h-full overflow-y-auto  border-1 border-(--color-whity)/10`}>
 
                 <div className="z-50 sticky select-none top-0 w-full bg-black/50 h-8 flex flex-row justify-between items-center backdrop-blur-[2px]">
                     <p className="p-2">Social</p>
@@ -326,7 +326,7 @@ export default function SocialWindow() {
                 </div>
 
                 <div className="flex flex-row w-full items-start flex-wrap h-full">
-                    <div className="flex-1 flex flex-col gap-2 p-8 border-1 h-full border-white/10 rounded-b-lg w-full max-w-[300px] bg-(--color-darker)/35 items-center">
+                    <div className="flex-1 flex flex-col gap-2 p-8 border-r-1 h-full border-white/10 rounded-b-lg w-full max-w-[300px] bg-(--color-darker)/35 items-center">
 
                         <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-23 h-23 rounded-full" />
                         <div className="flex flex-col items-center mt-2">

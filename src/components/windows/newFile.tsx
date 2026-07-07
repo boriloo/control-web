@@ -148,7 +148,7 @@ export default function NewFileWindow() {
         <div onClick={handleAreaClick} className={`${newFile.currentStatus === 'open' ? returnFilterEffects() : 'pointer-events-none'} 
         transition-all duration-500 fixed z-200 w-full h-screen flex justify-center items-center p-4 pb-[50px] cursor-pointer`}>
             <div className={`${newFile.currentStatus === 'open' ? 'scale-100' : 'scale-70 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-md p-4 w-full max-w-[600px] 
-            max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative`}>
+            max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative  border-1 border-(--color-whity)/10`}>
                 <X onClick={closeWindow} size={35}
                     className="absolute top-0 right-0 p-2 rounded-bl-lg cursor-pointer transition-all hover:bg-red-500" />
                 <h1 className="text-[20px] flex gap-1.5">Criar um novo item em <p className="text-(--color-lighter) max-w-50 truncate">

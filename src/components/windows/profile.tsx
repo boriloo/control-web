@@ -24,7 +24,7 @@ export default function ProfileWindow() {
         <div onClick={handleAreaClick} className={`${isFullsceen ? 'pb-[40px]' : ' p-2 pb-[50px]'} ${profile.currentStatus === "open" ? returnFilterEffects() : 'pointer-events-none'} 
         fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 cursor-pointer`}>
             <div className={`${isFullsceen ? 'max-w-full max-h-full' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${profile.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0 '} 
-                bg-(--color-dark) cursor-default origin-bottom relative transition-all duration-250 flex flex-col w-full h-full overflow-y-auto`}>
+                bg-(--color-dark) cursor-default origin-bottom relative transition-all duration-250 flex flex-col w-full h-full overflow-y-auto  border-1 border-(--color-whity)/10`}>
 
                 <div className="z-50 absolute select-none top-0 right-0 flex flex-row justify-end items-center">
                     <div className="flex flex-row h-full">

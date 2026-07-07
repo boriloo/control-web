@@ -37,7 +37,7 @@ export default function ConfigWindow() {
             ${config.currentStatus === "open" ? returnFilterEffects() : 'pointer-events-none'} 
         fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 cursor-pointer`}>
             <div className={`${isFullsceen ? 'max-w-full max-h-full rounded-none' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${config.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0'} 
-                cursor-default origin-bottom relative transition-all rounded-lg duration-250 flex flex-col bg-(--color-dark) w-full h-full overflow-hidden`}
+                cursor-default origin-bottom relative transition-all rounded-lg duration-250 flex flex-col bg-(--color-dark) w-full h-full overflow-hidden  border-1 border-(--color-whity)/10`}
             >
                 <div className="z-50 absolute select-none top-0 right-0 flex flex-row justify-end items-center">
                     <div className="flex flex-row h-full">
