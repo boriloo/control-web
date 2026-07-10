@@ -23,6 +23,10 @@ export type DesktopData = {
     members: string[]
 }
 
+export type DesktopInviteData = {
+
+}
+
 // import { Timestamp } from "firebase/firestore";
 
 // export type DesktopType = "personal" | "team"

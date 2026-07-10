@@ -7,6 +7,12 @@ export const createDesktopService = async (data: CreateDesktopData) => {
     return response.data;
 }
 
+export const getSafeDesktopByIdService = async (id: string) => {
+    const response = await api.get(`/desktop/safe/${id}`);
+
+    return (response).data;
+}
+
 export const getDesktopByIdService = async (id: string) => {
     const response = await api.get(`/desktop/${id}`);
 

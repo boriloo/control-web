@@ -6,17 +6,14 @@ import { returnFilterEffects, UserData } from "../../types/auth";
 import { ClickableImageInput } from "../imageInput";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useAppContext } from "../../context/AppContext";
-import { DesktopData } from "../../types/desktop";
+import { DesktopData, DesktopType } from "../../types/desktop";
 import { deleteDesktopService, getDesktopByIdService, getDesktopByOwnerService, updateDesktopService } from "../../services/desktopServices";
 import { useFileContext } from "../../context/FileContext";
 import { getUserByIdService } from "../../services/userServices";
 import { uploadStorageService } from "../../services/storageServices";
 import { UploadStorageData } from "../../types/storage";
-import { set } from "zod";
 
 type colors = 'red' | 'blue' | 'black' | 'purple' | 'green' | 'orange'
-
-type TypaDesktop = 'personal' | 'shared'
 
 export default function DesktopConfigWindow() {
     const { changeRootFiles, allFiles } = useFileContext();
@@ -46,7 +43,7 @@ export default function DesktopConfigWindow() {
     const [currentImage, setCurrentImage] = useState<File | null>(null)
     const [backgroundUrl, setBackgroundUrl] = useState<string>('')
     const [colorSelected, setColorSelected] = useState<colors>('red')
-    const [typaDesktop, setTypaDesktop] = useState<TypaDesktop>('personal')
+    const [typaDesktop, setTypaDesktop] = useState<DesktopType>('personal')
 
 
 
@@ -389,7 +386,7 @@ export default function DesktopConfigWindow() {
                 {currentDesktop?.id === windowDesktop?.id ? (
                     <p className="z-10 m-5 mb-[-55px] p-1 px-3 self-start border-1 border-(--color-light) bg-(--color-light)/30 backdrop-blur-sm rounded-full">Desktop atual</p>
                 ) : (
-                    <p onClick={() => handleChangeDesktop(windowDesktop?.id as string)} className="z-10 m-5 mb-[-55px] p-1 px-3 self-start border-1 
+                    <p onClick={() => handleChangeDesktop(windowDesktop?.id as string)} className="z-60 m-5 mb-[-55px] p-1 px-3 self-start border-1 
                     border-white/80 bg-zinc-200/5 hover:border-(--color-light) hover:bg-(--color-darker)/90 transition-all
                     hover:text-(--color-lighter) backdrop-blur-sm rounded-full flex flex-row gap-1 items-center group cursor-pointer">Abrir Desktop  <ArrowRight size={20} className="opacity-0 
                     max-w-0 transition-all group-hover:opacity-100 group-hover:max-w-5"/></p>

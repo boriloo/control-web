@@ -18,6 +18,7 @@ export default function DeleteFileWindow() {
     const [url, setUrl] = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [imageSrc, setImageSrc] = useState<string | null>(null)
+    const [tipoArquivo, setTipoArquivo] = useState<string>('')
 
 
     function getDomainFromUrl(url: string): string {
@@ -40,11 +41,11 @@ export default function DeleteFileWindow() {
     useEffect(() => {
         switch (deleteFile.file?.fileType) {
             case ('folder'):
-                console.log('é paxta')
+                setTipoArquivo('Pasta')
                 setImageSrc('/assets/images/open-folder.png')
                 break
             case ('link'):
-                console.log('é paxta')
+                setTipoArquivo('Link')
                 const domain = getDomainFromUrl(deleteFile.file?.url as string);
                 if (domain) {
                     setImageSrc(`https://www.google.com/s2/favicons?domain=${domain}&sz=256`)
@@ -113,8 +114,8 @@ export default function DeleteFileWindow() {
                 <div className="p-1.5 bg-(--color-regular) border border-(--color-light)/50 rounded-md absolute top-4 right-4">
                     <img src={imageSrc as string} className="w-10 object-contain pointer-events-none select-none" />
                 </div>
-                <h1 className="text-[24px] flex gap-1.5">Deseja excluir <p className="text-(--color-whity) font-medium max-w-70 truncate">
-                    {`${deleteFile.file?.name} (${deleteFile.file?.fileType})?`}</p></h1>
+                <h1 className="text-[24px] flex gap-1.5">Deseja excluir <p className="text-(--color-whity) max-w-70 truncate">
+                    {deleteFile.file?.name}</p> <span className="text-rose-500 mr-[-5px]">({tipoArquivo})</span>?</h1>
                 <p className="mt-[-10px] text-[16px] text-white/60">Essa ação não pode ser desfeita</p>
                 <div className={`${loading && 'saturate-0 pointer-events-none opacity-60'} flex flex-col gap-3 items-center`}>
 
