@@ -114,7 +114,7 @@ export default function DeleteFileWindow() {
                 <div className="p-1.5 bg-(--color-regular) border border-(--color-light)/50 rounded-md absolute top-4 right-4">
                     <img src={imageSrc as string} className="w-10 object-contain pointer-events-none select-none" />
                 </div>
-                <h1 className="text-[24px] flex gap-1.5">Deseja excluir <p className="text-(--color-whity) max-w-70 truncate">
+                <h1 className="text-[24px] flex gap-1.5">Deseja excluir <p className="text-(--color-whity) max-w-60 truncate">
                     {deleteFile.file?.name}</p> <span className="text-rose-500 mr-[-5px]">({tipoArquivo})</span>?</h1>
                 <p className="mt-[-10px] text-[16px] text-white/60">Essa ação não pode ser desfeita</p>
                 <div className={`${loading && 'saturate-0 pointer-events-none opacity-60'} flex flex-col gap-3 items-center`}>

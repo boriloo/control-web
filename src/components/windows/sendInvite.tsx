@@ -1,4 +1,4 @@
-import { UserPlus, X } from "lucide-react"
+import { Bot, UserPlus, X } from "lucide-react"
 import { useWindowContext } from "../../context/WindowContext";
 import { returnFilterEffects } from "../../types/auth";
 import { useCallback, useEffect, useState } from "react";
@@ -11,11 +11,14 @@ import {
 import { useFileContext } from "../../context/FileContext";
 import { getUserByIdService } from "../../services/userServices";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { useAppContext } from "../../context/AppContext";
 
 export default function SendInviteWindow() {
     const { t } = useTranslation();
     const { changeRootFiles } = useFileContext();
-    const { sendInvite } = useWindowContext();
+    const { sendInvite, social } = useWindowContext();
+    const { minimazeAllWindows } = useAppContext();
+    const [generalLoading, setGeneralLoading] = useState<boolean>(false)
     const [loading, setLoading] = useState<string[]>([]);
     const [availableFriends, setAvailableFriends] = useState<any[]>([]);
     const [pendingInvites, setPendingInvites] = useState<any[]>([]);
@@ -31,6 +34,7 @@ export default function SendInviteWindow() {
     useEffect(() => {
         const fetchPendingInvites = async () => {
             try {
+                setGeneralLoading(true)
                 const data = await getPendingDesktopInvitesService(sendInvite.desktop?.id as string);
                 const pendingData = await Promise.all(
                     data.map(async (invite: any) => {
@@ -49,6 +53,8 @@ export default function SendInviteWindow() {
                 setPendingInvites(pendingData);
             } catch (err) {
                 console.error("Erro ao buscar convites pendentes", err);
+            } finally {
+                setGeneralLoading(false)
             }
         };
 
@@ -109,70 +115,93 @@ export default function SendInviteWindow() {
 
                 <h1 className="text-[24px]">Convidar para <span className="text-(--color-whity) font-medium">{sendInvite.desktop?.name} </span><span className="text-rose-500">(desktop)</span></h1>
 
-                <div className="flex flex-col gap-2 h-full max-h-[400px] overflow-y-auto">
+
+                {availableFriends.length > 0 || pendingInvites.length > 0 ? (
+                    <div className="flex flex-col gap-2 h-full max-h-[400px] overflow-y-auto relative">
+
+                        <DotLottieReact
+                            src="assets/images/loader.lottie"
+                            className={`${generalLoading ? 'opacity-100' : 'opacity-0'} w-34 transition-all pointer-events-none absolute self-center top-[50%] translate-y-[-50%]`}
+                            loop
+                            autoplay
+                        />
 
 
-                    <div className={` ${availableFriends.length > 0 ? ' opacity-75' : 'opacity-0 h-0'} transition-all overflow-hidden text-md`}>Amigos disponíveis</div>
-                    {availableFriends.map((friend) => (
-                        <div onClick={() => createInvite(friend.id)} key={friend.id} className={`group flex flex-row justify-between items-center gap-3 py-2.5 px-3.5 rounded-md transition-all 
+                        <div className={` ${availableFriends.length > 0 ? ' opacity-75' : 'opacity-0 h-0'} transition-all overflow-hidden text-md`}>Amigos disponíveis</div>
+                        {availableFriends.map((friend) => (
+                            <div onClick={() => createInvite(friend.id)} key={friend.id} className={`${generalLoading ? 'opacity-50 saturate-0 pointer-events-none' : ''} group flex flex-row justify-between items-center gap-3 py-2.5 px-3.5 rounded-md transition-all 
                                 border-1 border-transparent  cursor-pointer ${loading.includes(friend.id) ? 'bg-white/3 scale-95' : 'bg-white/8 hover:bg-green-950/60 hover:border-green-500'}
                                  relative`}>
-                            <div className={`${loading.includes(friend.id) ? 'opacity-100' : 'opacity-0'} transition-all absolute w-full h-full flex justify-center 
+                                <div className={`${loading.includes(friend.id) ? 'opacity-100' : 'opacity-0'} transition-all absolute w-full h-full flex justify-center 
                                     items-center top-0 left-0  overflow-hidden`}>
-                                <DotLottieReact
-                                    src="assets/images/pending.lottie"
-                                    className="w-70 p-0"
-                                    loop
-                                    autoplay
-                                />
-                            </div>
-
-                            <div className={`${loading.includes(friend.id) ? 'opacity-70' : 'opacity-100'} flex flex-row gap-3 items-center`}>
-                                <img src={`${friend.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full transition-all" />
-                                <div className="flex flex-col">
-                                    <h1 className={`${loading.includes(friend.id) ? '' : 'group-hover:text-green-400'} text-lg `}>{friend.name}</h1>
-                                    <p className={`${loading.includes(friend.id) ? '' : 'group-hover:text-green-400'} text-[14px] opacity-75 `}>{friend.email}</p>
+                                    <DotLottieReact
+                                        src="assets/images/pending.lottie"
+                                        className="w-70 p-0"
+                                        loop
+                                        autoplay
+                                    />
                                 </div>
+
+                                <div className={`${loading.includes(friend.id) ? 'opacity-70' : 'opacity-100'} flex flex-row gap-3 items-center`}>
+                                    <img src={`${friend.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full transition-all" />
+                                    <div className="flex flex-col">
+                                        <h1 className={`${loading.includes(friend.id) ? '' : 'group-hover:text-green-400'} text-lg `}>{friend.name}</h1>
+                                        <p className={`${loading.includes(friend.id) ? '' : 'group-hover:text-green-400'} text-[14px] opacity-75 `}>{friend.email}</p>
+                                    </div>
+                                </div>
+
+
+                                <p className={`${loading.includes(friend.id) ? '' : 'group-hover:opacity-100'} text-green-300 bg-black/40 rounded-md p-1 px-2 mr-[-10px] transition-all opacity-0 group-hover:mr-0`}>Convidar para Desktop</p>
                             </div>
+                        ))}
 
 
-                            <p className={`${loading.includes(friend.id) ? '' : 'group-hover:opacity-100'} text-green-300 bg-black/40 rounded-md p-1 px-2 mr-[-10px] transition-all opacity-0 group-hover:mr-0`}>Convidar para Desktop</p>
+
+
+                        <div className={`${availableFriends.length > 0 ? 'mt-2' : 'mt-[-10px]'} ${pendingInvites.length > 0 ? ' opacity-75' : 'opacity-0 h-0 mt-[-5px]'} transition-all overflow-hidden text-md`}>
+                            Convites enviados
                         </div>
-                    ))}
-
-
-
-
-                    <div className={`${availableFriends.length > 0 && 'mt-2'} ${pendingInvites.length > 0 ? ' opacity-75' : 'opacity-0 h-0'} transition-all overflow-hidden text-md`}>Pendente</div>
-                    {pendingInvites.map((invite) => (
-                        <div onClick={() => cancelInvite(invite.id)} key={invite.id} className={`group flex flex-row justify-between items-center gap-3 py-2.5 px-3.5 rounded-md transition-all 
+                        {pendingInvites.map((invite) => (
+                            <div onClick={() => cancelInvite(invite.id)} key={invite.id} className={`${generalLoading ? 'opacity-50 saturate-0 pointer-events-none' : ''} group flex flex-row justify-between items-center gap-3 py-2.5 px-3.5 rounded-md transition-all 
                                 border-1 border-transparent cursor-pointer ${loading.includes(invite.id) ? 'bg-white/3 scale-95' : 'bg-white/8 hover:bg-red-950/60 hover:border-red-500'}
                                  relative`}>
-                            <div className={`${loading.includes(invite.id) ? 'opacity-100' : 'opacity-0'} transition-all absolute w-full h-full flex justify-center 
+                                <div className={`${loading.includes(invite.id) ? 'opacity-100' : 'opacity-0'} transition-all absolute w-full h-full flex justify-center 
                                     items-center top-0 left-0 overflow-hidden`}>
-                                <DotLottieReact
-                                    src="assets/images/pending.lottie"
-                                    className="w-70 p-0"
-                                    loop
-                                    autoplay
-                                />
-                            </div>
-
-                            <div className={`${loading.includes(invite.id) ? 'opacity-70' : 'opacity-100'} flex flex-row gap-3 items-center`}>
-                                <img src={`${invite.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full transition-all" />
-                                <div className="flex flex-col">
-                                    <h1 className={`${loading.includes(invite.id) ? '' : 'group-hover:text-red-400'} text-lg `}>{invite.name}</h1>
-                                    <p className={`${loading.includes(invite.id) ? '' : 'group-hover:text-red-400'} text-[14px] opacity-75 `}>{invite.email}</p>
+                                    <DotLottieReact
+                                        src="assets/images/pending.lottie"
+                                        className="w-70 p-0"
+                                        loop
+                                        autoplay
+                                    />
                                 </div>
-                            </div>
+
+                                <div className={`${loading.includes(invite.id) ? 'opacity-70' : 'opacity-100'} flex flex-row gap-3 items-center`}>
+                                    <img src={`${invite.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full transition-all" />
+                                    <div className="flex flex-col">
+                                        <h1 className={`${loading.includes(invite.id) ? '' : 'group-hover:text-red-400'} text-lg `}>{invite.name}</h1>
+                                        <p className={`${loading.includes(invite.id) ? '' : 'group-hover:text-red-400'} text-[14px] opacity-75 `}>{invite.email}</p>
+                                    </div>
+                                </div>
 
 
-                            <p className={`${loading.includes(invite.id) ? '' : 'group-hover:opacity-100'} text-red-300 bg-black/40 rounded-md p-1 px-2 mr-[-10px] transition-all 
+                                <p className={`${loading.includes(invite.id) ? '' : 'group-hover:opacity-100'} text-red-300 bg-black/40 rounded-md p-1 px-2 mr-[-10px] transition-all 
                                     opacity-0 group-hover:mr-0`}>Cancelar convite</p>
-                        </div>
-                    ))}
+                            </div>
+                        ))}
 
-                </div>
+                    </div>
+                ) : (
+                    <div className="h-[180px] w-full flex flex-col items-center justify-center">
+                        <Bot size={50} />
+                        <h1 className="text-center text-lg opacity-75 mt-1">Você ainda não tem amigos</h1>
+                        <button onClick={() => {
+                            minimazeAllWindows();
+                            social.openWindow();
+                        }} className={`max-w-55 mt-5 bg-rose-500 transition-all cursor-pointer 
+                    hover:bg-white hover:text-(--color-regular) p-2 px-5 rounded-sm font-medium text-[18px]`}>Adicionar amigos</button>
+                    </div>
+                )}
+
             </div>
         </div>
     )

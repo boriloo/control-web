@@ -180,9 +180,11 @@ export default function Icon({ icon, beingDragged }: IconProps) {
             origin-center drop-shadow-zinc-950/40 drop-shadow-md`}>
                 {/* <img src={imageSrc} alt={icon.name} className="w-full h-full object-contain pointer-events-none select-none " /> */}
             </div>
-            <p className={`${contextMenu.selectedIconId === icon.id ? 'bg-black/70' : `group-hover:bg-black/60 bg-black/40 ${beingDragged ? 'scale-106' : 'group-hover:scale-103'}`}  
-             text-[14px]/[18px] p-1  backdrop-blur-sm rounded-md line-clamp-2 text-center truncate
-            max-w-19 transition-all origin-top text-shadow-sm text-shadow-black/40`}>{icon.name}</p>
+            <div className={`${contextMenu.selectedIconId === icon.id ? 'bg-black/70' : `group-hover:bg-black/60 bg-black/40 ${beingDragged ? 'scale-106' : 'group-hover:scale-103'}`}  
+              p-1 backdrop-blur-sm rounded-md  text-center flex flex-row items-center justify-center
+            max-w-19 transition-all origin-top `}>
+                <p className="text-[14px]/[18px] text-shadow-sm text-shadow-black/40 line-clamp-2">{icon.name}</p>
+            </div>
         </div>
     );
 }

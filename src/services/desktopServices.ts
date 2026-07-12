@@ -19,8 +19,14 @@ export const getDesktopByIdService = async (id: string) => {
     return (response).data;
 }
 
-export const getDesktopByOwnerService = async () => {
+export const getDesktopByMembershipService = async () => {
     const response = await api.get("/desktop");
+
+    return (response).data;
+}
+
+export const getDesktopByOwnerService = async () => {
+    const response = await api.get("/desktop/owner");
 
     return (response).data;
 }
@@ -38,7 +44,7 @@ export const updateDesktopService = async (id: string, data: UpdateDesktopData) 
 }
 
 export const deleteDesktopService = async (id: string) => {
-    const response = await api.delete(`/desktop/${id}`,);
+    const response = await api.delete(`/desktop/${id}`);
 
     return (response).data;
 }
@@ -67,3 +73,9 @@ export const deleteDesktopInviteService = async (inviteId: string) => {
     const response = await api.delete(`/desktop/invite/${inviteId}`);
     return response.data;
 };
+
+export const getMembersByDesktopIdService = async (id: string) => {
+    const response = await api.get(`/desktop/members/${id}`);
+
+    return (response).data;
+}

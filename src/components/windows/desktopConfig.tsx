@@ -7,7 +7,7 @@ import { ClickableImageInput } from "../imageInput";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useAppContext } from "../../context/AppContext";
 import { DesktopData, DesktopType } from "../../types/desktop";
-import { deleteDesktopService, getDesktopByIdService, getDesktopByOwnerService, updateDesktopService } from "../../services/desktopServices";
+import { deleteDesktopService, getDesktopByIdService, getDesktopByOwnerService, getMembersByDesktopIdService, updateDesktopService } from "../../services/desktopServices";
 import { useFileContext } from "../../context/FileContext";
 import { getUserByIdService } from "../../services/userServices";
 import { uploadStorageService } from "../../services/storageServices";
@@ -22,7 +22,7 @@ export default function DesktopConfigWindow() {
     const { dtConfig, sendInvite } = useWindowContext();
 
     const [loading, setLoading] = useState<boolean>(false)
-
+    const [memberLoading, setMemberLoading] = useState<boolean>()
 
     const [isFullsceen, setIsFullscreen] = useState<boolean>(false)
     const [confirmDelete, setConfirmDelete] = useState<boolean>(false)
@@ -34,7 +34,7 @@ export default function DesktopConfigWindow() {
 
     const [bgVersion, setBgVersion] = useState(0)
 
-    const [desktopMembers, setDesktopMembers] = useState<UserData[]>([])
+    const [desktopMembers, setDesktopMembers] = useState<any[]>([])
 
     // INFORMAÇÕES DO DESKTOP (PARA UPDATE)
     const [windowDesktop, setWindowDesktop] = useState<DesktopData | null>(null)
@@ -44,7 +44,6 @@ export default function DesktopConfigWindow() {
     const [backgroundUrl, setBackgroundUrl] = useState<string>('')
     const [colorSelected, setColorSelected] = useState<colors>('red')
     const [typaDesktop, setTypaDesktop] = useState<DesktopType>('personal')
-
 
 
     const mouseDownTarget = useRef<EventTarget | null>(null);
@@ -115,11 +114,17 @@ export default function DesktopConfigWindow() {
     };
 
     const fetchDesktopMembers = async () => {
-        const userPromises = dtConfig.desktop?.members.map(id => getUserByIdService(id));
+        if (!dtConfig.desktop) return;
+        try {
+            setMemberLoading(true)
+            const members = await getMembersByDesktopIdService(dtConfig.desktop.id);
+            setDesktopMembers(members);
+        } catch (err) {
+            console.log(err)
+        } finally {
+            setMemberLoading(false)
+        }
 
-        const users = await Promise.all(userPromises as any);
-
-        setDesktopMembers(users);
     };
 
     useEffect(() => {
@@ -277,10 +282,7 @@ export default function DesktopConfigWindow() {
 
 
     const canUpdateDesktop = useCallback(() => {
-
-
         if (desktopName != windowDesktop?.name) return true;
-
         if (typaDesktop != windowDesktop?.desktopType) return true;
 
         if (typaBackgroundCount === 1) {
@@ -295,10 +297,17 @@ export default function DesktopConfigWindow() {
 
 
         return false;
-
     }, [typaBackgroundCount, typaDesktop, backgroundUrl, desktopName, currentImage, windowDesktop])
 
 
+    const roleText = (role: string) => {
+        switch (role) {
+            case 'member':
+                return 'Membro'
+            case 'owner':
+                return 'Criador'
+        }
+    }
 
     return (
         <div onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}
@@ -372,7 +381,8 @@ export default function DesktopConfigWindow() {
                     </div>
                 </div>
 
-                <div key={bgVersion} className={`${loading ? 'opacity-0' : ''} absolute w-full top-0 transition-all h-[450px] z-1 bg-cover bg-center`} style={{ backgroundImage: `url(${windowDesktop?.backgroundImage})` }} />
+                <div key={bgVersion} className={`${loading ? 'opacity-0' : ''} absolute w-full top-0 transition-all h-[450px] z-1 bg-cover`}
+                    style={{ backgroundImage: `url(${windowDesktop?.backgroundImage})`, backgroundPosition: 'center 30%' }} />
                 <div className="absolute w-full h-[450px] z-2 bg-gradient-to-b from-zinc-(--color-dark)/30 from-0% to-(--color-dark) to-78%" />
                 <div className="absolute w-full top-0 h-[450px] z-0 flex justify-center items-center">
                     <DotLottieReact
@@ -396,10 +406,9 @@ export default function DesktopConfigWindow() {
                     <div className="flex flex-row justify-between gap-2 p-4 items-center flex-wrap">
                         <div className="flex flex-col gap-1 items-start">
                             <p className="text-[15px] opacity-80">Criado em {new Date(windowDesktop?.createdAt as Date)?.toLocaleDateString('pt-BR')}</p>
-                            <h1 className="text-[38px] mt-[-10px]">{windowDesktop?.name}</h1>
-                            <p className="text-[18px] mt-[-5px]">Desktop {windowDesktop?.desktopType === 'personal' ? 'pessoal' : 'compartilhado'}</p>
-                            <p className="p-1 px-3 mt-5 bg-zinc-950/50 border-1 border-zinc-600 rounded-full">{windowDesktop?.members.length}
-                                {windowDesktop?.members.length && windowDesktop?.members.length > 1 ? ' Membros' : ' Membro'}</p>
+                            <h1 className="text-[38px] mt-[-6px]">{windowDesktop?.name}</h1>
+                            <p className="p-1 px-3 bg-zinc-950/50 border-1 border-zinc-600 rounded-full">Desktop {windowDesktop?.desktopType === 'personal' ? 'pessoal' : 'compartilhado'}</p>
+
                         </div>
                         <div className="p-2 px-3 flex flex-col bg-zinc-950/60 backdrop-blur-[2px] border-1 border-zinc-800 rounded-lg min-w-[300px]">
                             <p>Espaço Ocupado</p>
@@ -410,7 +419,7 @@ export default function DesktopConfigWindow() {
                         </div>
                     </div>
 
-                    <div className="flex flex-row gap-6 p-2 mt-[20px] items-start">
+                    <div className="flex flex-row gap-6 p-2 mt-[60px] items-start">
 
                         <div className="flex flex-col w-full items-start gap-4">
                             <h1 className="text-2xl">Informações</h1>
@@ -531,7 +540,7 @@ export default function DesktopConfigWindow() {
 
                         <div className="flex flex-col w-full max-w-[600px] p-4 rounded-xl gap-3 bg-zinc-950/70">
                             <div className="flex flex-row justify-between gap-2 items-center">
-                                <p className="text-xl">Membros</p>
+                                <p className="text-xl">{memberLoading ? '' : desktopMembers.length} Membros</p>
                                 <Plus size={35} onClick={() => {
                                     minimazeAllWindows();
                                     sendInvite.setDesktop({
@@ -546,26 +555,39 @@ export default function DesktopConfigWindow() {
 
                             <div className="flex flex-col w-full gap-3 mt-3 max-h-[570px] overflow-y-auto">
 
-                                {desktopMembers.map((member) =>
-                                    <div key={member.id} className="flex flex-row w-full justify-between items-center bg-(--color-regular)/80
+                                {memberLoading ?
+                                    (<div className="flex flex-col items-center p-2">
+                                        <DotLottieReact
+                                            src="assets/images/loader.lottie"
+                                            className="w-25 p-0"
+                                            loop
+                                            autoplay
+                                        />
+                                        <p>Carregando membros...</p>
+                                    </div>)
+                                    :
+                                    desktopMembers.map((member) =>
+                                        <div key={member.user.id} className="flex flex-row w-full justify-between items-center bg-(--color-regular)/80
                                     p-3.5 px-4 rounded-md group hover:bg-(--color-regular) border-2 border-(--color-light)/15 transition-all select-none shadow-md">
-                                        <div className="flex flex-row gap-3 items-center">
-                                            <img src={`${member.profileImage ?? 'assets/images/profile.png'}`} className={`
-                                                ${member.id === windowDesktop?.ownerId && 'shadow-[0px_0px_10px_1px_var(--color-light)] border-2 border-(--color-lighter)'} 
+                                            <div className="flex flex-row gap-3 items-center">
+                                                <img src={`${member.user.profileImage ?? 'assets/images/profile.png'}`} className={`
+                                                ${member.user.id === windowDesktop?.ownerId && 'shadow-[0px_0px_10px_1px_var(--color-light)] border-2 border-(--color-lighter)'} 
                                                 rounded-full w-12 h-12`} />
-                                            <div className="flex flex-col">
-                                                <p className="text-lg flex gap-1 items-end">{member.name} {member.id === user.id && (
-                                                    <span className="text-[15px] opacity-60 mb-0.5">(você)</span>)}</p>
+                                                <div className="flex flex-col">
+                                                    <p className="text-lg flex gap-1 items-end">{member.user.name} {member.user.id === user.id && (
+                                                        <span className="text-[15px] opacity-60 mb-0.5">(você)</span>)}
+                                                    </p>
+                                                    <p className="text-[14px] opacity-75">{member.id === dtConfig.desktop?.ownerId ? 'Criador' : roleText(member.role)}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-row gap-3">
+
+                                                <UserX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-600/20
+                                        hover:border-red-500 hover:text-red-500 w-9 h-9 p-1 bg-white/5 border border-white/40 rounded-md" />
                                             </div>
                                         </div>
-                                        <div className="flex flex-row gap-3">
-
-                                            <UserX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-600/20
-                                        hover:border-red-500 hover:text-red-500 w-9 h-9 p-1 bg-white/5 border border-white/40 rounded-md" />
-                                        </div>
-                                    </div>
-                                )}
-
+                                    )
+                                }
 
                             </div>
                         </div>
