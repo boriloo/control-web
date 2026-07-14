@@ -35,38 +35,36 @@ export default function ListDesktopsWindow() {
         });
     };
 
+    const getAllDesktops = async () => {
+
+        const responseDesktops = await getDesktopByMembershipService();
+
+        const desktopsWithColors = await Promise.all(
+            responseDesktops.map(async (desktop: DesktopData) => {
+                const sttDesktop = await standartDesktop(desktop);
+
+                const imgElement = await loadImage(sttDesktop.backgroundImage);
+
+                const response = (await getSwatches(imgElement)) as any;
+
+                const swatch = response?.Vibrant || response?.Muted;
+
+                const { _r, _g, _b } = swatch.color;
+
+                const hex = `#${(1 << 24 | _r << 16 | _g << 8 | _b).toString(16).slice(1)}`;
+
+                return {
+                    ...sttDesktop,
+                    thisColor: hex || '#000000'
+                };
+            })
+        );
+
+        setAllDesktops(desktopsWithColors);
+    };
+
     useEffect(() => {
         setAllDesktops([]);
-
-        const getAllDesktops = async () => {
-
-            const responseDesktops = await getDesktopByMembershipService();
-
-            const desktopsWithColors = await Promise.all(
-                responseDesktops.map(async (desktop: DesktopData) => {
-                    const sttDesktop = await standartDesktop(desktop);
-
-                    const imgElement = await loadImage(sttDesktop.backgroundImage);
-
-                    const response = (await getSwatches(imgElement)) as any;
-
-                    const swatch = response?.Vibrant || response?.Muted;
-
-                    const { _r, _g, _b } = swatch.color;
-
-                    const hex = `#${(1 << 24 | _r << 16 | _g << 8 | _b).toString(16).slice(1)}`;
-
-                    return {
-                        ...sttDesktop,
-                        thisColor: hex || '#000000'
-                    };
-                })
-            );
-
-            setAllDesktops(desktopsWithColors);
-        };
-
-
 
         const getAllInvites = async () => {
             const invites = await getPendingInvitesService();
@@ -128,17 +126,26 @@ export default function ListDesktopsWindow() {
 
     const acceptInvite = async (inviteId: string) => {
         try {
+            setLoading(true)
             await acceptDesktopInviteService(inviteId)
+            setDesktopInvites(prev => prev.filter((invite) => invite.id != inviteId))
+            await getAllDesktops()
         } catch (err) {
             console.log(err)
+        } finally {
+            setLoading(false)
         }
     }
 
     const denyInvite = async (inviteId: string) => {
         try {
+            setLoading(true)
             await deleteDesktopInviteService(inviteId)
+            setDesktopInvites(prev => prev.filter((invite) => invite.id != inviteId))
         } catch (err) {
             console.log(err)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -172,19 +179,19 @@ export default function ListDesktopsWindow() {
                     }} className="group flex flex-row w-full p-4 justify-between bg-(--color-light) min-h-17 max-h-17 items-center rounded-sm 
                     transition-all overflow-hidden cursor-pointer relative gap-2 hover:min-h-25 hover:max-h-25">
                         <div className="flex flex-row gap-4 relative">
-                            <div className="gap-1 z-2 bg-black/30 group-hover:bg-black/20 backdrop-blur-md p-1 px-3 rounded-full flex flex-row text-lg white 
+                            <div className="gap-1 z-2 bg-black/30 backdrop-blur-md p-1 px-3 rounded-full flex flex-row text-lg white 
                                     group-hover:opacity-0 transition-all">
                                 <p>Atual -</p>
                                 {currentDesktop?.name}
                             </div>
-                            <div className="gap-1 z-2 bg-black/30 opacity-0 group-hover:bg-black/20 backdrop-blur-md p-1 px-3 rounded-full
+                            <div className="gap-1 z-2 bg-black/40 opacity-0 backdrop-blur-md p-1 px-3 rounded-full
                                     flex flex-row text-lg white w-42 text-center justify-center group-hover:scale-105 transition-all group-hover:opacity-100 group-hover:ml-0 absolute">
                                 Clique para editar
                             </div>
                         </div>
 
 
-                        <div className="absolute w-full h-full left-0 top-0 z-[0] bg-(--color-light) transition-all duration-500 group-hover:brightness-60">
+                        <div className="absolute w-full h-full left-0 top-0 z-[0] bg-(--color-light) transition-all duration-500 group-hover:brightness-100 brightness-80">
                             <div className="w-[95%] group-hover:w-[98%] transition-all duration-400 h-full absolute "
                                 style={{ backgroundImage: `url(${currentDesktop?.backgroundImage})`, backgroundPosition: 'center center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' }}>
                             </div>
@@ -200,11 +207,11 @@ export default function ListDesktopsWindow() {
                             <div onClick={() => handleChangeDesktop(desktop.id)} className="group flex flex-row w-full p-4 justify-between bg-(--color-light) min-h-17 max-h-17 items-center rounded-sm 
                     transition-all overflow-hidden cursor-pointer relative gap-2 hover:min-h-25 hover:max-h-25">
                                 <div className="flex flex-row gap-4 relative">
-                                    <div className="gap-1 z-2 bg-black/30 group-hover:bg-black/20 backdrop-blur-md p-1 px-3 rounded-full flex flex-row text-lg white 
+                                    <div className="gap-1 z-2 bg-black/30 backdrop-blur-md p-1 px-3 rounded-full flex flex-row text-lg white 
                                     group-hover:opacity-0 transition-all">
                                         {desktop?.name}
                                     </div>
-                                    <div className="gap-1 z-2 bg-black/30 opacity-0 group-hover:bg-black/20 backdrop-blur-md p-1 px-3 rounded-full
+                                    <div className="gap-1 z-2 bg-black/40 opacity-0 backdrop-blur-md p-1 px-3 rounded-full
                                     flex flex-row text-lg white w-40 text-center justify-center group-hover:scale-105 transition-all group-hover:opacity-100 group-hover:ml-0 absolute">
                                         Clique para abrir
                                     </div>
@@ -221,7 +228,7 @@ export default function ListDesktopsWindow() {
 
                                 <div
                                     key={desktop.id}
-                                    className="absolute w-full h-full left-0 top-0 z-[0] transition-all duration-500 group-hover:brightness-60"
+                                    className="absolute w-full h-full left-0 top-0 z-[0] transition-all duration-500 group-hover:brightness-100 brightness-80"
                                     style={{ backgroundColor: desktop.thisColor }}
                                 >
                                     <div className="w-[95%] group-hover:w-[98%] transition-all duration-400 h-full absolute"
@@ -243,7 +250,7 @@ export default function ListDesktopsWindow() {
                     {desktopInvites.length >= 1 ?
                         desktopInvites.map((invite) => (
                             <div key={invite.id} onClick={() => acceptInvite(invite.id)} className="group flex flex-row w-full p-3 px-5 items-center bg-(--color-darker)/70 border-2 border-transparent 
-                            cursor-pointer hover:bg-[#081D12] hover:border-green-500 relative min-min-h-17 max-h-17 
+                            cursor-pointer hover:bg-[#081D12] hover:border-green-500 relative min-h-17 max-h-17 
                             rounded-sm transition-all justify-start gap-4">
                                 <h1 className="text-lg mt-[-4px] group-hover:scale-105 origin-center transition-all">
                                     {invite.name}

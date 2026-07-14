@@ -464,7 +464,7 @@ export default function DashboardPage() {
 
                 <div className={`${saving ? 'opacity-100 z-42' : 'opacity-0 z-0'} select-none pointer-none: p-2 px-3 rounded-sm backdrop-blur-sm bg-black/20 flex flex-row gap-2 absolute 
                 top-20 right-5 justify-center items-center transition-opacity duration-300`}>
-                    <img src="public/assets/images/changes.png" className="w-8" />
+                    <img src="/assets/images/changes.png" className="w-8" />
                     <p className="text-[17px]">Posições atualizadas</p>
                 </div>
 

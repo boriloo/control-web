@@ -7,7 +7,7 @@ import { ClickableImageInput } from "../imageInput";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useAppContext } from "../../context/AppContext";
 import { DesktopData, DesktopType } from "../../types/desktop";
-import { deleteDesktopService, getDesktopByIdService, getDesktopByOwnerService, getMembersByDesktopIdService, updateDesktopService } from "../../services/desktopServices";
+import { deleteDesktopService, getDesktopByIdService, getDesktopByMembershipService, getDesktopByOwnerService, getMembersByDesktopIdService, leaveDesktopService, updateDesktopService } from "../../services/desktopServices";
 import { useFileContext } from "../../context/FileContext";
 import { getUserByIdService } from "../../services/userServices";
 import { uploadStorageService } from "../../services/storageServices";
@@ -186,7 +186,7 @@ export default function DesktopConfigWindow() {
 
         try {
             if (currentDesktop?.id === dtConfig.desktop?.id) {
-                const desktops = await getDesktopByOwnerService();
+                const desktops = await getDesktopByMembershipService();
                 const otherDesktops = desktops.filter((d: any) => d.id !== dtConfig.desktop?.id);
 
                 if (otherDesktops.length === 0) {
@@ -309,6 +309,36 @@ export default function DesktopConfigWindow() {
         }
     }
 
+    const handleLeaveDesktop = useCallback(async () => {
+        if (!dtConfig.desktop) return;
+
+        try {
+            setLoading(true)
+            await leaveDesktopService(dtConfig.desktop.id)
+            if (currentDesktop?.id === dtConfig.desktop?.id) {
+                const desktops = await getDesktopByMembershipService();
+                const otherDesktops = desktops.filter((d: any) => d.id !== dtConfig.desktop?.id);
+
+                if (otherDesktops.length === 0) {
+                    setBlackScreen(true);
+                    setTimeout(() => {
+                        setHasDesktops(false);
+                    }, 1000);
+                } else {
+                    changeCurrentDesktop(otherDesktops[0]);
+                }
+            }
+            dtConfig.closeWindow()
+            dtConfig.changeDesktop(null)
+        } catch (err) {
+            console.log(err)
+        } finally {
+            setLoading(false)
+        }
+    }, [dtConfig.desktop?.id])
+
+
+
     return (
         <div onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}
             className={`${isFullsceen ? 'pb-[40px]' : ' p-2 pb-[50px]'} ${dtConfig.currentStatus === "open" ? returnFilterEffects() : 'pointer-events-none'} 
@@ -372,7 +402,7 @@ export default function DesktopConfigWindow() {
                 bg-(--color-dark) border-1 border-(--color-whity)/10 cursor-default origin-center relative transition-all duration-250 flex flex-col w-full h-full overflow-y-auto`}>
 
 
-                <div className="bg-(--color-light)/40 blur-[190px] w-120 h-120 right-0 bottom-[-450px] rounded-tl-full fixed"></div>
+                <div className={`${dtConfig.desktop?.ownerId === user.id ? 'bottom-[-450px] bg-(--color-light)/40' : 'bottom-[0px] z-20 bg-(--color-light)/30'} blur-[190px] w-120 h-120 right-0 rounded-tl-full fixed`}></div>
 
                 <div className="z-50 sticky mb-[-35px] select-none top-0 right-0 flex flex-row justify-end items-center">
                     <div className="flex flex-row h-full backdrop-blur-md bg-black/40 rounded-bl-md">
@@ -421,134 +451,171 @@ export default function DesktopConfigWindow() {
 
                     <div className="flex flex-row gap-6 p-2 mt-[60px] items-start">
 
-                        <div className="flex flex-col w-full items-start gap-4">
-                            <h1 className="text-2xl">Informações</h1>
-                            <div className="flex flex-col gap-1 w-full">
-                                <p className="text-lg">Nome do Desktop</p>
-                                <input value={desktopName} onChange={(e) => {
-                                    setDesktopName(e.target.value)
-                                }} type="text" className="border-1 border-(--color-light)/50 outline-none transition-all text-lg bg-(--color-regular) hover:bg-(--color-light)/30 mt-1
+                        {dtConfig.desktop?.ownerId === user.id && (
+                            <div className="flex flex-col w-full items-start gap-4">
+                                <h1 className="text-2xl">Informações</h1>
+                                <div className="flex flex-col gap-1 w-full">
+                                    <p className="text-lg">Nome do Desktop</p>
+                                    <input value={desktopName} onChange={(e) => {
+                                        setDesktopName(e.target.value)
+                                    }} type="text" className="border-1 border-(--color-light)/50 outline-none transition-all text-lg bg-(--color-regular) hover:bg-(--color-light)/30 mt-1
                                 cursor-pointer focus:cursor-text p-0.5 px-1.5 rounded-sm focus:border-(--color-light) focus:bg-(--color-lighter)/40 w-full max-w-[400px]" />
-                            </div>
-
-
-                            <div className="w-[100%] h-[1px] mt-1 bg-(--color-whity)/50"></div>
-
-                            <h1 className="text-2xl">Plano de Fundo</h1>
-                            <p className="text-md mt-[-12px] mb-1">Imagem exibida no fundo do Desktop atual.</p>
-
-
-
-                            <div className="flex flex-row rounded-lg overflow-hidden w-full max-w-[300px] select-none">
-                                <div onClick={previousBg} className="text-white p-2 border-2 border-(--color-light) rounded-l-lg flex justify-center items-center hover:bg-(--color-lighter) transition-all cursor-pointer">
-                                    <ChevronLeft strokeWidth={2.5} />
                                 </div>
-                                <div className="flex-1 text-lg flex justify-center items-center bg-(--color-darker)">
-                                    {bgText()}
-                                </div>
-                                <div onClick={nextBg} className="text-white p-2 border-2 border-(--color-light) rounded-r-lg flex justify-center items-center hover:bg-(--color-lighter) transition-all cursor-pointer">
-                                    <ChevronRight strokeWidth={2.5} />
-                                </div>
-                            </div>
 
-                            {/* {currentImage && !loading && (<p className="mb-[-5px] p-1 px-2 bg-white/10 rounded-lg">Prévia do Fundo</p>)} */}
 
-                            <div className={`${typaBackgroundCount === 1 ? 'h-43' : 'h-0 opacity-0'}  ${loading ? 'saturate-0 pointer-events-none opacity-50 scale-90' : ''} 
+                                <div className="w-[100%] h-[1px] mt-1 bg-(--color-whity)/50"></div>
+
+                                <h1 className="text-2xl">Plano de Fundo</h1>
+                                <p className="text-md mt-[-12px] mb-1">Imagem exibida no fundo do Desktop atual.</p>
+
+
+
+                                <div className="flex flex-row rounded-lg overflow-hidden w-full max-w-[300px] select-none">
+                                    <div onClick={previousBg} className="text-white p-2 border-2 border-(--color-light) rounded-l-lg flex justify-center items-center hover:bg-(--color-lighter) transition-all cursor-pointer">
+                                        <ChevronLeft strokeWidth={2.5} />
+                                    </div>
+                                    <div className="flex-1 text-lg flex justify-center items-center bg-(--color-darker)">
+                                        {bgText()}
+                                    </div>
+                                    <div onClick={nextBg} className="text-white p-2 border-2 border-(--color-light) rounded-r-lg flex justify-center items-center hover:bg-(--color-lighter) transition-all cursor-pointer">
+                                        <ChevronRight strokeWidth={2.5} />
+                                    </div>
+                                </div>
+
+                                {/* {currentImage && !loading && (<p className="mb-[-5px] p-1 px-2 bg-white/10 rounded-lg">Prévia do Fundo</p>)} */}
+
+                                <div className={`${typaBackgroundCount === 1 ? 'h-43' : 'h-0 opacity-0'}  ${loading ? 'saturate-0 pointer-events-none opacity-50 scale-90' : ''} 
                             origin-left flex flex-col items-start transition-all w-full overflow-hidden`}>
-                                <ClickableImageInput onFileSelected={(file) => {
-                                    setCurrentImage(file)
-                                }} />
-                            </div>
+                                    <ClickableImageInput onFileSelected={(file) => {
+                                        setCurrentImage(file)
+                                    }} />
+                                </div>
 
-                            <div className={`${typaBackgroundCount === 2 ? 'h-20' : 'h-0 opacity-0 mt-[-10px]'} ${loading ? 'saturate-0 pointer-events-none opacity-50 scale-90' : ''} 
+                                <div className={`${typaBackgroundCount === 2 ? 'h-20' : 'h-0 opacity-0 mt-[-10px]'} ${loading ? 'saturate-0 pointer-events-none opacity-50 scale-90' : ''} 
                             origin-left flex flex-col items-start transition-all w-full overflow-hidden`}>
-                                <p className="text-md">URL do Desktop</p>
-                                <input value={backgroundUrl} onChange={(e) => {
-                                    setBackgroundUrl(e.target.value)
-                                }} type="text" className="border-1 border-(--color-light)/50 outline-none transition-all text-lg bg-(--color-regular) hover:bg-(--color-light)/30 mt-1
+                                    <p className="text-md">URL do Desktop</p>
+                                    <input value={backgroundUrl} onChange={(e) => {
+                                        setBackgroundUrl(e.target.value)
+                                    }} type="text" className="border-1 border-(--color-light)/50 outline-none transition-all text-lg bg-(--color-regular) hover:bg-(--color-light)/30 mt-1
                                 cursor-pointer focus:cursor-text p-0.5 px-1.5 rounded-sm focus:border-(--color-light) focus:bg-(--color-lighter)/40 w-full max-w-[500px]" />
-                            </div>
+                                </div>
 
-                            <div className={`${typaBackgroundCount === 3 ? 'h-14 mt-[-12px]' : 'h-0 opacity-0 mt-[-10px]'} flex flex-row gap-3 transition-all items-center justify-center overflow-hidden`}>
-                                <div onClick={() => setColorSelected('red')} className={`${colorSelected === 'red' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                                <div className={`${typaBackgroundCount === 3 ? 'h-14 mt-[-12px]' : 'h-0 opacity-0 mt-[-10px]'} flex flex-row gap-3 transition-all items-center justify-center overflow-hidden`}>
+                                    <div onClick={() => setColorSelected('red')} className={`${colorSelected === 'red' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-red-500 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-red-400`}></div>
-                                <div onClick={() => setColorSelected('blue')} className={`${colorSelected === 'blue' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                                    <div onClick={() => setColorSelected('blue')} className={`${colorSelected === 'blue' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-blue-600 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-blue-500 `}></div>
-                                <div onClick={() => setColorSelected('black')} className={`${colorSelected === 'black' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                                    <div onClick={() => setColorSelected('black')} className={`${colorSelected === 'black' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-zinc-950 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-zinc-900`}></div>
-                                <div onClick={() => setColorSelected('purple')} className={`${colorSelected === 'purple' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                                    <div onClick={() => setColorSelected('purple')} className={`${colorSelected === 'purple' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-purple-500 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-purple-400`}></div>
-                                <div onClick={() => setColorSelected('green')} className={`${colorSelected === 'green' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                                    <div onClick={() => setColorSelected('green')} className={`${colorSelected === 'green' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-green-500 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-green-400`}></div>
-                                <div onClick={() => setColorSelected('orange')} className={`${colorSelected === 'orange' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                                    <div onClick={() => setColorSelected('orange')} className={`${colorSelected === 'orange' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-orange-500 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-orange-400`}></div>
-                            </div>
-
-
-
-
-                            <div className="w-[100%] h-[1px] mt-1 bg-(--color-whity)/50"></div>
-
-                            <h1 className="text-2xl">Tipo de Desktop</h1>
-
-                            <div className={`flex flex-row gap-3 w-full max-w-[800px] transition-all`}>
-                                <div onClick={() => setTypaDesktop('personal')} className={`${typaDesktop === 'personal' ? 'bg-rose-500' : 'bg-zinc-950 hover:bg-black'} p-2 flex-1 
-                        rounded-md text-center cursor-pointer transition-all text-lg shadow-2xl hover:scale-105`}>
-                                    Pessoal
                                 </div>
-                                <div onClick={() => setTypaDesktop('shared')} className={`${typaDesktop === 'shared' ? 'bg-rose-500' : 'bg-zinc-950 hover:bg-black'} p-2 flex-1 
+
+
+
+
+                                <div className="w-[100%] h-[1px] mt-1 bg-(--color-whity)/50"></div>
+
+                                <h1 className="text-2xl">Tipo de Desktop</h1>
+
+                                <div className={`flex flex-row gap-3 w-full max-w-[800px] transition-all`}>
+                                    <div onClick={() => setTypaDesktop('personal')} className={`${typaDesktop === 'personal' ? 'bg-rose-500' : 'bg-zinc-950 hover:bg-black'} p-2 flex-1 
                         rounded-md text-center cursor-pointer transition-all text-lg shadow-2xl hover:scale-105`}>
-                                    Compartilhado
+                                        Pessoal
+                                    </div>
+                                    <div onClick={() => setTypaDesktop('shared')} className={`${typaDesktop === 'shared' ? 'bg-rose-500' : 'bg-zinc-950 hover:bg-black'} p-2 flex-1 
+                        rounded-md text-center cursor-pointer transition-all text-lg shadow-2xl hover:scale-105`}>
+                                        Compartilhado
+                                    </div>
                                 </div>
-                            </div>
 
 
-                            <div className="w-[100%] h-[1px] mb-1 bg-(--color-whity)/50"></div>
+                                <div className="w-[100%] h-[1px] mb-1 bg-(--color-whity)/50"></div>
 
-                            {loading ? (
-                                <div className={`
+                                {loading ? (
+                                    <div className={`
                                 p-0.5 px-3 rounded-sm font-medium`}>
-                                    <DotLottieReact
-                                        src="assets/images/loader.lottie"
-                                        className="w-20 p-0"
-                                        loop
-                                        autoplay
-                                    />
-                                </div>
-                            ) : (
-                                <button
-                                    disabled={!canUpdateDesktop()}
-                                    onClick={handleEditDesktop}
-                                    className={`${!canUpdateDesktop() ? 'pointer-events-none saturate-0 opacity-50' : ''} border-1 border-(--color-light) transition-all cursor-pointer 
+                                        <DotLottieReact
+                                            src="assets/images/loader.lottie"
+                                            className="w-20 p-0"
+                                            loop
+                                            autoplay
+                                        />
+                                    </div>
+                                ) : (
+                                    <button
+                                        disabled={!canUpdateDesktop()}
+                                        onClick={handleEditDesktop}
+                                        className={`${!canUpdateDesktop() ? 'pointer-events-none saturate-0 opacity-50' : ''} border-1 border-(--color-light) transition-all cursor-pointer 
                                     hover:bg-(--color-light) p-2 px-3 rounded-sm font-medium`}>Salvar Alterações</button>
-                            )}
+                                )}
 
-                            <div className="bg-zinc-950/50 p-4 gap-3 flex flex-col w-full max-w-[400px] rounded-lg items-start border-1 border-zinc-800">
-                                <h1 className="text-2xl">Zona de risco</h1>
+                                <div className="bg-zinc-950/50 p-4 gap-3 flex flex-col w-full max-w-[400px] rounded-lg items-start border-1 border-zinc-800">
+                                    <h1 className="text-2xl">Zona de risco</h1>
 
-                                <button onClick={() => setConfirmDelete(true)} className="p-1 px-5 text-lg text-red-500 border-1 border-red-500 cursor-pointer transition-all
+                                    <button onClick={() => setConfirmDelete(true)} className="p-1 px-5 text-lg text-red-500 border-1 border-red-500 cursor-pointer transition-all
                                 hover:bg-red-500 hover:text-white rounded-md">
-                                    Excluir Desktop
-                                </button>
+                                        Excluir Desktop
+                                    </button>
+                                </div>
+
+
                             </div>
 
+                        )}
 
-                        </div>
 
 
-                        {/* VERSAO LANCAMENTO */}
+                        {dtConfig.desktop?.ownerId != user.id && (
+                            <>
+                                {loading ?
+                                    (
+                                        <div className="flex-1 flex flex-col gap-2 items-start">
+                                            <h1 className="text-2xl">Ações</h1>
+                                            <div className="w-[100%] h-[1px] mt-1 bg-(--color-whity)/50"></div>
+                                            <button className="bg-red-500 saturate-0 text-[18px] px-9.5 rounded-full mt-2
+                                transition-all opacity-65">
+                                                <DotLottieReact
+                                                    src="assets/images/loader.lottie"
+                                                    className="w-20 p-0"
+                                                    loop
+                                                    autoplay
+                                                />
+                                            </button>
+                                        </div>
+                                    )
+                                    :
+                                    (
+                                        <div className="flex-1 flex flex-col gap-2 items-start">
+                                            <h1 className="text-2xl">Ações</h1>
+                                            <div className="w-[100%] h-[1px] mt-1 bg-(--color-whity)/50"></div>
+                                            <button onClick={handleLeaveDesktop} className="bg-red-500 text-[18px] p-2 px-4 rounded-full mt-2 cursor-pointer 
+                                hover:bg-white hover:text-black transition-all">
+                                                Sair do Desktop
+                                            </button>
+                                        </div>
+                                    )}
+                            </>
+
+                        )}
 
                         <div className="flex flex-col w-full max-w-[600px] p-4 rounded-xl gap-3 bg-zinc-950/70">
                             <div className="flex flex-row justify-between gap-2 items-center">
                                 <p className="text-xl">{memberLoading ? '' : desktopMembers.length} Membros</p>
-                                <Plus size={35} onClick={() => {
-                                    minimazeAllWindows();
-                                    sendInvite.setDesktop({
-                                        id: dtConfig.desktop?.id as string,
-                                        name: dtConfig.desktop?.name as string
-                                    })
-                                    sendInvite.openWindow();
-                                }} className="p-1 rounded-full hover:bg-zinc-800 cursor-pointer transition-all" />
+                                {dtConfig.desktop?.ownerId === user.id && (
+                                    <Plus size={35} onClick={() => {
+                                        minimazeAllWindows();
+                                        sendInvite.setDesktop({
+                                            id: dtConfig.desktop?.id as string,
+                                            name: dtConfig.desktop?.name as string
+                                        })
+                                        sendInvite.openWindow();
+                                    }} className="p-1 rounded-full hover:bg-zinc-800 cursor-pointer transition-all" />
+                                )}
                             </div>
 
                             <div className="w-[100%] h-[1px] bg-zinc-400/40" />
@@ -571,8 +638,8 @@ export default function DesktopConfigWindow() {
                                     p-3.5 px-4 rounded-md group hover:bg-(--color-regular) border-2 border-(--color-light)/15 transition-all select-none shadow-md">
                                             <div className="flex flex-row gap-3 items-center">
                                                 <img src={`${member.user.profileImage ?? 'assets/images/profile.png'}`} className={`
-                                                ${member.user.id === windowDesktop?.ownerId && 'shadow-[0px_0px_10px_1px_var(--color-light)] border-2 border-(--color-lighter)'} 
-                                                rounded-full w-12 h-12`} />
+                                                ${member.user.id === windowDesktop?.ownerId ? 'shadow-[0px_0px_10px_1px_var(--color-light)] border-(--color-lighter)' : 'border-transparent'} 
+                                                rounded-full w-12 h-12 border-2`} />
                                                 <div className="flex flex-col">
                                                     <p className="text-lg flex gap-1 items-end">{member.user.name} {member.user.id === user.id && (
                                                         <span className="text-[15px] opacity-60 mb-0.5">(você)</span>)}
@@ -588,7 +655,6 @@ export default function DesktopConfigWindow() {
                                         </div>
                                     )
                                 }
-
                             </div>
                         </div>
 
