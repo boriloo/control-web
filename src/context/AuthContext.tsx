@@ -14,7 +14,7 @@ import { getDesktopByIdService, getDesktopByOwnerService } from "../services/des
 import { DesktopData } from "../types/desktop";
 import { getSwatches } from 'colorthief';
 import { useWindowContext } from "./WindowContext";
-import { getProxyStorageService } from "../services/storageServices";
+import { getProxyStorageService, getStorageService } from "../services/storageServices";
 import { useFileContext } from "./FileContext";
 
 
@@ -27,6 +27,7 @@ interface UserContextProps {
     currentDesktop: DesktopData | null;
     changeCurrentDesktop: (desktop: DesktopData) => void;
     standartDesktop: (desktop: any) => DesktopData;
+    standartUser: (user: any) => UserData;
     authLoginUser: (data: LoginData) => Promise<UserData>;
     authRegisterUser: (data: RegisterData) => Promise<void>;
     authLogoutUser: () => Promise<void>;
@@ -221,11 +222,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
 
-    const changeUser = useCallback((user: UserData) => {
-        setUser({
-            ...user,
-            profileImage: toBase64Image(user.profileImage) as string
-        })
+    const changeUser = useCallback(async (user: UserData) => {
+        const sttUser = await standartUser(user)
+        setUser(sttUser)
     }, [])
 
 
@@ -248,10 +247,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoading(true);
         try {
             const currentUser = await getMeService();
-            setUser({
-                ...currentUser,
-                profileImage: toBase64Image(currentUser.profileImage)
-            });
+            const sttUser = await standartUser(currentUser)
+            setUser(sttUser)
 
             console.log('CURRENT USER: ', currentUser)
             setIsAuthenticated(true);
@@ -293,6 +290,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         initApp();
     }, [initApp]);
 
+    const standartUser = async (user: any) => {
+        const profileImage = user.profileImage ?? user.profile_image
+
+        if (!profileImage) return user;
+        
+        const isPfp = profileImage.startsWith('users/')
+
+        let imageFromR2;
+
+        if (isPfp) {
+            imageFromR2 = await getStorageService(user.profileImage ?? user.profile_image);
+        }
+
+        console.log('IMAGME 🎉🎉🎉', imageFromR2)
+
+        const {
+            profile_image,
+            ...rest
+        } = user;
+
+        const returnDesktop = {
+            ...rest,
+            profileImage: isPfp ? imageFromR2 : profile_image ?? user.profileImage,
+        };
+
+        return returnDesktop;
+    }
+
 
     async function authLoginUser(data: LoginData) {
         try {
@@ -308,7 +333,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             localStorage.setItem("accessToken", token);
 
-            setUser(userData);
+            setUser(userData.user);
             setIsAuthenticated(true);
 
             await initApp();
@@ -357,6 +382,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 currentDesktop,
                 changeCurrentDesktop,
                 standartDesktop,
+                standartUser,
                 authLoginUser,
                 authRegisterUser,
                 isLoading,

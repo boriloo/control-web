@@ -6,7 +6,8 @@ import { useTranslation } from "react-i18next";
 import {
     createDesktopInviteService,
     getPendingDesktopInvitesService,
-    deleteDesktopInviteService
+    deleteDesktopInviteService,
+    getMembersByDesktopIdService
 } from "../../services/desktopServices";
 import { useFileContext } from "../../context/FileContext";
 import { getUserByIdService } from "../../services/userServices";
@@ -22,13 +23,9 @@ export default function SendInviteWindow() {
     const [loading, setLoading] = useState<string[]>([]);
     const [availableFriends, setAvailableFriends] = useState<any[]>([]);
     const [pendingInvites, setPendingInvites] = useState<any[]>([]);
+    const [desktopMembers, setDesktopMembers] = useState<any[]>([])
 
-    useEffect(() => {
-        const friends = sendInvite.friends.filter(
-            (friend) => !pendingInvites.some((invite) => invite.userId === friend.id)
-        );
-        setAvailableFriends(friends);
-    }, [sendInvite.friends, pendingInvites]);
+
 
 
     useEffect(() => {
@@ -49,7 +46,21 @@ export default function SendInviteWindow() {
                         };
                     })
                 );
-                console.log(pendingData)
+                if (!sendInvite.desktop) {
+                    setAvailableFriends(sendInvite.friends);
+                } else {
+                    const members = await getMembersByDesktopIdService(sendInvite.desktop.id)
+                    const memberIds = new Set(members.map((member: any) => member.user.id))
+
+                    const friends = sendInvite.friends.filter(
+                        (friend) =>
+                            !pendingInvites.some((invite) => invite.userId === friend.id) &&
+                            !memberIds.has(friend.id)
+                    )
+
+                    setAvailableFriends(friends)
+                }
+
                 setPendingInvites(pendingData);
             } catch (err) {
                 console.error("Erro ao buscar convites pendentes", err);
@@ -191,9 +202,9 @@ export default function SendInviteWindow() {
 
                     </div>
                 ) : (
-                    <div className="h-[180px] w-full flex flex-col items-center justify-center">
+                    <div className="h-[230px] w-full flex flex-col items-center justify-center">
                         <Bot size={50} />
-                        <h1 className="text-center text-lg opacity-75 mt-1">Você ainda não tem amigos</h1>
+                        <h1 className="text-center text-lg opacity-75 mt-1 w-full max-w-80">Você não tem amigos que podem ser convidados para esse desktop</h1>
                         <button onClick={() => {
                             minimazeAllWindows();
                             social.openWindow();

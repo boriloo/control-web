@@ -18,7 +18,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 type section = "friends" | "pending" | "blocked"
 
 export default function SocialWindow() {
-    const { user } = useUser();
+    const { user, standartUser } = useUser();
     const { social, sendInvite } = useWindowContext();
     const [friendListSection, setFriendListSection] = useState<section>('friends')
     const [isFullsceen, setIsFullscreen] = useState<boolean>(false)
@@ -48,7 +48,8 @@ export default function SocialWindow() {
                 const otherId = relation.sender_id === myId
                     ? relation.receiver_id
                     : relation.sender_id
-                const otherUser = await getUserByIdService(otherId)
+                const user = await getUserByIdService(otherId)
+                const otherUser = await standartUser(user)
                 return { relationId: relation.id, ...otherUser }
             })
         )
@@ -79,7 +80,8 @@ export default function SocialWindow() {
                 const otherId = relation.sender_id === myId
                     ? relation.receiver_id
                     : relation.sender_id
-                const otherUser = await getUserByIdService(otherId)
+                const user = await getUserByIdService(otherId)
+                const otherUser = await standartUser(user)
                 return { relationId: relation.id, ...otherUser }
             })
         )

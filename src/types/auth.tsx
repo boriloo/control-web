@@ -10,9 +10,6 @@ export interface UserData {
   name: string;
   email: string;
   profileImage: string;
-  filterDark: BasicFilter,
-  filterBlur: BasicFilter,
-  filterColor: ColorFilter,
   createdAt: string;
 }
 
@@ -20,9 +17,6 @@ export interface RegisterData {
   name: string;
   email: string;
   password: string;
-  filterDark: BasicFilter,
-  filterBlur: BasicFilter,
-  filterColor: ColorFilter,
 }
 
 export interface LoginData {
@@ -65,8 +59,5 @@ export const returnFilterEffects = () => {
 
 export type updateUserData = {
   name?: string,
-  profileImage?: File,
-  filterDark?: BasicFilter,
-  filterBlur?: BasicFilter,
-  filterColor?: ColorFilter,
+  profileImage?: string,
 }

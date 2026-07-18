@@ -20,6 +20,7 @@ export default function ListDesktopsWindow() {
     const [allDesktops, setAllDesktops] = useState<any[]>([]);
     const [desktopInvites, setDesktopInvites] = useState<any[]>([])
 
+
     const handleAreaClick = (e: React.MouseEvent<HTMLElement>) => {
         if (e.target != e.currentTarget) return;
         listdt.minimizeWindow();
@@ -59,6 +60,8 @@ export default function ListDesktopsWindow() {
                 };
             })
         );
+
+        console.log('OS DDESKTOPSSS,', desktopsWithColors)
 
         setAllDesktops(desktopsWithColors);
     };

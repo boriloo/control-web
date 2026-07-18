@@ -20,31 +20,12 @@ export const getUserByIdService = async (userId: string) => {
 }
 
 export const updateUserService = async (data: updateUserData) => {
-    console.log(data)
-    const formData = new FormData();
+    const body: any = {};
 
-    if (data.name) {
-        formData.append('name', data.name);
-    }
+    if (data.name) body.name = data.name;
+    if (data.profileImage) body.profileImage = data.profileImage;
 
-    if (data.profileImage) {
-        formData.append('profileImage', data.profileImage);
-    }
-
-    if (data.filterDark) {
-        formData.append('filterDark', data.filterDark);
-    }
-
-    if (data.filterBlur) {
-        formData.append('filterBlur', data.filterBlur);
-    }
-
-    if (data.filterColor) {
-        formData.append('filterColor', data.filterColor);
-    }
-
-
-    const response = await api.patch(`/user`, formData);
+    const response = await api.patch(`/user`, body);
 
     return response.data;
 }

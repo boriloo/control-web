@@ -6,6 +6,8 @@ import { AvatarImageInput } from "../../avatarInput"
 import { useAppContext } from "../../../context/AppContext"
 import { deleteUserService, updateUserService } from "../../../services/userServices"
 import { updateUserData } from "../../../types/auth"
+import { UploadStorageData } from "../../../types/storage"
+import { uploadStorageService } from "../../../services/storageServices"
 
 export default function AccountOption() {
     const { callToast } = useAppContext();
@@ -26,18 +28,43 @@ export default function AccountOption() {
 
     if (!currentDesktop) return;
 
-    const handleEditBackground = async () => {
+    const handleUpload = async (data: UploadStorageData) => {
+        try {
+            const { path } = await uploadStorageService(data)
+
+            return path
+        } catch (err) {
+            return undefined;
+        }
+
+    }
+
+    const handleEditUser = async () => {
         if (!currentImage && !username) return;
         try {
             setLoading(true)
-            const pictureForReq = currentImage ? currentImage : undefined
-            const updatedUser = await updateUserService({ name: username, profileImage: pictureForReq } as updateUserData)
 
-            changeUser(updatedUser);
+            let profileImagePath: string | undefined
+
+            if (currentImage) {
+                const path = await handleUpload({
+                    file: currentImage,
+                    typeOfUpload: 'profile',
+                } as UploadStorageData)
+                profileImagePath = path
+            }
+
+            const updatedUser = await updateUserService({
+                name: username,
+                profileImage: profileImagePath
+            } as updateUserData)
+
+            changeUser(updatedUser)
             setCurrentImage(null)
             callToast({ message: 'Avatar alterado com sucesso!', type: 'success' })
         } catch (err) {
             console.log('ERRO AO ATUALIZAR IMAGEM PELAS CONFIGURAÇÕES: ', err)
+            callToast({ message: 'Erro ao atualizar perfil!', type: 'error' })
         } finally {
             setLoading(false)
         }
@@ -68,8 +95,8 @@ export default function AccountOption() {
                 <div className="bg-zinc-950 p-3 w-full max-w-[510px] h-full max-h-[320px] rounded-lg border-1 border-zinc-800 overflow-y-auto flex flex-col gap-1">
                     <p className="text-lg">Atenção! Você está prestes a excluir esta conta. </p>
                     <p className="text-lg mt-4">
-                        Esta ação <b className="font-medium text-red-500">excluirá permanentemente </b>
-                        todos desktops e arquivos pertencentes a esta conta.
+                        Esta ação <span className="font-medium text-red-500">excluirá permanentemente </span>
+                        todos os desktops e arquivos pertencentes a esta conta.
                     </p>
                     <p className="text-lg mt-4">Digite <b className="font-medium">{formattedUserName}/delete</b> para seguir com a exclusão.</p>
                     <input onChange={(e) => setDeleteInput(e.target.value)} value={deleteInput} autoCorrect="false" spellCheck={false} autoCapitalize="false" onPaste={(e) => e.preventDefault()} type="text"
@@ -127,7 +154,7 @@ export default function AccountOption() {
                     />
                 </div>
             ) : (
-                <button disabled={(!currentImage && !username)} onClick={handleEditBackground} className={`${(currentImage || username) ? '' : 'pointer-events-none saturate-0 opacity-50'} border-1 
+                <button disabled={(!currentImage && !username)} onClick={handleEditUser} className={`${(currentImage || username) ? '' : 'pointer-events-none saturate-0 opacity-50'} border-1 
                 border-(--color-lighter) transition-all cursor-pointer 
             hover:bg-(--color-lighter) p-2 px-4 rounded-sm font-medium`}>Salvar alterações</button>
             )}

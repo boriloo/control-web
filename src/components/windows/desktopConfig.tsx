@@ -7,7 +7,7 @@ import { ClickableImageInput } from "../imageInput";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useAppContext } from "../../context/AppContext";
 import { DesktopData, DesktopType } from "../../types/desktop";
-import { deleteDesktopService, getDesktopByIdService, getDesktopByMembershipService, getDesktopByOwnerService, getMembersByDesktopIdService, leaveDesktopService, updateDesktopService } from "../../services/desktopServices";
+import { deleteDesktopService, getDesktopByIdService, getDesktopByMembershipService, getDesktopByOwnerService, getMembersByDesktopIdService, leaveDesktopService, removeMemberFromDesktopService, updateDesktopService } from "../../services/desktopServices";
 import { useFileContext } from "../../context/FileContext";
 import { getUserByIdService } from "../../services/userServices";
 import { uploadStorageService } from "../../services/storageServices";
@@ -18,7 +18,7 @@ type colors = 'red' | 'blue' | 'black' | 'purple' | 'green' | 'orange'
 export default function DesktopConfigWindow() {
     const { changeRootFiles, allFiles } = useFileContext();
     const { callToast, setBlackScreen, minimazeAllWindows } = useAppContext();
-    const { user, currentDesktop, changeCurrentDesktop, setHasDesktops } = useUser();
+    const { user, currentDesktop, changeCurrentDesktop, setHasDesktops, standartUser } = useUser();
     const { dtConfig, sendInvite } = useWindowContext();
 
     const [loading, setLoading] = useState<boolean>(false)
@@ -118,7 +118,25 @@ export default function DesktopConfigWindow() {
         try {
             setMemberLoading(true)
             const members = await getMembersByDesktopIdService(dtConfig.desktop.id);
-            setDesktopMembers(members);
+
+            const formatted = await Promise.all(members.map(async (member: any) => {
+                const {
+                    user,
+                    ...rest
+                } = member;
+
+                const betterUser = await standartUser(user)
+
+                console.log('🔥🔥🔥🔥', betterUser)
+
+                return {
+                    user: betterUser,
+                    rest
+                }
+            }))
+
+            console.log('MEMBROS PUXADOSSS 😅😅😅', formatted)
+            setDesktopMembers(formatted);
         } catch (err) {
             console.log(err)
         } finally {
@@ -337,6 +355,19 @@ export default function DesktopConfigWindow() {
         }
     }, [dtConfig.desktop?.id])
 
+    const handleRemoveMember = useCallback(async (userId: string) => {
+        if (!dtConfig.desktop) return;
+
+        try {
+            setMemberLoading(true)
+            await removeMemberFromDesktopService(dtConfig.desktop.id, userId)
+            setDesktopMembers(prev => prev.filter((member) => member.user.id != userId))
+        } catch (err) {
+            console.log(err)
+        } finally {
+            setMemberLoading(false)
+        }
+    }, [dtConfig.desktop?.id]);
 
 
     return (
@@ -402,7 +433,8 @@ export default function DesktopConfigWindow() {
                 bg-(--color-dark) border-1 border-(--color-whity)/10 cursor-default origin-center relative transition-all duration-250 flex flex-col w-full h-full overflow-y-auto`}>
 
 
-                <div className={`${dtConfig.desktop?.ownerId === user.id ? 'bottom-[-450px] bg-(--color-light)/40' : 'bottom-[0px] z-20 bg-(--color-light)/30'} blur-[190px] w-120 h-120 right-0 rounded-tl-full fixed`}></div>
+                <div className={`${dtConfig.desktop?.ownerId === user.id ? 'bottom-[-450px] bg-(--color-light)/40' : 'bottom-[0px] bg-(--color-light)/30'} 
+                blur-[190px] w-120 h-120 right-0 rounded-tl-full fixed z-2`}></div>
 
                 <div className="z-50 sticky mb-[-35px] select-none top-0 right-0 flex flex-row justify-end items-center">
                     <div className="flex flex-row h-full backdrop-blur-md bg-black/40 rounded-bl-md">
@@ -413,7 +445,7 @@ export default function DesktopConfigWindow() {
 
                 <div key={bgVersion} className={`${loading ? 'opacity-0' : ''} absolute w-full top-0 transition-all h-[450px] z-1 bg-cover`}
                     style={{ backgroundImage: `url(${windowDesktop?.backgroundImage})`, backgroundPosition: 'center 30%' }} />
-                <div className="absolute w-full h-[450px] z-2 bg-gradient-to-b from-zinc-(--color-dark)/30 from-0% to-(--color-dark) to-78%" />
+                <div className="absolute w-full h-[450px] z-1 bg-gradient-to-b from-zinc-(--color-dark)/30 from-0% to-(--color-dark) to-85%" />
                 <div className="absolute w-full top-0 h-[450px] z-0 flex justify-center items-center">
                     <DotLottieReact
                         src="assets/images/loader.lottie"
@@ -603,7 +635,7 @@ export default function DesktopConfigWindow() {
 
                         )}
 
-                        <div className="flex flex-col w-full max-w-[600px] p-4 rounded-xl gap-3 bg-zinc-950/70">
+                        <div className="flex flex-col w-full max-w-[600px] p-4 rounded-xl gap-3 bg-zinc-950/70 z-10">
                             <div className="flex flex-row justify-between gap-2 items-center">
                                 <p className="text-xl">{memberLoading ? '' : desktopMembers.length} Membros</p>
                                 {dtConfig.desktop?.ownerId === user.id && (
@@ -647,11 +679,12 @@ export default function DesktopConfigWindow() {
                                                     <p className="text-[14px] opacity-75">{member.id === dtConfig.desktop?.ownerId ? 'Criador' : roleText(member.role)}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex flex-row gap-3">
-
-                                                <UserX className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-600/20
+                                            {(dtConfig.desktop?.ownerId === user.id && user.id != member.user.id) && (
+                                                <div className="flex flex-row gap-3">
+                                                    <UserX onClick={() => handleRemoveMember(member.user.id)} className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-600/20
                                         hover:border-red-500 hover:text-red-500 w-9 h-9 p-1 bg-white/5 border border-white/40 rounded-md" />
-                                            </div>
+                                                </div>
+                                            )}
                                         </div>
                                     )
                                 }

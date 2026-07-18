@@ -2,9 +2,11 @@ import { api } from "../lib/axiosConfig"
 import { UploadStorageData } from "../types/storage";
 
 export const getStorageService = async (path: string) => {
-    const response = await api.get(`/storage/${path}`);
+    const response = await api.get(`/storage/${path}`, {
+        responseType: 'blob'
+    });
 
-    return (response).data;
+    return URL.createObjectURL(response.data);
 }
 
 export const getProxyStorageService = async (path: string) => {
