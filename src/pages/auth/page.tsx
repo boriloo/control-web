@@ -9,6 +9,7 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import '../../App.css'
 import { useUser } from "../../context/AuthContext";
 import { LoginData } from "../../types/auth";
+import { authGoogleLoginService } from "../../services/authServices";
 
 const loginSchema = z.object({
     email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
@@ -102,7 +103,6 @@ export default function AuthPage() {
                 const registerData = data as z.infer<typeof registerSchema>
                 await authRegisterUser({
                     name: registerData.name, email: registerData.email, password: registerData.password,
-                    filterDark: 'low', filterBlur: 'low', filterColor: 'color'
                 });
 
 
@@ -114,6 +114,14 @@ export default function AuthPage() {
             }
         }
     };
+
+    const handleGoogleLogin = async () => {
+        try {
+            await authGoogleLoginService()
+        } catch (err) {
+            console.error('Erro ao iniciar login com Google:', err)
+        }
+    }
 
 
     return (
@@ -215,16 +223,17 @@ export default function AuthPage() {
                     <p className={`${error ? 'p-1 px-3' : 'opacity-0 mt-[-10px] '} text-red-500 bg-red-700/10  rounded-sm text-[18px] font-medium transition-all`}>{error}</p>
                 </div> */}
 
-                    <button disabled={sent} onClick={() => {setLoginForm(!loginForm); setError('')}}
+                    <button disabled={sent} onClick={() => { setLoginForm(!loginForm); setError('') }}
                         className={`${sent ? 'opacity-50' : 'cursor-pointer hover:bg-rose-400/20'} underline text-rose-400 font-medium mt-5 text-md  p-1 px-2 transition-all  rounded-lg`}>
                         {loginForm ? 'Não possui uma conta?' : 'Já possui uma conta?'}
                     </button>
 
                     <div className="bg-white/50 w-full h-[1px] mt-8 mb-8"></div>
 
-                    <div className="flex flex-col gap-2 w-full items-center">
+                    <div onClick={handleGoogleLogin} className="flex flex-col gap-2 w-full items-center">
                         <p className="text-lg">Entrar com</p>
-                        <button className="cursor-pointer p-3 w-full flex justify-center items-center max-w-[300px] bg-gray-200 text-white font-bold rounded-lg hover:bg-white transition-colors">
+                        <button className="cursor-pointer p-3 w-full flex justify-center items-center max-w-[300px] bg-zinc-800 text-white font-bold rounded-lg hover:bg-white
+                        mt-2 hover:scale-102 transition-all">
                             <img src="/assets/images/google.png" className="w-5 h-5" />
                         </button>
                     </div>

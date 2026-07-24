@@ -318,17 +318,15 @@ export default function SocialWindow() {
             <div className={`${isFullsceen ? 'max-w-full max-h-full' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${social.currentStatus === "open" ? 'scale-100' : 'scale-0 '} 
                 bg-(--color-dark) cursor-default origin-bottom relative transition-all duration-300 flex flex-col w-full h-full overflow-y-auto  border-1 border-(--color-whity)/10`}>
 
-                <div className="z-50 sticky select-none top-0 w-full bg-black/50 h-8 flex flex-row justify-between items-center backdrop-blur-[2px]">
-                    <p className="p-2">Social</p>
+                <div className="z-50 absolute select-none top-0 right-0 flex flex-row justify-end items-center">
                     <div className="flex flex-row h-full">
-                        <Minus onClick={social.minimizeWindow} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-white/20" />
-                        <Maximize onClick={() => setIsFullscreen(!isFullsceen)} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-white/20" />
-                        <X onClick={social.closeWindow} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-red-500" />
+                        <Maximize onClick={() => setIsFullscreen(!isFullsceen)} className="transition-colors rounded-bl-md cursor-pointer p-[9px] w-10 h-full hover:bg-white/20" />
+                        <X onClick={social.closeWindow} className="transition-colors cursor-pointer p-2 w-10 h-full  hover:bg-red-500" />
                     </div>
                 </div>
 
                 <div className="flex flex-row w-full items-start flex-wrap h-full">
-                    <div className="flex-1 flex flex-col gap-2 p-8 border-r-1 h-full border-white/10 rounded-b-lg w-full max-w-[300px] bg-(--color-darker)/35 items-center">
+                    <div className="flex-1 flex flex-col gap-2 pt-10 p-8 border-r-1 h-full border-white/10 rounded-b-lg w-full max-w-[300px] bg-(--color-darker)/35 items-center">
 
                         <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-23 h-23 rounded-full" />
                         <div className="flex flex-col items-center mt-2">
@@ -355,7 +353,7 @@ export default function SocialWindow() {
                         </button>
 
                     </div>
-                    <div className="flex-2 flex flex-col gap-2 p-6 h-full">
+                    <div className="flex-2 flex flex-col gap-2 p-6 pt-13 h-full">
                         <div className="flex flex-row gap-2">
                             <input value={emailReq} onChange={(e) => setEmailReq(e.target.value)} type="email" placeholder="usuario@email.com"
                                 className="bg-zinc-950/40 border-1 flex-1 rounded-sm p-1.5 px-3 border-zinc-800

@@ -8,7 +8,7 @@ import {
 } from "react";
 import { useAppContext } from "./AppContext";
 import { LoginData, RegisterData, UserData } from "../types/auth";
-import { authLoginService, authLogoutService, authRefreshService, authRegisterService } from "../services/authServices";
+import { authLoginService, authLogoutService, authRefreshService, authRegisterService, authSetRefreshService } from "../services/authServices";
 import { getMeService } from "../services/userServices";
 import { getDesktopByIdService, getDesktopByOwnerService } from "../services/desktopServices";
 import { DesktopData } from "../types/desktop";
@@ -26,8 +26,8 @@ interface UserContextProps {
     changeUser: (user: UserData) => void;
     currentDesktop: DesktopData | null;
     changeCurrentDesktop: (desktop: DesktopData) => void;
-    standartDesktop: (desktop: any) => DesktopData;
-    standartUser: (user: any) => UserData;
+    standartDesktop: (desktop: any) => any;
+    standartUser: (user: any) => any;
     authLoginUser: (data: LoginData) => Promise<UserData>;
     authRegisterUser: (data: RegisterData) => Promise<void>;
     authLogoutUser: () => Promise<void>;
@@ -35,10 +35,14 @@ interface UserContextProps {
     hasDesktops: boolean;
     setHasDesktops: (value: boolean) => void;
     toBase64Image: (value: any) => void;
+    authGoogleUser: (token: string, refreshToken?: string) => Promise<void>
+    initApp: () => Promise<void>
     bgColors: any;
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
+
+
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const { closeAllWindows } = useAppContext();
@@ -294,7 +298,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const profileImage = user.profileImage ?? user.profile_image
 
         if (!profileImage) return user;
-        
+
         const isPfp = profileImage.startsWith('users/')
 
         let imageFromR2;
@@ -302,8 +306,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (isPfp) {
             imageFromR2 = await getStorageService(user.profileImage ?? user.profile_image);
         }
-
-        console.log('IMAGME 🎉🎉🎉', imageFromR2)
 
         const {
             profile_image,
@@ -371,6 +373,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
 
+    const authGoogleUser = useCallback(async (token: string, refreshToken?: string) => {
+        console.log('authGoogleUser chamado com token:', token?.substring(0, 20))
+        localStorage.setItem("accessToken", token)
+        try {
+            changeAllFiles([])
+            changeRootFiles([])
+            setCurrentDesktop(null)
+            setHasDesktops(false)
+            localStorage.removeItem("last-desktop")
+
+            localStorage.setItem("accessToken", token)
+
+            if (refreshToken) {
+                await authSetRefreshService(refreshToken)
+            }
+
+            setIsAuthenticated(true)
+            await initApp()
+        } catch (err) {
+            console.error('Erro detalhado no callback:', err)
+            localStorage.removeItem("accessToken")
+            setIsAuthenticated(false)
+            throw err
+        }
+    }, [initApp])
+
+
     return (
         <UserContext.Provider
             value={{
@@ -390,7 +419,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 hasDesktops,
                 setHasDesktops,
                 toBase64Image,
-                bgColors
+                bgColors,
+                authGoogleUser,
+                initApp
             }}
         >
             {children}

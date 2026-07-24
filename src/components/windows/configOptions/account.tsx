@@ -74,6 +74,7 @@ export default function AccountOption() {
         if (!user) return
 
         try {
+            setLoading(true)
             await deleteUserService()
 
             setDeleteInput('')
@@ -83,6 +84,7 @@ export default function AccountOption() {
         } catch (err) {
             console.error("Erro ao excluir usuario:", err);
             callToast({ message: 'Erro ao excluir usuario.', type: 'error' });
+            setLoading(false)
         }
     }
 
@@ -103,15 +105,32 @@ export default function AccountOption() {
                         className="border-1 border-white/20 outline-none bg-zinc-900 p-1 px-2 rounded-lg w-full 
                     transition-all hover:bg-zinc-800 focus:bg-zinc-950 focus:border-zinc-400" placeholder="Digite aqui" />
                     <div className="flex flex-row gap-2 mt-4">
-                        <button onClick={() => { setConfirmDelete(false); setDeleteInput('') }} className="flex-1 p-1 px-5 text-lg text-zinc-300 border-1
-                         border-zinc-300 cursor-pointer transition-all hover:bg-zinc-300/10 hover:text-white rounded-md">
-                            Voltar
-                        </button>
-                        <button disabled={`${formattedUserName}/delete` != deleteInput} onClick={deleteUserFunction} className={`${`${formattedUserName}/delete` === deleteInput ? '' : 'pointer-events-none saturate-0 opacity-70'} 
-                        flex-1 p-1 px-5 text-lg text-red-500 border-1 border-red-500 cursor-pointer transition-all 
-                        hover:bg-red-500 hover:text-white rounded-md`}>
-                            Excluir Conta
-                        </button>
+                        {loading ? (
+                            <div className="flex-1 flex justify-center py-2">
+                                <DotLottieReact
+                                    src="assets/images/loader.lottie"
+                                    className="w-14"
+                                    loop
+                                    autoplay
+                                />
+                            </div>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={() => { setConfirmDelete(false); setDeleteInput('') }}
+                                    className="flex-1 p-1 px-5 text-lg text-zinc-300 border-1 border-zinc-300 cursor-pointer transition-all hover:bg-zinc-300/10 hover:text-white rounded-md"
+                                >
+                                    Voltar
+                                </button>
+                                <button
+                                    disabled={`${formattedUserName}/delete` !== deleteInput}
+                                    onClick={deleteUserFunction}
+                                    className={`${`${formattedUserName}/delete` === deleteInput ? '' : 'pointer-events-none saturate-0 opacity-70'} flex-1 p-1 px-5 text-lg text-red-500 border-1 border-red-500 cursor-pointer transition-all hover:bg-red-500 hover:text-white rounded-md`}
+                                >
+                                    Excluir Conta
+                                </button>
+                            </>
+                        )}
                     </div>
                     <p className="self-center text-md text-white/60">*Esta ação é irreversível.</p>
                 </div>

@@ -23,17 +23,16 @@ export default function ProfileWindow() {
 
         <div onClick={handleAreaClick} className={`${isFullsceen ? 'pb-[40px]' : ' p-2 pb-[50px]'} ${profile.currentStatus === "open" ? returnFilterEffects() : 'pointer-events-none'} 
         fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 cursor-pointer`}>
-            <div className={`${isFullsceen ? 'max-w-full max-h-full' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${profile.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0 '} 
-                bg-(--color-dark) cursor-default origin-bottom relative transition-all duration-250 flex flex-col w-full h-full overflow-y-auto  border-1 border-(--color-whity)/10`}>
+            <div className={`rounded-lg max-w-[600px] ${profile.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0 '} 
+                bg-(--color-dark) cursor-default origin-bottom relative transition-all duration-250 flex flex-col w-full  overflow-y-auto p-4  border-1 border-(--color-whity)/10`}>
 
                 <div className="z-50 absolute select-none top-0 right-0 flex flex-row justify-end items-center">
                     <div className="flex flex-row h-full">
-                        <Maximize onClick={() => setIsFullscreen(!isFullsceen)} className="transition-colors rounded-bl-md cursor-pointer p-[9px] w-10 h-full hover:bg-white/20" />
-                        <X onClick={profile.closeWindow} className="transition-colors cursor-pointer p-2 w-10 h-full  hover:bg-red-500" />
+                        <X onClick={profile.closeWindow} className="transition-colors cursor-pointer p-2 w-10 h-full  hover:bg-red-500 rounded-bl-lg" />
                     </div>
                 </div>
 
-                <div className="flex flex-col w-full p-4 gap-4 items-center mt-5">
+                <div className="flex flex-col w-full gap-4 items-center mt-2">
                     <button onClick={() => {
                         config.setCurrentTab('account');
                         minimazeAllWindows();
@@ -69,13 +68,10 @@ export default function ProfileWindow() {
                         {/* <p className="mt-2 text-(--color-lighter) bg-gradient-to-r from-black via-black to-blue-950 text-[16px] p-[1px] px-2 rounded-sm font-bold">PRO</p> */}
                     </div>
                     <div className="w-[90%] h-[1px] bg-white/40"></div>
-                    <div className="flex flex-row">
-
-                    </div>
                 </div>
 
 
-                <button onClick={authLogoutUser} className="sticky bottom-4 mt-auto ml-auto right-4 flex flex-row gap-2 items-center p-1 text-[18px] 
+                <button onClick={authLogoutUser} className="ml-auto mt-6 right-4 flex flex-row gap-2 items-center p-1 text-[18px] 
                 px-5 border-[1.5px] border-(--color-light)/60 cursor-pointer rounded-md bg-zinc-950 text-white transition-all hover:border-red-500 hover:text-red-500">
                     <p>Sair</p>
                     <LogOut size={18} />

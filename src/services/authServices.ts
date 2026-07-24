@@ -24,3 +24,14 @@ export const authLogoutService = async () => {
 
     return (response).data;
 }
+
+export const authGoogleLoginService = async () => {
+    const response = await api.get('/auth/google')
+    const { url } = response.data
+    window.location.href = url
+}
+
+export const authSetRefreshService = async (refreshToken: string) => {
+    const response = await api.post('/auth/set-refresh', { refreshToken })
+    return response.data
+}
