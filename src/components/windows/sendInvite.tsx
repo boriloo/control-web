@@ -124,7 +124,7 @@ export default function SendInviteWindow() {
                 max-w-[700px] max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative pb-10 `}>
                 <X onClick={sendInvite.minimizeWindow} size={35} className="absolute top-0 right-0 p-2 rounded-bl-lg cursor-pointer transition-all hover:bg-red-500" />
 
-                <h1 className="text-[24px]">Convidar para <span className="text-(--color-whity) font-medium">{sendInvite.desktop?.name} </span><span className="text-rose-500">(desktop)</span></h1>
+                <h1 className="text-[22px]">Convidar para <span className="text-(--color-whity) font-medium">{sendInvite.desktop?.name} </span><span className="text-rose-500">(desktop)</span></h1>
 
 
                 {availableFriends.length > 0 || pendingInvites.length > 0 ? (

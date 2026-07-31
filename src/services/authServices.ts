@@ -35,3 +35,13 @@ export const authSetRefreshService = async (refreshToken: string) => {
     const response = await api.post('/auth/set-refresh', { refreshToken })
     return response.data
 }
+
+export const authForgotPasswordService = async (email: string) => {
+    const response = await api.post('/auth/forgot-password', { email })
+    return response.data
+}
+
+export const authResetPasswordService = async (accessToken: string, newPassword: string) => {
+    const response = await api.post('/auth/reset-password', { accessToken, newPassword })
+    return response.data
+}

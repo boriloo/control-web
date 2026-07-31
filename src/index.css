@@ -61,6 +61,7 @@ input:-webkit-autofill:active {
 
 
 ::-webkit-scrollbar {
+  display: none;
   width: 5px;
   height: 10px;
 }

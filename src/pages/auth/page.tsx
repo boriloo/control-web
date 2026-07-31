@@ -191,13 +191,13 @@ export default function AuthPage() {
 
                         <div className={`${loginForm ? 'h-10 opacity-100' : 'opacity-0 h-0'} transition-all select-none 
                         flex flex-row justify-between w-full gap-2 flex-wrap-reverse overflow-hidden items-center`}>
-                            <div className="flex flex-row gap-2 p-1 px-2 rounded-md transition-all items-center cursor-pointer hover:bg-blue-200/15" onClick={() => setRememberMe(!rememberMe)}>
+                            <div className={`${rememberMe ? 'hover:bg-rose-800/25' : 'hover:bg-zinc-200/15'} flex flex-row gap-2 p-1 px-2 rounded-md transition-all items-center cursor-pointer `} onClick={() => setRememberMe(!rememberMe)}>
                                 <div className={`w-5 h-5 rounded-sm flex justify-center items-center border-[1px] transition-all ${rememberMe ? 'border-rose-500 bg-rose-500' : 'border-white'} `}>
                                     {rememberMe && (
                                         <Check className="w-full" />
                                     )}
                                 </div>
-                                <p className={`${rememberMe ? 'text-rose-400' : 'text-white'} `}>Lembrar de mim</p>
+                                <p className={`${rememberMe ? 'text-rose-400' : 'text-white'} transition-all`}>Lembrar de mim</p>
                             </div>
                             <div className="text-rose-400 font-medium text-md cursor-pointer p-1 px-2 transition-all hover:bg-rose-500/20 rounded-lg">
                                 Esqueci minha senha
@@ -209,7 +209,7 @@ export default function AuthPage() {
                             disabled={sent}
                             className={`${loginForm ? '' : 'mt-4'} ${sent ? 'opacity-50' : 'cursor-pointer'} flex justify-center items-center hover:bg-rose-600
                             overflow-hidden p-6.5 w-full max-h-10 self-center bg-linear-to-b bg-black from-black/50 to-zinc-800/50 shadow-2xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.28),0_2px_4px_rgba(0,0,0,0.5)]
-                             text-white font-medium rounded-3xl text-xl transition-all`}>
+                             text-white font-medium rounded-3xl text-xl transition-all duration-250 hover:scale-101`}>
                             {sent ? (<DotLottieReact
                                 src="assets/images/loader.lottie"
                                 className="w-26 p-0"

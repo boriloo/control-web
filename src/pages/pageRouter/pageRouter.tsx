@@ -7,6 +7,8 @@ import EmailSentPage from "../email/page";
 import { useEffect, useState } from "react";
 import PlansPage from "../plans/page";
 import AuthCallbackPage from "../auth/callback";
+import ForgotPasswordPage from "../auth/forgot-password";
+import ResetPasswordPage from "../auth/reset-password";
 
 const phrases = [
     "Control",
@@ -100,6 +102,13 @@ export default function PageRouter() {
                         path="/auth/callback"
                         element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <AuthCallbackPage />}
                     />
+
+                    <Route
+                        path="/auth/forgot-password"
+                        element={<ForgotPasswordPage />}
+                    />
+
+                    <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>

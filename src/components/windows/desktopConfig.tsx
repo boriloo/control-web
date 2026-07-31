@@ -77,7 +77,7 @@ export default function DesktopConfigWindow() {
 
     const [copy, setCopy] = useState<boolean>(false);
 
-    const timeoutRef = useRef(null);
+    const timeoutRef = useRef<number | null>(null);
 
     const copyDeleteText = async () => {
         try {
@@ -127,15 +127,12 @@ export default function DesktopConfigWindow() {
 
                 const betterUser = await standartUser(user)
 
-                console.log('🔥🔥🔥🔥', betterUser)
-
                 return {
                     user: betterUser,
                     rest
                 }
             }))
 
-            console.log('MEMBROS PUXADOSSS 😅😅😅', formatted)
             setDesktopMembers(formatted);
         } catch (err) {
             console.log(err)
@@ -554,8 +551,9 @@ export default function DesktopConfigWindow() {
 
                                 <h1 className="text-2xl">Tipo de Desktop</h1>
 
-                                <div className={`flex flex-row gap-3 w-full max-w-[800px] transition-all`}>
-                                    <div onClick={() => setTypaDesktop('personal')} className={`${typaDesktop === 'personal' ? 'bg-rose-500' : 'bg-zinc-950 hover:bg-black'} p-2 flex-1 
+                                <div className={`flex flex-row gap-3 w-full max-w-[800px] transition-all select-none`}>
+                                    <div onClick={() => setTypaDesktop('personal')} className={`${typaDesktop === 'personal' ? 'bg-rose-500' : 'bg-zinc-950 hover:bg-black'}
+                                    ${desktopMembers.length > 1 && 'saturate-0 opacity-60 pointer-events-none'} p-2 flex-1 
                         rounded-md text-center cursor-pointer transition-all text-lg shadow-2xl hover:scale-105`}>
                                         Pessoal
                                     </div>
@@ -635,61 +633,67 @@ export default function DesktopConfigWindow() {
 
                         )}
 
-                        <div className="flex flex-col w-full max-w-[600px] p-4 rounded-xl gap-3 bg-zinc-950/70 z-10">
-                            <div className="flex flex-row justify-between gap-2 items-center">
-                                <p className="text-xl">{memberLoading ? '' : desktopMembers.length} Membros</p>
-                                {dtConfig.desktop?.ownerId === user.id && (
-                                    <Plus size={35} onClick={() => {
-                                        minimazeAllWindows();
-                                        sendInvite.setDesktop({
-                                            id: dtConfig.desktop?.id as string,
-                                            name: dtConfig.desktop?.name as string
-                                        })
-                                        sendInvite.openWindow();
-                                    }} className="p-1 rounded-full hover:bg-zinc-800 cursor-pointer transition-all" />
-                                )}
-                            </div>
+                        {dtConfig.desktop?.desktopType === 'shared' && (
+                            <div className="flex flex-col w-full max-w-[600px] p-4 rounded-xl gap-3 bg-zinc-950/70 z-10">
+                                <div className="flex flex-row justify-between gap-2 items-center">
+                                    <p className="text-xl">{memberLoading ? '' : desktopMembers.length} Membros</p>
+                                    {dtConfig.desktop?.ownerId === user.id && (
+                                        <Plus size={35} onClick={() => {
+                                            minimazeAllWindows();
+                                            sendInvite.setDesktop({
+                                                id: dtConfig.desktop?.id as string,
+                                                name: dtConfig.desktop?.name as string
+                                            })
+                                            sendInvite.openWindow();
+                                        }} className="p-1 rounded-full hover:bg-zinc-800 cursor-pointer transition-all" />
+                                    )}
+                                </div>
 
-                            <div className="w-[100%] h-[1px] bg-zinc-400/40" />
+                                <div className="w-[100%] h-[1px] bg-zinc-400/40" />
 
-                            <div className="flex flex-col w-full gap-3 mt-3 max-h-[570px] overflow-y-auto">
 
-                                {memberLoading ?
-                                    (<div className="flex flex-col items-center p-2">
-                                        <DotLottieReact
-                                            src="assets/images/loader.lottie"
-                                            className="w-25 p-0"
-                                            loop
-                                            autoplay
-                                        />
-                                        <p>Carregando membros...</p>
-                                    </div>)
-                                    :
-                                    desktopMembers.map((member) =>
-                                        <div key={member.user.id} className="flex flex-row w-full justify-between items-center bg-(--color-regular)/80
+
+                                <div className="flex flex-col w-full gap-3 mt-3 max-h-[570px] overflow-y-auto">
+
+                                    {memberLoading ?
+                                        (<div className="flex flex-col items-center p-2">
+                                            <DotLottieReact
+                                                src="assets/images/loader.lottie"
+                                                className="w-25 p-0"
+                                                loop
+                                                autoplay
+                                            />
+                                            <p>Carregando membros...</p>
+                                        </div>)
+                                        :
+                                        desktopMembers.map((member) =>
+                                            <div key={member.user.id} className="flex flex-row w-full justify-between items-center bg-(--color-regular)/80
                                     p-3.5 px-4 rounded-md group hover:bg-(--color-regular) border-2 border-(--color-light)/15 transition-all select-none shadow-md">
-                                            <div className="flex flex-row gap-3 items-center">
-                                                <img src={`${member.user.profileImage ?? 'assets/images/profile.png'}`} className={`
+                                                <div className="flex flex-row gap-3 items-center">
+                                                    <img src={`${member.user.profileImage ?? 'assets/images/profile.png'}`} className={`
                                                 ${member.user.id === windowDesktop?.ownerId ? 'shadow-[0px_0px_10px_1px_var(--color-light)] border-(--color-lighter)' : 'border-transparent'} 
                                                 rounded-full w-12 h-12 border-2`} />
-                                                <div className="flex flex-col">
-                                                    <p className="text-lg flex gap-1 items-end">{member.user.name} {member.user.id === user.id && (
-                                                        <span className="text-[15px] opacity-60 mb-0.5">(você)</span>)}
-                                                    </p>
-                                                    <p className="text-[14px] opacity-75">{member.id === dtConfig.desktop?.ownerId ? 'Criador' : roleText(member.role)}</p>
+                                                    <div className="flex flex-col">
+                                                        <p className="text-lg flex gap-1 items-end">{member.user.name} {member.user.id === user.id && (
+                                                            <span className="text-[15px] opacity-60 mb-0.5">(você)</span>)}
+                                                        </p>
+                                                        <p className="text-[14px] opacity-75">{member.id === dtConfig.desktop?.ownerId ? 'Criador' : roleText(member.role)}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            {(dtConfig.desktop?.ownerId === user.id && user.id != member.user.id) && (
-                                                <div className="flex flex-row gap-3">
-                                                    <UserX onClick={() => handleRemoveMember(member.user.id)} className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-600/20
+                                                {(dtConfig.desktop?.ownerId === user.id && user.id != member.user.id) && (
+                                                    <div className="flex flex-row gap-3">
+                                                        <UserX onClick={() => handleRemoveMember(member.user.id)} className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-600/20
                                         hover:border-red-500 hover:text-red-500 w-9 h-9 p-1 bg-white/5 border border-white/40 rounded-md" />
-                                                </div>
-                                            )}
-                                        </div>
-                                    )
-                                }
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )
+                                    }
+                                </div>
                             </div>
-                        </div>
+                        )}
+
+
 
                     </div>
 
