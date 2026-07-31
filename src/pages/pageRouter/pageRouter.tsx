@@ -73,52 +73,24 @@ export default function PageRouter() {
 
     return (
         <BrowserRouter>
-            {isLoading ? (
-                <LoadingScreen />
-            ) : (
-                <Routes>
-                    <Route
-                        path="/"
-                        element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <Navigate to='/auth' replace />}
-                    />
+            <Routes>
+                {/* sempre acessíveis, independente de loading ou auth */}
+                <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
-                    <Route
-                        path="/auth/reset-password"
-                        element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <ResetPasswordPage />}
-                    />
-                    
-                    <Route
-                        path="/auth"
-                        element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <AuthPage />}
-                    />
-                    <Route
-                        path="/email-sent"
-                        element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <EmailSentPage />}
-                    />
-                    <Route
-                        path="/dashboard"
-                        element={isAuthenticated ? <DashboardPage /> : <Navigate to='/auth' replace />}
-                    />
-                    <Route
-                        path="/plans"
-                        element={isAuthenticated ? <PlansPage /> : <Navigate to='/auth' replace />}
-                    />
-
-                    <Route
-                        path="/auth/callback"
-                        element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <AuthCallbackPage />}
-                    />
-
-                    <Route
-                        path="/auth/forgot-password"
-                        element={<ForgotPasswordPage />}
-                    />
-
-
-
-                    <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-            )}
+                {/* resto das rotas com loading e auth */}
+                <Route path="*" element={
+                    isLoading ? <LoadingScreen /> : (
+                        <Routes>
+                            <Route path="/" element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <Navigate to='/auth' replace />} />
+                            <Route path="/auth" element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <AuthPage />} />
+                            <Route path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to='/auth' replace />} />
+                            <Route path="*" element={<NotFoundPage />} />
+                        </Routes>
+                    )
+                } />
+            </Routes>
         </BrowserRouter>
     );
 }
