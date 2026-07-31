@@ -81,6 +81,12 @@ export default function PageRouter() {
                         path="/"
                         element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <Navigate to='/auth' replace />}
                     />
+
+                    <Route
+                        path="/auth/reset-password"
+                        element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <ResetPasswordPage />}
+                    />
+                    
                     <Route
                         path="/auth"
                         element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <AuthPage />}
@@ -108,7 +114,7 @@ export default function PageRouter() {
                         element={<ForgotPasswordPage />}
                     />
 
-                    <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+
 
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
