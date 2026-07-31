@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import DashboardPage from "../dashboard/page";
 import { useUser } from "../../context/AuthContext";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
@@ -73,6 +73,7 @@ export default function PageRouter() {
 
     return (
         <BrowserRouter>
+            <RecoveryRedirect />
             <Routes>
                 {/* sempre acessíveis, independente de loading ou auth */}
                 <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
@@ -93,4 +94,22 @@ export default function PageRouter() {
             </Routes>
         </BrowserRouter>
     );
+}
+
+function RecoveryRedirect() {
+    const navigate = useNavigate()
+    const location = useLocation()
+
+    useEffect(() => {
+        const hash = location.hash.startsWith('#') ? location.hash.slice(1) : ''
+        const params = new URLSearchParams(hash)
+        const type = params.get('type')
+        const accessToken = params.get('access_token')
+
+        if (type === 'recovery' && accessToken) {
+            navigate(`/auth/reset-password${location.hash}`, { replace: true })
+        }
+    }, [])
+
+    return null
 }
