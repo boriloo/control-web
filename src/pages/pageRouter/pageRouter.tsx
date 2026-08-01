@@ -102,12 +102,20 @@ function RecoveryRedirect() {
 
     useEffect(() => {
         const hash = location.hash.startsWith('#') ? location.hash.slice(1) : ''
+        if (!hash) return
+
         const params = new URLSearchParams(hash)
         const type = params.get('type')
         const accessToken = params.get('access_token')
 
-        if (type === 'recovery' && accessToken) {
+        if (!accessToken) return
+
+        if (type === 'recovery') {
+            // reset de senha — vai para reset-password
             navigate(`/auth/reset-password${location.hash}`, { replace: true })
+        } else if (type === null || params.get('provider_token')) {
+            // login OAuth (Google) — vai para callback
+            navigate(`/auth/callback${location.hash}`, { replace: true })
         }
     }, [])
 
