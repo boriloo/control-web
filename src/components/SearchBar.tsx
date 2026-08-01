@@ -152,9 +152,16 @@ export default function SearchBar() {
                 imgViewer.setFile(file);
                 imgViewer.openWindow();
             } else {
-                openLink.setName(file.name)
-                openLink.setUrl(file.url as string);
-                openLink.openWindow();
+               const dontWarning = localStorage.getItem('dont-show-warning')
+
+                if (dontWarning === 'true') {
+                    window.open(file.url as string, '_blank')?.focus();
+                } else {
+                    openLink.setName(file.name as string);
+                    openLink.setUrl(file.url as string);
+                    openLink.setBackPath(false);
+                    openLink.openWindow();
+                }
             }
         } else if (file.fileType === "folder") {
             fileViewer.openWindow();
@@ -178,10 +185,10 @@ export default function SearchBar() {
             peer-focus:opacity-100 hover:opacity-100 ${searchTerm.trim() !== '' ? '' : ''} 
             opacity-0 flex flex-col bg-(--color-dark) top-10 rounded-md w-full max-h-[300px] overflow-y-auto`}>
                 {filteredFiles.map((file) => (
-                    <div key={file.id} onClick={() => returnAction(file)} className="min-h-14 group flex flex-row justify-between relative rounded-md 
-                    cursor-pointer hover:bg-(--color-regular)/30 overflow-hidden transition-all">
-                        <div className="flex flex-row gap-2 p-3 w-full items-center">
-                            <img src={imageReturn(file.fileType, file.url as string)} className="w-7 max-h-5 object-contain" alt={file.name} />
+                    <div key={file.id} onClick={() => returnAction(file)} className="min-h-15 group flex flex-row justify-between relative rounded-md 
+                    cursor-pointer hover:bg-(--color-regular)/40 overflow-hidden transition-all">
+                        <div className="flex flex-row gap-3 p-3 w-full items-center">
+                            <img src={imageReturn(file.fileType, file.url as string)} className="w-7 max-h-5.5 object-contain" alt={file.name} />
                             <div className="flex flex-col">
                                 <p className="text-[18px] max-w-55 truncate">{file.name}</p>
                                 <p className="text-[14px] mt-[-5px] opacity-80">{imageValidations[file.url as string] ? 'imagem' : file.fileType}</p>

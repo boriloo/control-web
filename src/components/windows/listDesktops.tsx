@@ -162,15 +162,23 @@ export default function ListDesktopsWindow() {
                 <h1 className="text-[24px]">{t("listdt.title")}</h1>
                 <div className="w-full flex flex-row gap-2 mt-[-10px] justify-between items-end">
                     <div className={`opacity-75 text-md`}>Seus desktops</div>
-                    <button onClick={() => {
-                        minimazeAllWindows();
-                        newdt.openWindow();
-                        dtConfig.changeDesktop(null)
-                    }} className={`bg-rose-500 transition-all cursor-pointer flex flex-row gap-2 group items-center
+
+                    {(allDesktops.length >= 5) ?
+                        (<div className="p-2 px-4 bg-zinc-800 rounded-full flex flex-row justify-center items-center">
+                            <p className="text-[16px] text-center">Máx. de desktops próprios atingido</p>
+                        </div>)
+                        :
+                        (<button onClick={() => {
+                            minimazeAllWindows();
+                            newdt.openWindow();
+                            dtConfig.changeDesktop(null)
+                        }} className={`${loading && 'saturate-0 scale-90 opacity-35 pointer-events-none'} bg-rose-500 transition-all cursor-pointer flex flex-row gap-2 group items-center
                     hover:bg-white hover:text-(--color-regular) p-2 hover:px-4 rounded-full font-medium`}>
-                        <Plus />
-                        <p className="w-0 overflow-hidden truncate ml-[-7px] group-hover:w-40 text-[18px]/[22px]">{t("listdt.create")}</p>
-                    </button>
+                            <Plus />
+                            <p className="w-0 overflow-hidden truncate ml-[-7px] group-hover:w-40 text-[18px]/[22px]">{t("listdt.create")}</p>
+                        </button>)}
+
+
                 </div>
 
                 <div className={`${loading ? 'opacity-20 saturate-0 pointer-events-none' : ''} transition-all flex flex-col gap-3 w-full max-h-[500px] items-center overflow-y-auto overflow-x-hidden`}>
