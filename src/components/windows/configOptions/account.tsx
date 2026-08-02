@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useUser } from "../../../context/AuthContext"
 // import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
 import { DotLottieReact } from "@lottiefiles/dotlottie-react"
@@ -38,6 +38,12 @@ export default function AccountOption() {
         }
 
     }
+
+    const canUpdate = useMemo(() => {
+        if (username != user?.name || currentImage) return true;
+
+        return false;
+    }, [username, currentImage, user])
 
     const handleEditUser = async () => {
         if (!currentImage && !username) return;
@@ -173,7 +179,7 @@ export default function AccountOption() {
                     />
                 </div>
             ) : (
-                <button disabled={(!currentImage && !username)} onClick={handleEditUser} className={`${(currentImage || username) ? '' : 'pointer-events-none saturate-0 opacity-50'} border-1 
+                <button disabled={(!canUpdate)} onClick={handleEditUser} className={`${canUpdate ? '' : 'pointer-events-none saturate-0 opacity-50'} border-1 
                 border-(--color-lighter) transition-all cursor-pointer 
             hover:bg-(--color-lighter) p-2 px-4 rounded-sm font-medium`}>Salvar alterações</button>
             )}

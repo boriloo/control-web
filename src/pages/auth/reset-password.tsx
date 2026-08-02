@@ -9,6 +9,7 @@ export default function ResetPasswordPage() {
     const [accessToken, setAccessToken] = useState<string | null>(null)
     const [password, setPassword] = useState('')
     const [confirm, setConfirm] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [done, setDone] = useState(false)
@@ -24,7 +25,7 @@ export default function ResetPasswordPage() {
         }
 
         setAccessToken(token)
-    }, [location])
+    }, [location, navigate])
 
     const handleSubmit = async () => {
         if (!password || !confirm || !accessToken) return
@@ -65,20 +66,32 @@ export default function ResetPasswordPage() {
             </div>
 
             <div className="flex flex-col gap-3 w-full max-w-sm">
-                <input
-                    type="password"
-                    placeholder="Nova senha"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    className="bg-white/5 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-white/30 transition-all"
-                />
-                <input
-                    type="password"
-                    placeholder="Confirmar senha"
-                    value={confirm}
-                    onChange={e => setConfirm(e.target.value)}
-                    className="bg-white/5 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-white/30 transition-all"
-                />
+                <div className="relative w-full">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Nova senha"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg p-3 pr-16 text-white outline-none focus:border-white/30 transition-all"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white text-sm"
+                    >
+                        {showPassword ? 'Ocultar' : 'Ver'}
+                    </button>
+                </div>
+
+                <div className="relative w-full">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Confirmar senha"
+                        value={confirm}
+                        onChange={e => setConfirm(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg p-3 pr-16 text-white outline-none focus:border-white/30 transition-all"
+                    />
+                </div>
 
                 {error && (
                     <p className="text-red-400 text-sm">{error}</p>
@@ -87,7 +100,7 @@ export default function ResetPasswordPage() {
                 <button
                     onClick={handleSubmit}
                     disabled={!password || !confirm || loading}
-                    className="p-3 rounded-lg bg-white/10 hover:bg-white/15 disabled:opacity-50 disabled:pointer-events-none text-white transition-all">
+                    className="p-3 mt-2 rounded-lg bg-white/10 hover:bg-white/15 disabled:opacity-50 disabled:pointer-events-none text-white transition-all">
                     {loading ? 'Salvando...' : 'Redefinir senha'}
                 </button>
             </div>

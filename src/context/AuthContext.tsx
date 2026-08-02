@@ -8,12 +8,11 @@ import {
 } from "react";
 import { useAppContext } from "./AppContext";
 import { LoginData, RegisterData, UserData } from "../types/auth";
-import { authLoginService, authLogoutService, authRefreshService, authRegisterService, authSetRefreshService } from "../services/authServices";
+import { authLoginService, authLogoutService, authRegisterService, authSetRefreshService } from "../services/authServices";
 import { getMeService } from "../services/userServices";
 import { getDesktopByIdService, getDesktopByOwnerService } from "../services/desktopServices";
 import { DesktopData } from "../types/desktop";
 import { getSwatches } from 'colorthief';
-import { useWindowContext } from "./WindowContext";
 import { getProxyStorageService, getStorageService } from "../services/storageServices";
 import { useFileContext } from "./FileContext";
 

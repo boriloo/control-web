@@ -199,9 +199,9 @@ export default function AuthPage() {
                                 </div>
                                 <p className={`${rememberMe ? 'text-rose-400' : 'text-white'} transition-all`}>Lembrar de mim</p>
                             </div>
-                            <div className="text-rose-400 font-medium text-md cursor-pointer p-1 px-2 transition-all hover:bg-rose-500/20 rounded-lg">
+                            <button disabled={sent} onClick={() => navigate('/auth/forgot-password')} className="text-rose-400 font-medium text-md cursor-pointer p-1 px-2 transition-all hover:bg-rose-500/20 rounded-lg">
                                 Esqueci minha senha
-                            </div>
+                            </button>
                         </div>
 
 
