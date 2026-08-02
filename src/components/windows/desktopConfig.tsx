@@ -20,6 +20,7 @@ export default function DesktopConfigWindow() {
     const { callToast, setBlackScreen, minimazeAllWindows } = useAppContext();
     const { user, currentDesktop, changeCurrentDesktop, setHasDesktops, standartUser } = useUser();
     const { dtConfig, sendInvite } = useWindowContext();
+    const [maxFileStorage, setMaxFileStorage] = useState<number>(500)
 
     const [loading, setLoading] = useState<boolean>(false)
     const [memberLoading, setMemberLoading] = useState<boolean>()
@@ -456,7 +457,7 @@ export default function DesktopConfigWindow() {
                     <p className="z-10 m-5 mb-[-55px] p-1 px-3 self-start border-1 border-(--color-light) bg-(--color-light)/30 backdrop-blur-sm rounded-full">Desktop atual</p>
                 ) : (
                     <p onClick={() => handleChangeDesktop(windowDesktop?.id as string)} className="z-60 m-5 mb-[-55px] p-1 px-3 self-start border-1 
-                    border-white/80 bg-zinc-200/5 hover:border-(--color-light) hover:bg-(--color-darker)/90 transition-all
+                    border-white/80 bg-zinc-950/25 hover:border-(--color-light) hover:bg-(--color-darker)/90 transition-all
                     hover:text-(--color-lighter) backdrop-blur-sm rounded-full flex flex-row gap-1 items-center group cursor-pointer">Abrir Desktop  <ArrowRight size={20} className="opacity-0 
                     max-w-0 transition-all group-hover:opacity-100 group-hover:max-w-5"/></p>
                 )}
@@ -467,15 +468,21 @@ export default function DesktopConfigWindow() {
                             <p className="text-[15px] opacity-80">Criado em {new Date(windowDesktop?.createdAt as Date)?.toLocaleDateString('pt-BR')}</p>
                             <h1 className="text-[38px] mt-[-6px]">{windowDesktop?.name}</h1>
                             <p className="p-1 px-3 bg-zinc-950/50 border-1 border-zinc-600 rounded-full">Desktop {windowDesktop?.desktopType === 'personal' ? 'pessoal' : 'compartilhado'}</p>
+                        </div>
 
-                        </div>
-                        <div className="p-2 px-3 flex flex-col bg-zinc-950/60 backdrop-blur-[2px] border-1 border-zinc-800 rounded-lg min-w-[300px]">
-                            <p>Espaço Ocupado</p>
-                            <h1 className="text-[30px]">{allFiles.length} items</h1>
-                            {/* <div className="w-full bg-zinc-950 h-1 mt-2 rounded-md overflow-hidden">
-                                <div className="bg-(--color-light) w-[34%] h-full"></div>
-                            </div> */}
-                        </div>
+                        {dtConfig.desktop?.id === currentDesktop?.id && (
+                            <div className={`${allFiles.length >= maxFileStorage ? 'bg-black/40 border-red-500/50' : 'bg-zinc-950/60 border-zinc-800'} p-2 px-3 flex flex-col  backdrop-blur-[2px] border-1  rounded-lg min-w-[300px]`}>
+                                <p className={`${allFiles.length >= maxFileStorage && 'text-red-500'}`}>{allFiles.length >= maxFileStorage ? 'Espaço Máximo Ocupado' : 'Espaço Ocupado'}</p>
+                                <h1 className={`${allFiles.length >= maxFileStorage && 'text-red-500'} text-[30px]`}>{allFiles.length} <span className="text-lg ml-[-5px] opacity-70">/{maxFileStorage}</span></h1>
+                                <div className="w-full bg-zinc-950 h-1 mt-2 rounded-md overflow-hidden">
+                                    <div
+                                        className={`${allFiles.length >= maxFileStorage ? 'bg-red-500' : 'bg-(--color-light)'}  h-full transition-all duration-300 ease-out`}
+                                        style={{ width: `${Math.min((allFiles.length / maxFileStorage) * 100, 100)}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        )}
+
                     </div>
 
                     <div className="flex flex-row gap-6 p-2 mt-[60px] items-start">

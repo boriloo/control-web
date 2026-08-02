@@ -43,6 +43,7 @@ export default function DashboardPage() {
     const [isDraggin, setIsDraggin] = useState<boolean>(false);
     const [isMoving, setIsMoving] = useState<boolean>(false);
     const [lastDraggedId, setLastDraggedId] = useState<string>('');
+    const [maxFileStorage, setMaxFileStorage] = useState<number>(500)
     const originalFilesRef = useRef<FileData[]>([]);
 
     useEffect(() => {
@@ -56,7 +57,7 @@ export default function DashboardPage() {
 
     useEffect(() => {
         if (isDraggin || filesMap.current.size === 0) {
-            setTimer(3);
+            setTimer(20);
             return;
         }
 
@@ -134,7 +135,7 @@ export default function DashboardPage() {
             changeNextIconPosition(nextPosition);
         };
 
-        setTimer(3)
+        setTimer(20)
 
     }, [rootFiles]);
 
@@ -232,24 +233,37 @@ export default function DashboardPage() {
             ])
         } else {
             contextMenu.setSelectedIconId('')
-            contextMenu.setFunctions([
-                {
-                    label: 'Criar Arquivo',
-                    action: () => {
-                        newFile.setFile(null)
-                        newFile.openWindow()
-                        contextMenu.setIsVisible(false)
+            if (allFiles.length >= maxFileStorage) {
+                contextMenu.setFunctions([
+                    {
+                        label: 'Editar Desktop',
+                        action: () => {
+                            dtConfig.changeDesktop(currentDesktop)
+                            dtConfig.openWindow()
+                            contextMenu.setIsVisible(false)
+                        }
                     }
-                },
-                {
-                    label: 'Alterar Desktop',
-                    action: () => {
-                        dtConfig.changeDesktop(currentDesktop)
-                        dtConfig.openWindow()
-                        contextMenu.setIsVisible(false)
+                ])
+            } else {
+                contextMenu.setFunctions([
+                    {
+                        label: 'Criar Arquivo',
+                        action: () => {
+                            newFile.setFile(null)
+                            newFile.openWindow()
+                            contextMenu.setIsVisible(false)
+                        }
+                    },
+                    {
+                        label: 'Editar Desktop',
+                        action: () => {
+                            dtConfig.changeDesktop(currentDesktop)
+                            dtConfig.openWindow()
+                            contextMenu.setIsVisible(false)
+                        }
                     }
-                }
-            ])
+                ])
+            }
         };
 
 
@@ -405,15 +419,22 @@ export default function DashboardPage() {
                 <ContextMenu />
                 <div className="flex flex-row flex-wrap justify-between items-center w-full gap-3 p-4">
                     <div className=" w-full max-w-50">
-                        <button onClick={() => {
-                            newFile.setFile(null)
-                            newFile.openWindow()
-                        }}
-                            className="flex flex-row items-center justify-start gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md hover:bg-(--color-lighter) border-[1px] 
+                        {allFiles.length >= maxFileStorage ?
+                            (<button className="p-1 px-3 bg-zinc-950/50 rounded-md opacity-75 backdrop-blur-md flex flex-row items-center justify-start">
+                                <p className="text-lg text-center">Máximo atingido</p>
+                            </button>)
+                            :
+                            (<button onClick={() => {
+                                newFile.setFile(null)
+                                newFile.openWindow()
+                            }}
+                                className="flex flex-row items-center justify-start gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md hover:bg-(--color-lighter) border-[1px] 
                     border-transparent hover:text-white hover:border-(--color-lighter) transition-all select-none hover:scale-102">
-                            <CirclePlus />
-                            <p className="text-lg">{t("dashboard.create")}</p>
-                        </button>
+                                <CirclePlus />
+                                <p className="text-lg">{t("dashboard.create")}</p>
+                            </button>)
+                        }
+
                     </div>
                     <SearchBar />
 

@@ -22,6 +22,7 @@ export default function NewFileWindow() {
     const [drop, setDrop] = useState<boolean>(false)
     const [name, setName] = useState<string | null>(null)
     const [url, setUrl] = useState<string | null>(null)
+    const [canCreate, setCanCreate] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
 
     const normalizeUrl = (inputUrl: string | null): string | null => {
@@ -41,18 +42,24 @@ export default function NewFileWindow() {
         }
     };
 
+    useEffect(() => {
+        const hasValidName = !!name?.trim();
+        const hasValidUrl = fileType === 'link' ? !!url?.trim() : true;
+        setCanCreate(hasValidName && hasValidUrl);
+    }, [name, url, fileType]);
+
     const handleCreateFile = async () => {
-        if (!user || !currentDesktop) {
-            alert("Erro: Não foi possível identificar o utilizador ou o desktop.");
+        if (!canCreate || !user || !currentDesktop) {
+            alert("Erro: Verifique os campos ou a autenticação.");
             return;
         }
 
-        setLoading(true)
+        setLoading(true);
 
         const basePayload = {
             desktopId: currentDesktop.id,
             parentId: 'root',
-            name: name,
+            name: name?.trim(),
             fileType: fileType,
             xPos: nextIconPosition?.x,
             yPos: nextIconPosition?.y,
@@ -61,48 +68,49 @@ export default function NewFileWindow() {
         let finalPayload: any = { ...basePayload };
 
         if (newFile.file) {
-            finalPayload.parentId = newFile.file.id
+            finalPayload.parentId = newFile.file.id;
         }
 
         switch (fileType) {
             case 'link':
                 const finalUrl = normalizeUrl(url);
-
                 if (!finalUrl) {
+                    setLoading(false);
                     return;
                 }
-
                 finalPayload.url = finalUrl;
                 break;
-
             case 'folder':
                 break;
-
             default:
-                console.error("Tipo de ficheiro desconhecido:", fileType);
+                console.error("Tipo de arquivo desconhecido:", fileType);
+                setLoading(false);
                 return;
         }
 
         try {
-            console.log(finalPayload)
+            console.log(finalPayload);
             const fileCreated = await createFileService(currentDesktop.id, finalPayload as FileData);
-            const dftFile = defaultFile(fileCreated)
-            if (finalPayload.parentId != 'root') {
+            const dftFile = defaultFile(fileCreated);
+
+            if (finalPayload.parentId !== 'root') {
                 changeAllFiles([...allFiles, dftFile]);
             } else {
                 changeRootFiles([...rootFiles, dftFile]);
                 changeAllFiles([...allFiles, dftFile]);
             }
 
-            setName(null)
+            // Moveu o toast de sucesso para cá, para não disparar caso dê erro
+            callToast({ message: 'Arquivo criado com sucesso!', type: 'success' });
+
+            setName(null);
+            setUrl(null);
+            newFile.closeWindow();
         } catch (error) {
-            console.error("Falha ao criar o ficheiro:", error);
+            console.error("Falha ao criar o arquivo:", error);
+            callToast({ message: 'Erro ao criar o arquivo.', type: 'error' });
         } finally {
-            callToast({ message: 'Arquivo criado com sucesso!', type: 'success' })
-            setLoading(false)
-            setName(null)
-            setUrl(null)
-            newFile.closeWindow()
+            setLoading(false);
         }
     };
 
@@ -199,8 +207,8 @@ export default function NewFileWindow() {
                         </div>
                     </div>
                     <div className="flex flex-row w-[40%] transition-all mt-2">
-                        <button onClick={handleCreateFile} className="p-1.5 px-5 text-[20px] font-medium cursor-pointer transition-all 
-                         bg-rose-500 hover:bg-white hover:text-(--color-dark) rounded-md w-full flex flex-row justify-center items-center">
+                        <button onClick={handleCreateFile} disabled={!canCreate} className={`${!canCreate && 'saturate-0 opacity-50 pointer-events-none'} p-1.5 px-5 text-[20px] font-medium cursor-pointer transition-all 
+                         bg-rose-500 hover:bg-white hover:text-(--color-dark) rounded-md w-full flex flex-row justify-center items-center`}>
                             {loading ? <DotLottieReact
                                 src="assets/images/loader.lottie"
                                 className="w-15 p-0"
