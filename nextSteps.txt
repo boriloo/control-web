@@ -1,7 +1,3 @@
-
-BOTAO DE ESQUECI SENHA LEVAR PRA TELA
-
-
 VALIDAR SE TODOS OS ERROS ESTAO COM TOASTS
 
 --------------------------------------

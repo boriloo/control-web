@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { ArrowDownToLine, ArrowLeftToLine, ArrowRightToLine, ArrowUpToLine, CirclePlus, GripVertical } from "lucide-react";
+import { ArrowDownToLine, ArrowLeftToLine, ArrowRightToLine, ArrowUpToLine, CirclePlus, GripVertical, RotateCw } from "lucide-react";
 import { DraggableIcon } from "../../components/draggableIcon";
 import { useDraggableScroll } from "../../components/dragScroll";
 import ProfileWindow from "../../components/windows/profile";
@@ -30,7 +30,7 @@ import SendInviteWindow from "../../components/windows/sendInvite";
 
 
 export default function DashboardPage() {
-    const { rootFiles, changeRootFiles, allFiles, defaultFile } = useFileContext();
+    const { rootFiles, changeRootFiles, allFiles, defaultFile, reloadAllFiles, canReload } = useFileContext();
     const { changeNextIconPosition, blackScreen } = useAppContext();
     const { t } = useTranslation();
     const { root } = useRootContext();
@@ -45,6 +45,7 @@ export default function DashboardPage() {
     const [lastDraggedId, setLastDraggedId] = useState<string>('');
     const [maxFileStorage, setMaxFileStorage] = useState<number>(500)
     const originalFilesRef = useRef<FileData[]>([]);
+    const [reloadText, setReloadText] = useState<boolean>(false)
 
     useEffect(() => {
         document.documentElement.style.setProperty('--color-darker', bgColors.darker);
@@ -201,6 +202,7 @@ export default function DashboardPage() {
     }, [rootFiles, checkOverflow]);
 
     const handleContextClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        if (!currentDesktop) return;
 
         if (e.button != 2) {
             contextMenu.setIsVisible(false)
@@ -214,8 +216,6 @@ export default function DashboardPage() {
         contextMenu.setIsVisible(true)
 
         const elementIsIcon = (e.target as HTMLElement).closest('[data-id]') as HTMLElement;
-
-
 
         if (elementIsIcon) {
             const icon = allFiles.filter((icon) => icon.id === elementIsIcon.dataset.id)[0]
@@ -233,41 +233,43 @@ export default function DashboardPage() {
             ])
         } else {
             contextMenu.setSelectedIconId('')
-            if (allFiles.length >= maxFileStorage) {
-                contextMenu.setFunctions([
-                    {
-                        label: 'Editar Desktop',
-                        action: () => {
-                            dtConfig.changeDesktop(currentDesktop)
-                            dtConfig.openWindow()
-                            contextMenu.setIsVisible(false)
-                        }
+
+            const desktopOptions = [];
+
+            if (allFiles.length < maxFileStorage) {
+                desktopOptions.push({
+                    label: 'Criar Arquivo',
+                    action: () => {
+                        newFile.setFile(null)
+                        newFile.openWindow()
+                        contextMenu.setIsVisible(false)
                     }
-                ])
-            } else {
-                contextMenu.setFunctions([
-                    {
-                        label: 'Criar Arquivo',
-                        action: () => {
-                            newFile.setFile(null)
-                            newFile.openWindow()
-                            contextMenu.setIsVisible(false)
-                        }
-                    },
-                    {
-                        label: 'Editar Desktop',
-                        action: () => {
-                            dtConfig.changeDesktop(currentDesktop)
-                            dtConfig.openWindow()
-                            contextMenu.setIsVisible(false)
-                        }
-                    }
-                ])
+                });
             }
+
+            desktopOptions.push({
+                label: 'Editar Desktop',
+                action: () => {
+                    dtConfig.changeDesktop(currentDesktop)
+                    dtConfig.openWindow()
+                    contextMenu.setIsVisible(false)
+                }
+            });
+
+            if (canReload) {
+                desktopOptions.push({
+                    label: 'Recarregar Arquivos',
+                    action: () => {
+                        reloadAllFiles(currentDesktop.id)
+                        contextMenu.setIsVisible(false)
+                    }
+                });
+            }
+
+            contextMenu.setFunctions(desktopOptions);
         };
 
-
-    }, [currentDesktop, deleteFile])
+    }, [currentDesktop, deleteFile, allFiles, canReload, reloadAllFiles]) // Dependências atualizadas
 
 
 
@@ -418,7 +420,7 @@ export default function DashboardPage() {
             <div className={`${start ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000 flex flex-col w-full h-screen overflow-hidden text-white relative select-none`}>
                 <ContextMenu />
                 <div className="flex flex-row flex-wrap justify-between items-center w-full gap-3 p-4">
-                    <div className=" w-full max-w-50">
+                    <div className="w-full max-w-50 flex flex-row gap-2">
                         {allFiles.length >= maxFileStorage ?
                             (<button className="p-1 px-3 bg-zinc-950/50 rounded-md opacity-75 backdrop-blur-md flex flex-row items-center justify-start">
                                 <p className="text-lg text-center">Máximo atingido</p>
@@ -434,6 +436,18 @@ export default function DashboardPage() {
                                 <p className="text-lg">{t("dashboard.create")}</p>
                             </button>)
                         }
+                        <button disabled={!canReload} onClick={() => {
+                            if (!currentDesktop) return;
+                            reloadAllFiles(currentDesktop.id)
+                            contextMenu.setIsVisible(false)
+                            setReloadText(true)
+                            setTimeout(() => setReloadText(false), 2500)
+                        }} className={`${!canReload ? 'opacity-55 scale-94' : 'hover:scale-102 hover:border-(--color-lighter) hover:text-white hover:bg-(--color-lighter) cursor-pointer'} flex flex-row 
+                        items-center justify-start p-1 px-2  rounded-md bg-black/40  backdrop-blur-md  border-[1px] 
+                    border-transparent   transition-all select-none gap-1 items-center`}>
+                            <RotateCw size={20} strokeWidth={2.5} />
+                            <p className={`${reloadText ? 'w-39' : 'w-0 opacity-0 ml-[-3px]'} truncate overflow-hidden transition-all`}>Arquivos atualizados!</p>
+                        </button>
 
                     </div>
                     <SearchBar />
