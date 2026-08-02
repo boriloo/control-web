@@ -155,7 +155,7 @@ export default function NewFileWindow() {
     return (
         <div onClick={handleAreaClick} className={`${newFile.currentStatus === 'open' ? returnFilterEffects() : 'pointer-events-none'} 
         transition-all duration-500 fixed z-200 w-full h-screen flex justify-center items-center p-4 pb-[50px] cursor-pointer`}>
-            <div className={`${newFile.currentStatus === 'open' ? 'scale-100' : 'scale-70 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-xl p-4 w-full max-w-[700px] 
+            <div onClick={(e) => {e.stopPropagation}} className={`${newFile.currentStatus === 'open' ? 'scale-100' : 'scale-70 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-xl p-4 w-full max-w-[700px] 
             max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative border-1 border-(--color-whity)/10`}>
                 <X onClick={closeWindow} size={35} className="absolute top-0 right-0 p-2 rounded-bl-lg cursor-pointer transition-all hover:bg-red-500" />
                 <h1 className="text-[22px] flex gap-1.5">Criar um novo item em
@@ -191,8 +191,8 @@ export default function NewFileWindow() {
                         <p className="text-lg">Nome</p>
                         <div className="flex flex-col">
                             <input value={name ?? ''} onChange={(e) => setName(e.target.value)} type="text" className="border-1 border-(--color-light) outline-none transition-all text-[16px] bg-(--color-regular)/50
-                             hover:bg-(--color-regular)/70  
-                                cursor-pointer focus:cursor-text p-1.5 px-2.5 rounded-sm focus:border-(--color-light) focus:bg-(--color-light)/40 text-(--color-lighter) focus:text-white w-full" />
+                             hover:bg-(--color-regular)/70 cursor-pointer focus:cursor-text p-1.5 px-2.5 rounded-sm focus:border-(--color-light) 
+                             focus:bg-(--color-light)/40 text-(--color-lighter) focus:text-white w-full" />
                         </div>
                     </div>
 

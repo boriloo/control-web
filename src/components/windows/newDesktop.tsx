@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { useWindowContext } from "../../context/WindowContext";
 import { returnFilterEffects } from "../../types/auth";
 import { useUser } from "../../context/AuthContext";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 // import { createDesktop, updateDesktopBackground } from "../../services/desktop";
 // import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { ClickableImageInput } from "../imageInput";
@@ -64,8 +64,14 @@ export default function NewDesktopWindow() {
         } catch (err) {
             return undefined;
         }
-
     }
+
+    const canCreate = useMemo(() => {
+        if (!desktopName.trim()) return false
+        if (typaBackgroundCount === 1 && !imageSelected) return false  // 1 = upload
+        if (typaBackgroundCount === 2 && !backgroundUrl.trim()) return false  // 2 = url
+        return true
+    }, [desktopName, typaBackgroundCount, imageSelected, backgroundUrl])
 
     const handleSubmit = async () => {
         try {
@@ -138,17 +144,17 @@ export default function NewDesktopWindow() {
         newdt.currentStatus != 'closed' && <div onClick={handleAreaClick} className={`${newdt.currentStatus === 'open' ? returnFilterEffects() : 'pointer-events-none '} 
         transition-all duration-500 fixed z-100 w-full h-screen flex justify-center items-center p-4 pb-[50px] cursor-pointer`}>
             <div className={`${newdt.currentStatus === 'open' ? 'scale-100' : 'scale-50 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-md p-4 w-full 
-                max-w-[600px] max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative pb-5  border-1 border-(--color-whity)/10`}>
+                max-w-[700px] max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative pb-5  border-1 border-(--color-whity)/10`}>
                 <X onClick={newdt.closeWindow} size={35} className="absolute top-0 right-0 p-2 rounded-bl-lg cursor-pointer transition-all hover:bg-red-500" />
                 <h1 className="text-[24px]">Criar novo Desktop</h1>
                 <div className="flex flex-col gap-1 w-full">
-                    <p className="text-xl">Nome</p>
+                    <p className="text-lg">Nome</p>
                     <input type="text" onChange={(e) => setDesktopName(e.target.value)} className="border-1 border-(--color-light) outline-none transition-all text-[17px] bg-(--color-regular)/50
                              hover:bg-(--color-regular)/70  
                                 cursor-pointer focus:cursor-text p-1 px-2.5 rounded-sm focus:border-(--color-light) focus:bg-(--color-light)/40 text-(--color-lighter) focus:text-white w-full" />
                 </div>
 
-                <div className="flex flex-col gap-2 w-full items-start max-w-[1000px] ">
+                <div className="flex flex-col gap-2 w-full items-start max-w-[1000px] mt-2">
                     <p className="text-lg">Plano de fundo</p>
                     <div className="flex flex-row rounded-lg overflow-hidden w-full max-w-[300px] select-none">
                         <div onClick={previousBg} className="text-white p-2 border-2 border-(--color-light) rounded-l-lg flex justify-center items-center hover:bg-(--color-lighter) transition-all cursor-pointer">
@@ -197,7 +203,7 @@ export default function NewDesktopWindow() {
                 </div>
 
 
-                <div className="flex flex-col gap-2 w-full items-start max-w-[1000px]">
+                <div className="flex flex-col gap-2 w-full items-start max-w-[1000px] mt-2">
                     <p className="text-lg">Tipo de Desktop</p>
                     <div className="flex flex-row gap-2 w-full">
                         <div className="flex-1 relative">
@@ -226,7 +232,7 @@ export default function NewDesktopWindow() {
 
                     </div>
                 </div>
-                <button onClick={handleSubmit} disabled={!imageSelected || desktopName === '' || loading} className={`${!imageSelected || desktopName === '' ? 'pointer-events-none saturate-0 opacity-40' : ''}
+                <button onClick={handleSubmit} disabled={!canCreate} className={`${!canCreate ? 'pointer-events-none saturate-0 opacity-40' : ''}
                     bg-rose-500 border-none text-xl ${loading ? 'saturate-0 pointer-events-none' : 'p-2'} flex justify-center px-6 font-medium cursor-pointer 
                     mt-2 rounded-sm transition-all hover:bg-rose-400 hover:scale-101 `}>
                     {loading ? <DotLottieReact
