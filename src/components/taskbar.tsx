@@ -9,7 +9,7 @@ export default function TaskBar() {
     const { user } = useUser();
 
     return (
-        <div className="max-h-10 z-100 fixed bottom-0 relative flex flex-row justify-center items-center gap-2 h-10 w-full backdrop-blur-sm bg-black/60 overflow-hidden transition-all duration-600 select-none">
+        <div className="max-h-10 z-100 fixed bottom-0 flex flex-row justify-center items-center gap-2 h-10 w-full backdrop-blur-sm bg-black/60 overflow-hidden transition-all duration-600 select-none">
             <img onClick={() => {
                 minimazeAllWindows()
                 config.openWindow()

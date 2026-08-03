@@ -154,17 +154,17 @@ export default function NewFileWindow() {
 
     return (
         <div onClick={handleAreaClick} className={`${newFile.currentStatus === 'open' ? returnFilterEffects() : 'pointer-events-none'} 
-        transition-all duration-500 fixed z-200 w-full h-screen flex justify-center items-center p-4 pb-[50px] cursor-pointer`}>
-            <div onClick={(e) => {e.stopPropagation}} className={`${newFile.currentStatus === 'open' ? 'scale-100' : 'scale-70 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-xl p-4 w-full max-w-[700px] 
+        transition-all duration-500 fixed z-200 w-full h-screen flex justify-center items-center md:p-4 p-2 pb-[50px] cursor-pointer`}>
+            <div onClick={(e) => {e.stopPropagation}} className={`${newFile.currentStatus === 'open' ? 'scale-100' : 'scale-70 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-xl 
+            p-4 w-full max-w-[700px] 
             max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative border-1 border-(--color-whity)/10`}>
-                <X onClick={closeWindow} size={35} className="absolute top-0 right-0 p-2 rounded-bl-lg cursor-pointer transition-all hover:bg-red-500" />
-                <h1 className="text-[22px] flex gap-1.5">Criar um novo item em
+                <X onClick={closeWindow} size={35} className="absolute top-0 right-0 p-2 rounded-bl-lg cursor-pointer transition-all hover:bg-red-500 md:bg-transparent bg-red-500" />
+                <h1 className="text-[22px] flex gap-1.5 flex-row flex-wrap">Criar um novo item em
                     {newFile.file ?
                         (<p className="text-white font-medium max-w-50 truncate">{newFile.file.name} <span className="text-rose-500">{newFile.file.fileType}</span></p>)
 
                         :
                         (<p className="text-white font-medium max-w-50 truncate">{currentDesktop?.name} <span className="text-rose-500">(Desktop)</span></p>)
-
                     }
                 </h1>
                 <div className={`${loading && 'saturate-0 pointer-events-none opacity-60'} flex flex-col gap-3 items-center`}>
