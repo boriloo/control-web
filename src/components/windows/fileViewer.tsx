@@ -167,15 +167,13 @@ export default function FileWindow() {
         <>
             <div className={`flex-1 w-full h-screen absolute z-[20] transition-all duration-500  ${fileViewer.currentStatus === "open" ? returnFilterEffects() : 'pointer-events-none'} `}></div>
             <div onClick={handleAreaClick} className={`${fileViewer.currentStatus === "open" ? '' : 'pointer-events-none'} 
-        fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 cursor-pointer group`}>
-
-
+        fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 md:p-4 p-2 cursor-pointer group`}>
 
                 <div className={` ${fileViewer.currentStatus === "open" ? 'scale-100' : 'scale-0 opacity-0'} hover:scale-100 hover:opacity-100 
                 group-hover:scale-95 group-hover:opacity-98 group-hover:bg-red-800/10 hover:bg-transparent
                 ${loading ? 'max-w-[60px] max-h-[60px] rounded-[50px]' : 'rounded-[10px] max-w-[1200px] max-h-[700px]'}  bg-linear-to-b from-(--color-dark)/80 to-(--color-regular)/10
                 border-t-1 border-white/20 cursor-default relative ${loading ? '' : 'overflow-y-auto'}
-                transition-all duration-300 flex flex-col w-full h-full shadow-black/10 shadow-lg
+                transition-all duration-300 flex flex-col w-full h-[90%] shadow-black/10 shadow-lg
                  select-none backdrop-blur-[2.2vi]`}>
 
                     <DotLottieReact

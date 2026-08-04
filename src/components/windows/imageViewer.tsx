@@ -144,33 +144,35 @@ export default function ImageViewerWindow() {
             </div>
 
             <div className={`${isFullsceen ? 'max-w-full max-h-full' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${imgViewer.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0'} 
-                bg-zinc-900 cursor-default origin-bottom relative transition-all duration-250 flex flex-col w-full h-full overflow-y-auto  border-1 border-(--color-whity)/10`}>
-                <div className="z-50 sticky select-none top-0 w-full bg-black/50 h-8 flex flex-row justify-between items-center backdrop-blur-[2px]">
-                    <p className="p-2">Visualizar Imagem</p>
-                    <div className="flex flex-row h-full">
-                        <Minus onClick={imgViewer.minimizeWindow} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-white/20" />
-                        <Maximize onClick={() => setIsFullscreen(!isFullsceen)} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-white/20" />
-                        <X onClick={imgViewer.closeWindow} className="transition-colors cursor-pointer p-1 px-2 w-9 h-full hover:bg-red-500" />
+                bg-(--color-dark) cursor-default origin-bottom relative transition-all duration-250 flex flex-col items-center w-full h-full overflow-y-auto border-1 border-(--color-whity)/10`}>
+
+                <div className="z-50 sticky mb-[-35px] select-none top-0 right-0 flex flex-row w-full justify-end items-center">
+                    <div className="flex flex-row h-full backdrop-blur-md bg-black/40 rounded-bl-md">
+                        <Maximize onClick={() => setIsFullscreen(!isFullsceen)} className="transition-colors rounded-bl-md cursor-pointer p-[9px] w-10 h-full hover:bg-white/20" />
+                        <X onClick={imgViewer.closeWindow} className="transition-colors cursor-pointer p-2 w-10 h-full  hover:bg-red-500" />
                     </div>
                 </div>
-                <div className="flex flex-row justify-between p-2 items-center px-3 bg-zinc-900/50">
-                    <p className="flex-1"></p>
-                    <p className="flex-1 text-center">{imgViewer.file?.name}</p>
-                    <div className="flex flex-row flex-1 justify-end">
-                        <Download onClick={downloadImageSimples} size={30} className={`${downLoading && 'pointer-events-none opacity-60'} p-1 transition-all cursor-pointer hover:bg-zinc-700 rounded-sm`} />
+
+                <div onClick={downloadImageSimples} className="flex z-60 flex-row justify-center p-1 px-2 group rounded-md cursor-pointer transition-all items-center hover:bg-(--color-lighter)/20 mt-2">
+                    <p className="text-center truncate w-50 group-hover:w-0 group-hover:opacity-0 transition-all">{imgViewer.file?.name}</p>
+
+                    <div className="flex flex-row justify-center items-center w-0 transition-all opacity-0 group-hover:w-50 group-hover:opacity-100">
+                        <Download size={30} className={`p-1 transition-all cursor-pointer`} />
+                        <p className="truncate transition-all">Clique para baixar</p>
                     </div>
                 </div>
+
                 {!loading && (
-                    <div className={`${downLoading && 'saturate-0 scale-80'} relative transition-all flex-1 overflow-hidden flex justify-center items-center w-full`}>
+                    <div className={`${downLoading && 'saturate-0 scale-80'} relative transition-all select-none flex-1 overflow-hidden flex justify-center items-center w-full mt-3`}>
                         <h1 className={`${!downLoading && 'opacity-0'} pointer-events-none absolute text-[23px] p-2 bg-zinc-900 rounded-md px-5`}>Fazendo Download...</h1>
                         <img src={driveImage ? driveImage : imgViewer.file?.url} className="h-full max-h-full max-w-full object-contain" />
                     </div>
                 )}
 
-                <div className="mt-auto flex flex-row justify-between p-2 items-center bg-zinc-900/50">
+                <div className="mt-auto flex flex-row justify-between p-2 items-center bg-zinc-900/50 w-full">
                     <div className="flex flex-row gap-4 items-center p-2 px-3">
-                        <Info size={30} className={"p-1 transition-all cursor-pointer hover:bg-zinc-700 rounded-sm"} />
-                        <div className="h-5 w-[1px] bg-zinc-700"></div>
+                        {/* <Info size={30} className={"p-1 transition-all cursor-pointer hover:bg-zinc-700 rounded-sm"} />
+                        <div className="h-5 w-[1px] bg-zinc-700"></div> */}
 
                     </div>
 

@@ -33,7 +33,7 @@ export default function DashboardPage() {
     const { rootFiles, changeRootFiles, allFiles, defaultFile, reloadAllFiles, canReload } = useFileContext();
     const { changeNextIconPosition, blackScreen } = useAppContext();
     const { t } = useTranslation();
-    const { root } = useRootContext();
+    const { isMobile } = useRootContext();
     const { user, hasDesktops, setHasDesktops, currentDesktop, bgColors } = useUser();
     const { newFile, listdt, openLink, contextMenu, dtConfig, deleteFile } = useWindowContext();
     const [start, setStart] = useState<boolean>(false);
@@ -419,54 +419,94 @@ export default function DashboardPage() {
             <OpenLinkWindow url={openLink.url as string} />
             <div className={`${start ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000 flex flex-col w-full h-screen overflow-hidden text-white relative select-none`}>
                 <ContextMenu />
-                <div className="flex flex-row flex-wrap justify-between items-center w-full gap-3 p-4">
-                    <div className="w-full max-w-50 flex flex-row gap-2">
-                        {allFiles.length >= maxFileStorage ?
-                            (<button className="p-1 px-3 bg-zinc-950/50 rounded-md opacity-75 backdrop-blur-md flex flex-row items-center justify-start">
-                                <p className="text-lg text-center">Máximo atingido</p>
-                            </button>)
-                            :
-                            (<button onClick={() => {
-                                newFile.setFile(null)
-                                newFile.openWindow()
-                            }}
-                                className="flex flex-row items-center justify-start gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md hover:bg-(--color-lighter) border-[1px] 
+
+                {isMobile ?
+                    (<div className="flex flex-row flex-wrap justify-between items-center w-full gap-3 p-4">
+                        <div className="flex flex-row gap-2">
+                            {allFiles.length >= maxFileStorage ?
+                                (<button className="p-1 px-3 bg-zinc-950/50 rounded-md opacity-75 backdrop-blur-md flex flex-row items-center justify-start">
+                                    <p className="text-lg text-center">Máximo atingido</p>
+                                </button>)
+                                :
+                                (<button onClick={() => {
+                                    newFile.setFile(null)
+                                    newFile.openWindow()
+                                }}
+                                    className="flex flex-row items-center justify-start gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md hover:bg-(--color-lighter) border-[1px] 
                     border-transparent hover:text-white hover:border-(--color-lighter) transition-all select-none hover:scale-102">
-                                <CirclePlus />
-                                <p className="text-lg">{t("dashboard.create")}</p>
-                            </button>)
-                        }
-                        <button disabled={!canReload} onClick={() => {
-                            if (!currentDesktop) return;
-                            reloadAllFiles(currentDesktop.id)
-                            contextMenu.setIsVisible(false)
-                            setReloadText(true)
-                            setTimeout(() => setReloadText(false), 2500)
-                        }} className={`${!canReload ? 'opacity-55 scale-94' : 'hover:scale-102 hover:border-(--color-lighter) hover:text-white hover:bg-(--color-lighter) cursor-pointer'} flex flex-row 
+                                    <CirclePlus />
+                                    <p className="text-lg">{t("dashboard.create")}</p>
+                                </button>)
+                            }
+                            <button disabled={!canReload} onClick={() => {
+                                if (!currentDesktop) return;
+                                reloadAllFiles(currentDesktop.id)
+                                contextMenu.setIsVisible(false)
+                                setReloadText(true)
+                                setTimeout(() => setReloadText(false), 2500)
+                            }} className={`${!canReload ? 'opacity-55 scale-94' : 'hover:scale-102 hover:border-(--color-lighter) hover:text-white hover:bg-(--color-lighter) cursor-pointer'} flex flex-row 
                         items-center justify-start p-1 px-2  rounded-md bg-black/40  backdrop-blur-md  border-[1px] 
                     border-transparent   transition-all select-none gap-1 items-center`}>
-                            <RotateCw size={20} strokeWidth={2.5} />
-                            <p className={`${reloadText ? 'w-39' : 'w-0 opacity-0 ml-[-3px]'} truncate overflow-hidden transition-all`}>Arquivos atualizados!</p>
-                        </button>
+                                <RotateCw size={20} strokeWidth={2.5} />
+                                <p className={`${reloadText ? 'w-39' : 'w-0 opacity-0 ml-[-3px]'} truncate overflow-hidden transition-all`}>Arquivos atualizados!</p>
+                            </button>
 
-                    </div>
-                    <SearchBar />
+                        </div>
 
-                    {/* VERSÃO LANÇAMENTO */}
 
-                    {/* <div onClick={listdt.openWindow} className="flex flex-row items-center justify-between gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md hover:bg-black/65 border-[1px] 
-                    border-white hover:text-(--color-lighter) hover:border-(--color-lighter) transition-all w-full max-w-50 select-none">
-                            <p className="text-lg truncate">{currentDesktop?.name} ({currentDesktop?.type})</p>
+                        <div onClick={listdt.openWindow} className="flex flex-row items-center justify-between gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md
+                    hover:bg-(--color-lighter) hover:scale-102
+                     hover:text-white hover:border-(--color-lighter) transition-all w-full max-w-30 select-none">
+                            <p className="text-lg truncate">{currentDesktop?.name}</p>
                             <GripVertical />
-                        </div> */}
+                        </div>
 
-                    <div onClick={listdt.openWindow} className="flex flex-row items-center justify-between gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md
+
+                        <SearchBar />
+                    </div>)
+                    :
+                    (<div className="flex flex-row flex-wrap justify-between items-center w-full gap-3 p-4">
+                        <div className="w-full max-w-50 flex flex-row gap-2">
+                            {allFiles.length >= maxFileStorage ?
+                                (<button className="p-1 px-3 bg-zinc-950/50 rounded-md opacity-75 backdrop-blur-md flex flex-row items-center justify-start">
+                                    <p className="text-lg text-center">Máximo atingido</p>
+                                </button>)
+                                :
+                                (<button onClick={() => {
+                                    newFile.setFile(null)
+                                    newFile.openWindow()
+                                }}
+                                    className="flex flex-row items-center justify-start gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md hover:bg-(--color-lighter) border-[1px] 
+                    border-transparent hover:text-white hover:border-(--color-lighter) transition-all select-none hover:scale-102">
+                                    <CirclePlus />
+                                    <p className="text-lg">{t("dashboard.create")}</p>
+                                </button>)
+                            }
+                            <button disabled={!canReload} onClick={() => {
+                                if (!currentDesktop) return;
+                                reloadAllFiles(currentDesktop.id)
+                                contextMenu.setIsVisible(false)
+                                setReloadText(true)
+                                setTimeout(() => setReloadText(false), 2500)
+                            }} className={`${!canReload ? 'opacity-55 scale-94' : 'hover:scale-102 hover:border-(--color-lighter) hover:text-white hover:bg-(--color-lighter) cursor-pointer'} flex flex-row 
+                        items-center justify-start p-1 px-2  rounded-md bg-black/40  backdrop-blur-md  border-[1px] 
+                    border-transparent   transition-all select-none gap-1 items-center`}>
+                                <RotateCw size={20} strokeWidth={2.5} />
+                                <p className={`${reloadText ? 'w-39' : 'w-0 opacity-0 ml-[-3px]'} truncate overflow-hidden transition-all`}>Arquivos atualizados!</p>
+                            </button>
+
+                        </div>
+                        <SearchBar />
+
+                        <div onClick={listdt.openWindow} className="flex flex-row items-center justify-between gap-2 p-1 px-3 cursor-pointer rounded-md bg-black/40 backdrop-blur-md
                     hover:bg-(--color-lighter) hover:scale-102
                      hover:text-white hover:border-(--color-lighter) transition-all w-full max-w-50 select-none">
-                        <p className="text-lg truncate">{currentDesktop?.name}</p>
-                        <GripVertical />
-                    </div>
-                </div>
+                            <p className="text-lg truncate">{currentDesktop?.name}</p>
+                            <GripVertical />
+                        </div>
+                    </div>)
+                }
+
 
                 <ArrowLeftToLine onClick={
                     () => {
@@ -474,28 +514,28 @@ export default function DashboardPage() {
                         desktopRef.current.scrollLeft = 0
                     }
                 } className={`${contentToLeft ? 'opacity-100' : 'opacity-0 pointer-events-none'} border-transparent border-[2px] hover:border-(--color-lighter) cursor-pointer transition-all z-20 w-15 h-15 p-3 
-                        text-(--color-lighter) rounded-full bg-black/30 backdrop-blur-md fixed left-3 top-[50%] translate-y-[-100%]`} />
+                        text-(--color-lighter) rounded-full bg-black/30 backdrop-blur-md fixed left-3 md:top-[50%] top-[55%] translate-y-[-100%] md:scale-100 scale-85`} />
                 <ArrowUpToLine onClick={
                     () => {
                         if (!desktopRef.current) return;
                         desktopRef.current.scrollTop = 0
                     }
                 } className={`${contentToTop ? 'opacity-100' : 'opacity-0 pointer-events-none'} border-transparent border-[2px] hover:border-(--color-lighter) cursor-pointer transition-all z-20 w-15 h-15 p-3 
-                        text-(--color-lighter) rounded-full bg-black/30 backdrop-blur-md fixed top-15 left-[50%] translate-x-[-50%]`} />
+                        text-(--color-lighter) rounded-full bg-black/30 backdrop-blur-md fixed top-30 left-[50%] md:top-15 translate-x-[-50%] md:scale-100 scale-85`} />
                 <ArrowRightToLine onClick={
                     () => {
                         if (!desktopRef.current) return;
                         desktopRef.current.scrollLeft = desktopRef.current.scrollWidth - desktopRef.current.clientWidth
                     }
                 } className={`${contentToRight ? 'opacity-100' : 'opacity-0 pointer-events-none'} border-transparent border-[2px] hover:border-(--color-lighter) cursor-pointer transition-all z-20 w-15 h-15 p-3 
-                        text-(--color-lighter) rounded-full bg-black/30 backdrop-blur-md fixed right-3 top-[50%] translate-y-[-100%]`} />
+                        text-(--color-lighter) rounded-full bg-black/30 backdrop-blur-md fixed right-3 md:top-[50%] top-[55%] translate-y-[-100%] md:scale-100 scale-85`} />
                 <ArrowDownToLine onClick={
                     () => {
                         if (!desktopRef.current) return;
                         desktopRef.current.scrollTop = desktopRef.current.scrollHeight - desktopRef.current.clientHeight
                     }
                 } className={`${contentToBottom ? 'opacity-100' : 'opacity-0 pointer-events-none'} border-transparent border-[2px] hover:border-(--color-lighter) cursor-pointer transition-all z-20 w-15 h-15 p-3 
-                        text-(--color-lighter) rounded-full bg-black/30 backdrop-blur-md fixed bottom-14 left-[50%] translate-x-[-50%]`} />
+                        text-(--color-lighter) rounded-full bg-black/30 backdrop-blur-md fixed bottom-14 left-[50%] translate-x-[-50%] md:scale-100 scale-85`} />
 
                 <div className={`${saving ? 'opacity-100 z-42' : 'opacity-0 z-0'} select-none pointer-none: p-2 px-3 rounded-sm backdrop-blur-sm bg-black/20 flex flex-row gap-2 absolute 
                 top-20 right-5 justify-center items-center transition-opacity duration-300`}>

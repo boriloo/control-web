@@ -41,7 +41,7 @@ export default function AppearanceOption() {
 
 
     return (
-        <div className="flex flex-col items-start gap-4 p-6 py-5 w-full">
+        <div className="flex flex-col items-start gap-4 md:p-6 p-3 py-5 w-full">
             {hasDesktops && (<h1 className="text-[25px] flex">Aparência</h1>)}
             <p className="text-md mt-[-12px] mb-1">Configurações visuais da aplicação.</p>
             <div className="w-full h-[1px] bg-white/40 mt-[-10px]"></div>

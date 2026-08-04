@@ -154,7 +154,7 @@ export default function ListDesktopsWindow() {
 
     return (
         listdt.currentStatus != 'closed' && <div onClick={handleAreaClick} className={`${listdt.currentStatus === 'open' ? returnFilterEffects() : 'pointer-events-none '} 
-        transition-all duration-500 fixed z-100 w-full h-screen flex justify-center items-center p-4 pb-[50px] cursor-pointer`}>
+        transition-all duration-500 fixed z-100 w-full h-screen flex justify-center items-center md:p-4 p-2 pb-[50px] cursor-pointer`}>
             <div style={{ transition: 'background-color 1s, scale 0.2s, opacity 0.2s' }} className={`${listdt.currentStatus === 'open' ? 'scale-100' : 'scale-50 opacity-0'} 
             cursor-default bg-(--color-dark) origin-center rounded-md p-4 w-full border-1 border-(--color-whity)/10
                 max-w-[700px] max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative pb-10 `}>

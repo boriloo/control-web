@@ -33,7 +33,7 @@ export default function ConfigWindow() {
     }
 
     return (
-        config.currentStatus != "closed" && (<div onClick={handleAreaClick} className={`${isFullsceen ? 'pb-[40px]' : ' p-2 pb-[50px]'} 
+        config.currentStatus != "closed" && (<div onClick={handleAreaClick} className={`${isFullsceen ? 'pb-[40px]' : 'md:p-4 p-2 pb-[50px]'} 
             ${config.currentStatus === "open" ? returnFilterEffects() : 'pointer-events-none'} 
         fixed z-100 flex-1 flex justify-center items-center w-full h-screen transition-all duration-500 cursor-pointer`}>
             <div className={`${isFullsceen ? 'max-w-full max-h-full rounded-none' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${config.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0'} 

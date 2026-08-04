@@ -97,7 +97,7 @@ export default function AccountOption() {
 
 
     return (
-        <div className="flex flex-col items-start gap-4 p-6 py-5 w-full">
+        <div className="flex flex-col items-start gap-4 md:p-6 p-3 py-5 w-full">
             <div className={`${confirmDelete ? '' : 'pointer-events-none opacity-0'} transition-all cursor-default fixed left-0 top-0 bg-black/70 w-full h-full z-100 flex 
             justify-center items-center p-2 `}>
                 <div className="bg-zinc-950 p-3 w-full max-w-[510px] h-full max-h-[320px] rounded-lg border-1 border-zinc-800 overflow-y-auto flex flex-col gap-1">
@@ -149,13 +149,13 @@ export default function AccountOption() {
             <div className="w-full flex flex-col gap-1 px-2">
                 <p className="text-xl mt-2">Perfil</p>
                 <p className="text-md mb-1">Suas informações exibidas a outros usuários.</p>
-                <div className="flex flex-row gap-3 py-3 rounded-xl w-full">
+                <div className="flex flex-row gap-3 py-3 rounded-xl w-full flex-wrap">
                     <div className={`${loading ? 'pointer-events-none saturate-0 opacity-60 scale-80' : ''} origin-center flex justify-center transition-all w-25`}>
                         <AvatarImageInput onFileSelected={(file) => {
                             setCurrentImage(file)
                         }} />
                     </div>
-                    <div className="flex flex-col gap-2 p-3 shadow-md">
+                    <div className="flex flex-col gap-2 p-3">
                         <p className="text-md">Nome de exibição</p>
                         <input value={username} onChange={(e) => {
                             setUsername(e.target.value)
