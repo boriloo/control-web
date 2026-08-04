@@ -378,7 +378,8 @@ export default function DesktopConfigWindow() {
 
                 <div className={`${!copy ? '' : 'mt-[-65px]'} bg-white transition-all rounded-full p-2 text-black px-4 z-20`}>Texto copiado!</div>
 
-                <div className={`${!copy ? 'mt-[-70px]' : 'mt-[-5px]'} transition-all bg-zinc-950 p-3 w-full max-w-[510px] h-full max-h-[370px] rounded-lg border-1 border-zinc-800 overflow-y-auto flex flex-col gap-1 z-30`}>
+                <div className={`${!copy ? 'mt-[-70px]' : 'mt-[-5px]'} transition-all bg-zinc-950 p-3 w-full max-w-[510px] h-full md:max-h-[370px] max-h-[470px] rounded-lg border-1 border-zinc-800 
+                overflow-y-auto flex flex-col gap-1 z-30`}>
                     <p className="text-lg">Atenção! Você está prestes a excluir um desktop </p>
                     <p className="text-xl text-red-500">{windowDesktop?.name}</p>
                     <p className="text-lg mt-4">
@@ -409,14 +410,15 @@ export default function DesktopConfigWindow() {
                             <>
                                 <button
                                     onClick={() => { setConfirmDelete(false); setDeleteInput('') }}
-                                    className="flex-1 p-1 px-5 text-lg text-zinc-300 border-1 border-zinc-300 cursor-pointer transition-all hover:bg-zinc-300/10 hover:text-white rounded-md"
+                                    className="flex-1 p-1 px-5 md:text-lg text-base text-zinc-300 border-1 border-zinc-300 cursor-pointer transition-all hover:bg-zinc-300/10 hover:text-white rounded-md"
                                 >
                                     Voltar
                                 </button>
                                 <button
                                     disabled={`${formattedUserName}/${formattedDtName}` !== deleteInput}
                                     onClick={deleteDesktopFunction}
-                                    className={`${`${formattedUserName}/${formattedDtName}` === deleteInput ? '' : 'pointer-events-none saturate-0 opacity-70'} flex-1 p-1 px-5 text-lg text-red-500 border-1 border-red-500 cursor-pointer transition-all hover:bg-red-500 hover:text-white rounded-md`}
+                                    className={`${`${formattedUserName}/${formattedDtName}` === deleteInput ? '' : 'pointer-events-none saturate-0 opacity-70'} 
+                                    flex-1 p-1 px-5 md:text-lg text-base text-red-500 border-1 border-red-500 cursor-pointer transition-all hover:bg-red-500 hover:text-white rounded-md`}
                                 >
                                     Excluir Desktop
                                 </button>
@@ -427,7 +429,7 @@ export default function DesktopConfigWindow() {
                 </div>
             </div>
 
-            <div className={`${isFullsceen ? 'max-w-full max-h-full' : 'rounded-lg max-w-[1200px] max-h-[700px]'} ${dtConfig.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0'} 
+            <div className={`${isFullsceen ? 'max-w-full max-h-full' : 'rounded-lg max-w-[1200px] md:max-h-[700px]'} ${dtConfig.currentStatus === "open" ? 'scale-100' : 'scale-50 opacity-0'} 
                 bg-(--color-dark) border-1 border-(--color-whity)/10 cursor-default origin-center relative transition-all duration-250 flex flex-col w-full h-full overflow-y-auto`}>
 
 
@@ -462,7 +464,7 @@ export default function DesktopConfigWindow() {
                     max-w-0 transition-all group-hover:opacity-100 group-hover:max-w-5"/></p>
                 )}
 
-                <div className="flex flex-col gap-2 p-4 mt-[80px] z-3">
+                <div className="flex flex-col gap-2 md:p-4 p-2 mt-[80px] z-3">
                     <div className="flex flex-row justify-between gap-2 p-4 items-center flex-wrap">
                         <div className="flex flex-col gap-1 items-start">
                             <p className="text-[15px] opacity-80">Criado em {new Date(windowDesktop?.createdAt as Date)?.toLocaleDateString('pt-BR')}</p>
@@ -471,7 +473,8 @@ export default function DesktopConfigWindow() {
                         </div>
 
                         {dtConfig.desktop?.id === currentDesktop?.id && (
-                            <div className={`${allFiles.length >= maxFileStorage ? 'bg-black/40 border-red-500/50' : 'bg-zinc-950/60 border-zinc-800'} p-2 px-3 flex flex-col  backdrop-blur-[2px] border-1  rounded-lg min-w-[300px]`}>
+                            <div className={`${allFiles.length >= maxFileStorage ? 'bg-black/40 border-red-500/50' : 'bg-zinc-950/60 border-zinc-800'} p-2 px-3 flex flex-col  backdrop-blur-[2px] border-1  
+                            rounded-lg min-w-[300px]`}>
                                 <p className={`${allFiles.length >= maxFileStorage && 'text-red-500'}`}>{allFiles.length >= maxFileStorage ? 'Espaço Máximo Ocupado' : 'Espaço Ocupado'}</p>
                                 <h1 className={`${allFiles.length >= maxFileStorage && 'text-red-500'} text-[30px]`}>{allFiles.length} <span className="text-lg ml-[-5px] opacity-70">/{maxFileStorage}</span></h1>
                                 <div className="w-full bg-zinc-950 h-1 mt-2 rounded-md overflow-hidden">
@@ -485,7 +488,7 @@ export default function DesktopConfigWindow() {
 
                     </div>
 
-                    <div className="flex flex-row gap-6 p-2 mt-[60px] items-start">
+                    <div className="flex flex-row gap-6 p-2 mt-[60px] flex-wrap items-start">
 
                         {dtConfig.desktop?.ownerId === user.id && (
                             <div className="flex flex-col w-full items-start gap-4">
