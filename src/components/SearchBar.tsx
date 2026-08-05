@@ -181,7 +181,7 @@ export default function SearchBar() {
                             bg-black/40 backdrop-blur-md hover:bg-black/45 focus:bg-black/55 focus:backdrop-blur-lg focus:border-(--color-lighter) rounded-full"
                 placeholder={t("dashboard.search")}
             />
-            <div className={`z-10 absolute transition-all pointer-events-none peer-focus:pointer-events-auto hover:pointer-events-auto
+            <div onMouseDown={(e) => e.preventDefault()} className={`z-10 absolute transition-all pointer-events-none peer-focus:pointer-events-auto hover:pointer-events-auto
             peer-focus:opacity-100 hover:opacity-100 ${searchTerm.trim() !== '' ? '' : ''} 
             opacity-0 flex flex-col bg-(--color-dark) top-10 rounded-md w-full max-h-[300px] overflow-y-auto`}>
                 {filteredFiles.map((file) => (
