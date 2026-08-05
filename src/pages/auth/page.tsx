@@ -10,6 +10,7 @@ import '../../App.css'
 import { useUser } from "../../context/AuthContext";
 import { LoginData } from "../../types/auth";
 import { authGoogleLoginService } from "../../services/authServices";
+import { useRootContext } from "../../context/RootContext";
 
 const loginSchema = z.object({
     email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
@@ -41,6 +42,7 @@ type FormData = z.infer<typeof loginSchema> | z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
     const { authLoginUser, authRegisterUser, changeUser } = useUser();
+    const { isMobile } = useRootContext();
     const navigate = useNavigate();
     const [rememberMe, setRememberMe] = useState<boolean>(false);
     const [seePass, setSeePass] = useState<boolean>(false);
@@ -130,21 +132,24 @@ export default function AuthPage() {
                 <p className={` control-text text-[50px] `}>Control</p>
             </div>
             <p className="absolute right-10 top-10 text-lg control-text">Control</p>
-            <p style={{
-                color: 'transparent',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                backgroundImage: 'linear-gradient(to right, #f1deff, #faded4, #f1deff)',
+            {!isMobile && (
+                <p style={{
+                    color: 'transparent',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    backgroundImage: 'linear-gradient(to right, #f1deff, #faded4, #f1deff)',
 
-                backgroundSize: '200% auto',
+                    backgroundSize: '200% auto',
 
-                animation: 'gradient-x 15s linear infinite'
-            }}
+                    animation: 'gradient-x 15s linear infinite'
+                }}
 
-                className={`absolute self-center text-[4vi]/[5.5vi] w-[47vi] text-end transition-all duration-500 select-none
+                    className={`absolute self-center text-[4vi]/[5.5vi] w-[47vi] text-end transition-all duration-500 select-none
                 ${fade ? 'opacity-100 right-15' : 'opacity-0 right-12'}`}>
-                {phrases[currentPhraseIndex]}
-            </p>
+                    {phrases[currentPhraseIndex]}
+                </p>
+            )}
+
             <div className={`${approved ? 'scale-101 brightness-0' : 'scale-125'} 
              min-h-screen w-full fixed bg-cover bg-center transition-all duration-1000 z-[-1] overflow-hidden brightness-75`}>
 
@@ -156,9 +161,9 @@ export default function AuthPage() {
                 </div>
 
             </div>
-            <div className="flex justify-start items-center p-8 w-full min-h-screen">
-                <div className={`${approved ? 'opacity-0' : 'opacity-100'} max-w-[650px] p-8 py-10 transition-all duration-500 select-none flex flex-col 
-                items-center w-full h-full bg-linear-to-b from-white/9 to-white/1 backdrop-blur-md rounded-xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_4px_10px_rgba(0,0,0,0.3)]`}>
+            <div className="flex justify-start items-center md:p-8 p-0 w-full min-h-screen">
+                <div className={`${approved ? 'opacity-0' : 'opacity-100'} max-w-[650px] md:p-8 p-4 md:py-10 py-6 transition-all duration-500 select-none flex flex-col 
+                items-center w-full h-full bg-linear-to-b from-white/9 to-white/1 backdrop-blur-md md:rounded-xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_4px_10px_rgba(0,0,0,0.3)]`}>
 
                     <img src="assets/images/logo.png" className="w-18"></img>
                     <h1 className={`${error ? 'text-red-400 p-1 px-2 bg-red-700/20' : ''} rounded-md mt-2 transition-all text-[35px]`}>{error ? error : loginForm ? 'Entrar com e-mail' : 'Crie sua conta'}</h1>
@@ -189,8 +194,8 @@ export default function AuthPage() {
                         transition-all outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-rose-300`} />
 
 
-                        <div className={`${loginForm ? 'h-10 opacity-100' : 'opacity-0 h-0'} transition-all select-none 
-                        flex flex-row justify-between w-full gap-2 flex-wrap-reverse overflow-hidden items-center`}>
+                        <div className={`${loginForm ? 'md:h-10 h-20 opacity-100' : 'opacity-0 h-0'} transition-all select-none 
+                        flex flex-row md:justify-between w-full gap-2 flex-wrap items-center`}>
                             <div className={`${rememberMe ? 'hover:bg-rose-800/25' : 'hover:bg-zinc-200/15'} flex flex-row gap-2 p-1 px-2 rounded-md transition-all items-center cursor-pointer `} onClick={() => setRememberMe(!rememberMe)}>
                                 <div className={`w-5 h-5 rounded-sm flex justify-center items-center border-[1px] transition-all ${rememberMe ? 'border-rose-500 bg-rose-500' : 'border-white'} `}>
                                     {rememberMe && (
@@ -199,7 +204,8 @@ export default function AuthPage() {
                                 </div>
                                 <p className={`${rememberMe ? 'text-rose-400' : 'text-white'} transition-all`}>Lembrar de mim</p>
                             </div>
-                            <button disabled={sent} onClick={() => navigate('/auth/forgot-password')} className="text-rose-400 font-medium text-md cursor-pointer p-1 px-2 transition-all hover:bg-rose-500/20 rounded-lg">
+                            <button disabled={sent} onClick={() => navigate('/auth/forgot-password')} className="text-rose-400 font-medium text-md cursor-pointer 
+                            p-1 px-2 transition-all hover:bg-rose-500/20 rounded-lg md:ml-0 ml-auto">
                                 Esqueci minha senha
                             </button>
                         </div>
