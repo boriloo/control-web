@@ -14,10 +14,12 @@ import {
     blockRelationService
 } from "../../services/relationServices";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { useRootContext } from "../../context/RootContext";
 
 type section = "friends" | "pending" | "blocked"
 
 export default function SocialWindow() {
+    const { isMobile } = useRootContext();
     const { user, standartUser } = useUser();
     const { social, sendInvite } = useWindowContext();
     const [friendListSection, setFriendListSection] = useState<section>('friends')
@@ -208,11 +210,11 @@ export default function SocialWindow() {
                                 <div className="flex flex-row gap-4 ml-auto">
                                     <UserRoundX
                                         onClick={() => handleRemoveFriend(friend.relationId)}
-                                        className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
+                                        className="cursor-pointer transition-all md:opacity-0 md:scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
                                 hover:border-red-300 hover:text-red-300 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
                                     <Ban
                                         onClick={() => handleBlock(friend.relationId, 'friends')}
-                                        className="cursor-pointer transition-all opacity-0 scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
+                                        className="cursor-pointer transition-all md:opacity-0 md:scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/15 
                                 hover:border-red-500 hover:text-red-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
                                 </div>
                             </div>
@@ -326,35 +328,38 @@ export default function SocialWindow() {
                 </div>
 
                 <div className="flex flex-row w-full items-start flex-wrap h-full">
-                    <div className="flex-1 flex flex-col gap-2 pt-10 p-8 border-r-1 h-full border-white/10 rounded-b-lg w-full max-w-[300px] bg-(--color-darker)/35 items-center">
+                    {!isMobile && (
+                        <div className="flex-1 flex flex-col gap-2 pt-10 p-8 border-r-1 h-full border-white/10 rounded-b-lg w-full max-w-[300px] bg-(--color-darker)/35 items-center">
 
-                        <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-23 h-23 rounded-full" />
-                        <div className="flex flex-col items-center mt-2">
-                            <h1 className="text-lg font-bold">{user?.name as string}</h1>
-                            <p className="opacity-60">{user?.email as string}</p>
-                        </div>
-
-                        <div className="flex flex-row p-4 w-full justify-around rounded-lg bg-(--color-regular) gap-1 mt-2">
-                            <div className="flex flex-col items-center gap-1">
-                                <p>{allFriends.length}</p>
-                                <p>Amigos</p>
+                            <img src={`${user?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-23 h-23 rounded-full" />
+                            <div className="flex flex-col items-center mt-2">
+                                <h1 className="text-lg font-bold">{user?.name as string}</h1>
+                                <p className="opacity-60">{user?.email as string}</p>
                             </div>
-                            <div className="h-full w-[1px] bg-white/20"></div>
-                            <div className="flex flex-col items-center gap-1">
-                                <p>15</p>
-                                <p>Colegas</p>
-                            </div>
-                        </div>
 
-                        <button className="flex flex-row gap-2 items-center p-1 mt-2 text-[16px] 
+                            <div className="flex flex-row p-4 w-full justify-around rounded-lg bg-(--color-regular) gap-1 mt-2">
+                                <div className="flex flex-col items-center gap-1">
+                                    <p>{allFriends.length}</p>
+                                    <p>Amigos</p>
+                                </div>
+                                <div className="h-full w-[1px] bg-white/20"></div>
+                                <div className="flex flex-col items-center gap-1">
+                                    <p>15</p>
+                                    <p>Colegas</p>
+                                </div>
+                            </div>
+
+                            <button className="flex flex-row gap-2 items-center p-1 mt-2 text-[16px] 
                             px-3 border-[1.5px] border-white/20 cursor-pointer rounded-md bg-(--color-dark) self-center text-white transition-all hover:border-(--color-lighter) hover:text-(--color-lighter) hover:bg-zinc-950">
-                            <p>Copiar Link de amizade</p>
-                            <Clipboard size={16} />
-                        </button>
+                                <p>Copiar Link de amizade</p>
+                                <Clipboard size={16} />
+                            </button>
 
-                    </div>
-                    <div className="flex-2 flex flex-col gap-2 p-6 pt-13 h-full">
-                        <div className="flex flex-row gap-2">
+                        </div>
+                    )}
+
+                    <div className="flex-2 flex flex-col gap-2 md:p-6 p-3 pt-13 h-full">
+                        <div className="flex md:flex-row flex-col gap-2">
                             <input value={emailReq} onChange={(e) => setEmailReq(e.target.value)} type="email" placeholder="usuario@email.com"
                                 className="bg-zinc-950/40 border-1 flex-1 rounded-sm p-1.5 px-3 border-zinc-800
                             hover:bg-zinc-950/60 transition-all outline-none focus:border-zinc-500 focus:bg-zinc-950/80" />
@@ -374,18 +379,18 @@ export default function SocialWindow() {
 
                         <p className={`${error ? 'p-1 px-2' : 'p-0 px-0 opacity-0'} transition-all rounded-md text-red-500 bg-red-500/10 self-start`}>{error}</p>
 
-                        <div className="min-h-40 p-4 gap-3 rounded-md flex flex-col h-full">
+                        <div className="min-h-40 md:p-4 p-2 gap-3 rounded-md flex flex-col h-full">
 
                             <div className="flex flex-row w-full relative select-none">
                                 <div className={`${friendListSection === 'friends' ? 'left-[1px]' : friendListSection === 'pending' ? 'left-[33.5%]' : 'left-[66.8%]'} w-[33%] transition-all h-full absolute
                                  bg-(--color-light) z-[-1] rounded-md`}></div>
                                 <div className="flex-1 flex justify-center">
                                     <h1 onClick={() => setFriendListSection('friends')} className={`${friendListSection === 'friends' ? 'text-white w-full' : ' '}
-                                     p-1.5 text-lg w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Amigos</h1>
+                                     p-1.5 md:text-lg text-md w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Amigos</h1>
                                 </div>
                                 <div className="flex-1 flex justify-center">
                                     <h1 onClick={() => setFriendListSection('pending')} className={`${friendListSection === 'pending' ? 'text-white w-full' : ' '}
-                                     p-1.5 text-lg w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer relative`}>
+                                     p-1.5 md:text-lg text-md w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer relative`}>
                                         {allReceived.length > 0 && (
                                             <div className="w-4 h-4 rounded-full bg-(--color-lighter) bg-linear-to-b from-(--color-lighter) to-(--color-whity)/60 absolute top-[-5px] right-[-5px]"></div>
                                         )}
@@ -394,7 +399,7 @@ export default function SocialWindow() {
                                 </div>
                                 <div className="flex-1 flex justify-center items-center">
                                     <h1 onClick={() => setFriendListSection('blocked')} className={`${friendListSection === 'blocked' ? 'text-white w-full' : ' '}
-                                     p-1.5 text-lg w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Bloqueados</h1>
+                                     p-1.5 md:text-lg text-md w-full hover:bg-(--color-light)/10 rounded-sm text-center transition-all cursor-pointer`}>Bloqueados</h1>
                                 </div>
                             </div>
 

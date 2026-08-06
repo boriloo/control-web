@@ -188,7 +188,7 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
             absolute z-200 bg-zinc-950 w-full min-h-screen flex justify-center items-center p-4`}>
                 <h1 className={`${done ? 'opacity-100 mt-0' : 'opacity-0 mt-7'} transition-all duration-700 text-[40px] text-center`}>Tudo pronto. <br /> Aproveite :)</h1>
             </div>
-            <p className="absolute right-10 top-10 text-lg control-text">Control</p>
+            <p className="absolute md:opacity-100 opacity-0 right-10 top-10 text-lg control-text">Control</p>
 
             <div className={`${start ? 'opacity-0' : 'opacity-100'} bg-black transtion-all duration-500 pointer-events-none fixed z-50 flex 
             flex-col justify-center items-center w-full min-h-screen`}>
@@ -230,7 +230,8 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                 </div>)
                 :
                 (<div className="flex flex-col items-center w-full max-w-[1000px] gap-8 select-none">
-                    <div className="flex flex-row items-center gap-3 p-3 bg-linear-to-b from-white/9 to-white/1 absolute top-5 left-5
+
+                    <div className="flex flex-row items-center gap-3 p-3 bg-linear-to-b from-white/9 to-white/1 absolute top-5 left-5 md:scale-100 scale-80 origin-top-left
                     backdrop-blur-md rounded-xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_4px_10px_rgba(0,0,0,0.3)]">
                         <img src={`${user?.profileImage || "/assets/images/profile.png"}`} className="rounded-full w-11 h-11" />
                         <div className="flex flex-col justify-center">
@@ -243,7 +244,7 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                         </button>
                     </div>
 
-                    <div className="w-full gap-3 flex flex-row items-center">
+                    <div className="w-full gap-3 flex flex-row items-center md:mt-0 mt-16">
 
                         <ChevronLeft onClick={previousStage} size={40} className={`${stage === 1 ? 'saturate-0 opacity-50 pointer-events-none' : ''} p-1 rounded-full 
                         bg-zinc-200/10 transition-all cursor-pointer hover:text-rose-400 hover:bg-zinc-200/20`} />
@@ -257,10 +258,12 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
 
                     </div>
 
-                    <h1 className={`${stage === 1 ? '' : 'opacity-0 pointer-events-none z-0'} transition-all text-[55px] gap-1 text-center`}>Crie seu primeiro <p className="text-rose-400 mt-[-10px]">Desktop</p></h1>
+                    <h1 className={`${stage === 1 ? '' : 'opacity-0 pointer-events-none z-0'} transition-all md:text-[55px] text-[41px] gap-1 text-center`}>
+                        Crie seu primeiro <p className="text-rose-400 mt-[-10px]">Desktop</p>
+                    </h1>
 
                     <div className={`${stage === 1 ? '' : 'opacity-0 pointer-events-none z-0'} flex flex-col gap-1 w-full max-w-[600px] transition-all`}>
-                        <p className="text-2xl">Qual será o nome do desktop?</p>
+                        <p className="md:text-2xl text-lg">Qual será o nome do desktop?</p>
                         <input type="text" onChange={(e) => setDesktopName(e.target.value)} className="border-b-1 border-zinc-400 outline-none transition-all text-xl 
                                 cursor-pointer focus:cursor-text p-1 px-2 focus:border-rose-400 focus:bg-zinc-700/40 w-full " />
                     </div>
@@ -273,7 +276,7 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
 
                     {/* ESTAGIO 2 */}
 
-                    <h1 className={`${stage === 2 ? '' : 'opacity-0 pointer-events-none z-0'} transition-all text-[55px] gap-1 text-center mt-[-368px]`}>
+                    <h1 className={`${stage === 2 ? '' : 'opacity-0 pointer-events-none z-0'} transition-all md:text-[55px] text-[41px] gap-1 text-center md:mt-[-368px] mt-[-328px]`}>
                         Escolha o<p className={`text-rose-400 mt-[-10px]`}>Plano de Fundo</p>
                     </h1>
 
@@ -339,7 +342,8 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
 
                     {/* estagio 3 */}
 
-                    <h1 className={`${stage === 3 ? '' : 'opacity-0 pointer-events-none z-0'} transition-all text-[55px] gap-1 text-center mt-[-368px] flex flex-wrap justify-center items-center gap-3`}>
+                    <h1 className={`${stage === 3 ? '' : 'opacity-0 pointer-events-none z-0'} transition-all md:text-[55px] text-[41px]/[40px] gap-1 text-center md:mt-[-368px] mt-[-328px] flex flex-wrap justify-center items-center 
+                    gap-3`}>
                         Qual será o <p className="text-rose-400">Tipo</p> de Desktop?
                     </h1>
 
@@ -354,21 +358,21 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                         </div>
                     </div>
 
-                    <p className={`${(typaDesktop === 'personal' && stage === 3) ? '' : 'opacity-0 pointer-events-none z-[-1]'} text-xl transition-all mt-2`}>
+                    <p className={`${(typaDesktop === 'personal' && stage === 3) ? '' : 'opacity-0 pointer-events-none z-[-1]'} text-xl transition-all md:mt-2 mt-0 text-center`}>
                         Um desktop apenas para você.</p>
 
-                    <p className={`${(typaDesktop === 'shared' && stage === 3) ? '' : 'opacity-0 pointer-events-none z-[-1]'} text-xl transition-all mt-[-60px]`}>
+                    <p className={`${(typaDesktop === 'shared' && stage === 3) ? '' : 'opacity-0 pointer-events-none z-[-1] h-0'} text-xl transition-all mt-[-60px] text-center`}>
                         Um desktop para você e outras pessoas, com arquivos compartilhados.</p>
 
-                    <p className={`${stage === 3 ? 'opacity-60' : 'opacity-0'} text-xl transition-all`}>(Você pode mudar isso depois)</p>
+                    <p className={`${stage === 3 ? 'opacity-60' : 'opacity-0'} md:text-xl text-base transition-all`}>(Você pode mudar isso depois)</p>
 
                     <div className="flex flex-row gap-3">
                         <button onClick={previousStage} disabled={stage != 3} className={`${stage === 3 ? 'z-10' : 'opacity-0 pointer-events-none z-0'}
-                    bg-zinc-600 border-none text-xl p-2 px-6 font-medium cursor-pointer rounded-sm transition-all hover:bg-zinc-500 w-42 hover:scale-105`}>
+                    bg-zinc-600 border-none md:text-xl text-lg p-2 md:px-6 md:w-auto w-40 font-medium cursor-pointer rounded-sm transition-all hover:bg-zinc-500 w-42 hover:scale-105`}>
                             Voltar
                         </button>
                         <button onClick={handleSubmit} disabled={stage != 3} className={`${stage === 3 ? !colorSelected ? 'pointer-events-none saturate-0 opacity-40' : '' : 'opacity-0 pointer-events-none z-0'}
-                    bg-rose-600 border-none text-xl p-2 px-6 font-medium cursor-pointer rounded-sm transition-all hover:bg-rose-400 hover:scale-105`}>
+                    bg-rose-600 border-none md:text-xl text-lg p-2 md:px-6 md:w-auto w-40 font-medium cursor-pointer rounded-sm transition-all hover:bg-rose-400 hover:scale-105`}>
                             Criar Desktop
                         </button>
                     </div>

@@ -5,12 +5,15 @@ import { deleteFileService } from "../../services/fileServices";
 import { useFileContext } from "../../context/FileContext";
 import { useAppContext } from "../../context/AppContext";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { useRootHook } from "../../hooks/rootHook";
+import { useRootContext } from "../../context/RootContext";
 // import { createFile } from "../../services/file";
 
 
 export type CreateFileType = "folder" | "link"
 
 export default function DeleteFileWindow() {
+    const { isMobile } = useRootContext();
     const { rootFiles, changeRootFiles, allFiles, changeAllFiles } = useFileContext();
     const { deleteFile, fileViewer, imgViewer } = useWindowContext();
     const { callToast } = useAppContext();
@@ -108,14 +111,22 @@ export default function DeleteFileWindow() {
 
     return (
         <div onClick={handleAreaClick} className={`${deleteFile.currentStatus == 'open' ? returnFilterEffects() : 'pointer-events-none'} 
-        transition-all duration-500 fixed z-200 w-full h-screen flex justify-center items-center p-4 pb-[50px] cursor-pointer`}>
+        transition-all duration-500 fixed z-200 w-full h-screen flex justify-center items-center p-2 pb-[50px] cursor-pointer`}>
             <div className={`${deleteFile.currentStatus == 'open' ? 'scale-100' : 'scale-50 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-md p-4 w-full max-w-[600px] 
             max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative  border-1 border-(--color-whity)/10`}>
                 <div className="p-1.5 bg-(--color-regular) border border-(--color-light)/50 rounded-md absolute top-4 right-4">
                     <img src={imageSrc as string} className="w-10 object-contain pointer-events-none select-none" />
                 </div>
-                <h1 className="text-[24px] flex gap-1.5">Deseja excluir <p className="text-(--color-whity) max-w-60 truncate">
-                    {deleteFile.file?.name}</p> <span className="text-rose-500 mr-[-5px]">({tipoArquivo})</span>?</h1>
+
+                {isMobile ?
+                    (<h1 className="text-[16px] flex flex-col flex-wrap gap-1.5">
+                        <span className="opacity-85">Deseja excluir</span>
+                        <p className="text-(--color-whity) max-w-45 text-[26px] mt-[-5px] mb-1 truncate">{deleteFile.file?.name}?</p>
+                    </h1>)
+                    :
+                    (<h1 className="text-[24px] flex flex-row flex-wrap gap-1.5">Deseja excluir <p className="text-(--color-whity) max-w-60 truncate">
+                        {deleteFile.file?.name}</p> <span className="text-rose-500 mr-[-5px]">({tipoArquivo})</span>?</h1>)}
+
                 <p className="mt-[-10px] text-[16px] text-white/60">Essa ação não pode ser desfeita</p>
                 <div className={`${loading && 'saturate-0 pointer-events-none opacity-60'} flex flex-col gap-3 items-center`}>
 
