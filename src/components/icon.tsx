@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRootContext } from "../context/RootContext";
 import { useWindowContext } from "../context/WindowContext";
 import { FileData } from "../types/file";
+import { Trash2 } from "lucide-react";
 
 interface IconProps {
     icon: FileData;
@@ -9,21 +10,20 @@ interface IconProps {
 }
 
 export default function Icon({ icon, beingDragged }: IconProps) {
-
-    const { root } = useRootContext();
-    const { fileViewer, openLink, imgViewer, newFile, contextMenu } = useWindowContext();
+    const { root, isMobile } = useRootContext();
+    const { fileViewer, openLink, imgViewer, newFile, contextMenu, deleteFile } = useWindowContext();
     const [imageSrc, setImageSrc] = useState<string>("/assets/images/file.png");
-    // const [loading, setLoading] = useState<>
-    const [isValidImage, setIsValidImage] = useState<boolean | null>(null)
-    const [driveThumb, setDriveThumb] = useState<string | null>(null)
-    const [clickEffects, setClickEffects] = useState<{ id: number, x: number, y: number }[]>([])
+    const [isValidImage, setIsValidImage] = useState<boolean | null>(null);
+    const [driveThumb, setDriveThumb] = useState<string | null>(null);
+    const [clickEffects, setClickEffects] = useState<{ id: number, x: number, y: number }[]>([]);
+    
+    // Estado para seleção no mobile
+    const [isSelected, setIsSelected] = useState(false);
 
     function getDomainFromUrl(url: string): string {
         try {
             const hostname = new URL(url).hostname;
-
             const parts = hostname.split(".");
-
             const isCompoundSuffix = parts.length > 2 && parts[parts.length - 2].length <= 3;
             const rootDomain = isCompoundSuffix
                 ? parts.slice(-3).join(".")
@@ -34,12 +34,11 @@ export default function Icon({ icon, beingDragged }: IconProps) {
         }
     }
 
-
     useEffect(() => {
         const validateImage = async (): Promise<boolean> => {
             return new Promise((resolve) => {
                 if (!icon.url || icon.fileType !== 'link') return;
-                let convertedUrl = 'null'
+                let convertedUrl = 'null';
 
                 if (icon.url.startsWith('https://drive.google.com')) {
                     const regex = /\/d\/([a-zA-Z0-9_-]+)/;
@@ -48,38 +47,33 @@ export default function Icon({ icon, beingDragged }: IconProps) {
                     if (match && match[1]) {
                         const fileId = match[1];
                         convertedUrl = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
-                        setDriveThumb(convertedUrl)
+                        setDriveThumb(convertedUrl);
                     } else {
                         console.warn("Não foi possível extrair o ID do arquivo do Google Drive.");
                     }
                 } else if (/\.(jpg|jpeg|webp|png)/i.test(icon.url as string)) {
-                    convertedUrl = icon.url
+                    convertedUrl = icon.url;
                 }
 
                 const img = new Image();
 
-
                 if (convertedUrl) {
                     img.src = convertedUrl;
                 } else {
-                    img.src = icon.url
+                    img.src = icon.url;
                 }
                 img.onload = () => resolve(true);
                 img.onerror = () => resolve(false);
             });
         }
 
-
         const callValidateFunction = async () => {
             const isValid = await validateImage();
-
-            setIsValidImage(isValid)
+            setIsValidImage(isValid);
         }
 
-        callValidateFunction()
-
-    }, [icon.url])
-
+        callValidateFunction();
+    }, [icon.url]);
 
     useEffect(() => {
         function loadIcon() {
@@ -109,11 +103,9 @@ export default function Icon({ icon, beingDragged }: IconProps) {
         loadIcon();
     }, [icon, isValidImage]);
 
-
     const returnAction = useCallback(() => {
-
         if (!root.canOpenWindow || beingDragged) return;
-        newFile.setFile(icon)
+        newFile.setFile(icon);
 
         if (icon.fileType === "link") {
             if (!icon.url) return;
@@ -121,7 +113,7 @@ export default function Icon({ icon, beingDragged }: IconProps) {
                 imgViewer.setFile(icon);
                 imgViewer.openWindow();
             } else {
-                const dontWarning = localStorage.getItem('dont-show-warning')
+                const dontWarning = localStorage.getItem('dont-show-warning');
 
                 if (dontWarning === 'true') {
                     window.open(icon.url as string, '_blank')?.focus();
@@ -136,11 +128,15 @@ export default function Icon({ icon, beingDragged }: IconProps) {
 
         if (icon.fileType === "folder") {
             fileViewer.openWindow();
-            fileViewer.setFile(icon)
+            fileViewer.setFile(icon);
         }
-    }, [icon.url, isValidImage, root])
+    }, [icon.url, isValidImage, root]);
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (isMobile) {
+            setIsSelected(!isSelected);
+        }
+
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -153,16 +149,31 @@ export default function Icon({ icon, beingDragged }: IconProps) {
         }, 1500);
     };
 
+    const handleDeleteFile = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        deleteFile.setFile(icon);
+        deleteFile.openWindow();
+    }, [icon]);
 
     return (
-        <div onClick={handleClick}
+        <div 
+            onClick={handleClick}
             onDoubleClick={returnAction}
-            className={`${contextMenu.selectedIconId === icon.id ? 'bg-blue-500/30  border-blue-500 shadow-[-5px_-5px] shadow-[#2B7FFF]' : `border-transparent 
-            ${beingDragged ? 'scale-105 bg-blue-500/25' : 'hover:bg-white/15'}`} 
-        border-2  transition-all p-1 px-2 duration-300 group select-none flex flex-col justify-center overflow-hidden
-        items-center gap-2 w-20 h-full max-h-40  rounded-sm cursor-pointer relative `}>
+            className={`${contextMenu.selectedIconId === icon.id || (isMobile && isSelected) ? 
+            'bg-blue-500/30 border-blue-500' : `overflow-hidden border-transparent ${beingDragged ? 'scale-105 bg-blue-500/25' : 'hover:bg-white/15'}`} 
+            border-2 transition-all p-1 px-2 duration-300 group select-none flex flex-col justify-center 
+            items-center gap-2 w-20 h-full max-h-40 rounded-sm cursor-pointer relative`}
+        >
+            <div 
+                onClick={handleDeleteFile} 
+                className={`${isMobile && isSelected ? 'scale-100' : 'scale-0'} flex justify-center absolute top-[-16px] right-[-16px] cursor-pointer items-center 
+                transition-all p-1.5 bg-red-500 text-white hover:bg-white hover:text-red-600 rounded-full z-100`}
+            >
+                <Trash2 size={18} />
+            </div>
 
-            {clickEffects.map(effect => (
+
+            {!isSelected && clickEffects.map(effect => (
                 <span
                     key={effect.id}
                     className="absolute w-3 h-3 bg-white/60 clickPing rounded-full pointer-events-none origin-center"
@@ -181,11 +192,10 @@ export default function Icon({ icon, beingDragged }: IconProps) {
                 backgroundRepeat: 'no-repeat'
             }} className={`${beingDragged ? 'scale-106' : 'group-hover:scale-103'} bg-red max-w-13 w-full flex justify-center items-center h-8 max-h-8 transition-transform 
             origin-center drop-shadow-zinc-950/40 drop-shadow-md`}>
-                {/* <img src={imageSrc} alt={icon.name} className="w-full h-full object-contain pointer-events-none select-none " /> */}
             </div>
-            <div className={`${contextMenu.selectedIconId === icon.id ? 'bg-black/70' : `group-hover:bg-black/60 bg-black/40 ${beingDragged ? 'scale-106' : 'group-hover:scale-103'}`}  
-              p-1 backdrop-blur-sm rounded-md  text-center flex flex-row items-center justify-center
-            max-w-19 transition-all origin-top `}>
+
+            <div className={`${contextMenu.selectedIconId === icon.id || (isMobile && isSelected) ? 'bg-black/70' : `group-hover:bg-black/60 bg-black/40 ${beingDragged ? 'scale-106' : 'group-hover:scale-103'}`}  
+              p-1 backdrop-blur-sm rounded-md text-center flex flex-row items-center justify-center max-w-19 transition-all origin-top`}>
                 <p className="text-[14px]/[18px] text-shadow-sm text-shadow-black/40 line-clamp-2">{icon.name}</p>
             </div>
         </div>

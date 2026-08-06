@@ -1,5 +1,5 @@
 import { ExternalLink, Search } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useUser } from "../context/AuthContext";
 // import { FullFileData, listenToAllFilesByDesktop } from "../services/file";
@@ -19,6 +19,20 @@ export default function SearchBar() {
     const { user, currentDesktop } = useUser();
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [imageValidations, setImageValidations] = useState<Record<string, boolean>>({});
+    const containerRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+                inputRef.current?.blur();
+                setSearchTerm('');
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
 
     function getDomainFromUrl(url: string): string {
         try {
@@ -152,7 +166,7 @@ export default function SearchBar() {
                 imgViewer.setFile(file);
                 imgViewer.openWindow();
             } else {
-               const dontWarning = localStorage.getItem('dont-show-warning')
+                const dontWarning = localStorage.getItem('dont-show-warning')
 
                 if (dontWarning === 'true') {
                     window.open(file.url as string, '_blank')?.focus();
@@ -172,9 +186,10 @@ export default function SearchBar() {
 
 
     return (
-        <div className="w-full max-w-[400px] relative select-none">
+        <div ref={containerRef} className="w-full max-w-[400px] relative select-none">
             <Search className='absolute left-3 z-10 top-1/2 -translate-y-1/2 text-zinc-200 transition-all duration-300' />
             <input
+                ref={inputRef}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 value={searchTerm}
                 className="peer w-full h-10 pl-11 pr-4 cursor-pointer transition-all duration-300 outline-none border-[2px] border-transparent
@@ -195,10 +210,6 @@ export default function SearchBar() {
                             </div>
                             <p className="ml-[-5px] p-1 px-2 opacity-0 transition-all rounded-md group-hover:opacity-100 group-hover:ml-2 text-(--color-lighter) bg-(--color-light)/15">Clique para abrir</p>
                         </div>
-                        {/* <p className="absolute bg-(--color-light) h-full right-0 flex items-center justify-end gap-2
-                    transition-all text-center font-medium text-lg overflow-hidden max-w-0 w-full group-hover:pr-3 group-hover:max-w-[95px]">
-                            Abrir <ExternalLink size={20} />
-                        </p> */}
                     </div>
                 ))}
             </div>
