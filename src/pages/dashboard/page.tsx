@@ -414,6 +414,8 @@ export default function DashboardPage() {
                 }}
             />
 
+            <div className={`${start ? 'opacity-0' : ''} absolute z-150 pointer-events-none transition-all bg-white w-screen h-screen`}></div>
+
 
             {/* LOADER ANIMATION */}
             <div className="pointer-events-none fixed z-[-3] flex justify-center flex-col gap-2 items-center w-full min-h-screen">
