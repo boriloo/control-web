@@ -11,7 +11,7 @@ import ForgotPasswordPage from "../auth/forgot-password";
 import ResetPasswordPage from "../auth/reset-password";
 
 const phrases = [
-    "Control",
+    "Logo",
     "Organizando arquivos...",
     "Carregando imagens...",
     "Vasculhando pastas...",
@@ -36,8 +36,14 @@ const LoadingScreen = () => {
     return (
         <div className={`bg-black transition-all duration-500 pointer-events-none fixed z-50 flex flex-col justify-center items-center w-full min-h-screen`}>
             <p className={`text-[50px] text-end transition-all duration-500 select-none control-text mt-10
-                    ${fade ? 'opacity-100 right-15' : 'opacity-0 right-12'}`}>
-                {phrases[currentPhraseIndex]}
+            ${fade ? 'opacity-100 right-15' : 'opacity-0 right-12'}`}>
+
+                {phrases[currentPhraseIndex] === "Logo" ? (
+                    <img src="/assets/images/logoContoruWhite.png" alt="Logo" className="w-70 mb-4 mt-4" />
+                ) : (
+                    phrases[currentPhraseIndex]
+                )}
+
             </p>
             <DotLottieReact
                 src="assets/images/loader.lottie"
@@ -82,7 +88,8 @@ export default function PageRouter() {
 
                 {/* resto das rotas com loading e auth */}
                 <Route path="*" element={
-                    isLoading ? <LoadingScreen /> : (
+                    isLoading ? <LoadingScreen /> :
+                    (
                         <Routes>
                             <Route path="/" element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <Navigate to='/auth' replace />} />
                             <Route path="/auth" element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <AuthPage />} />

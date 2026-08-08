@@ -277,3 +277,43 @@ input:-webkit-autofill:active {
 .clickPing {
   animation: click-ping 1s forwards;
 }
+
+@keyframes zoomAnim {
+  0% {
+    transform: translateY(0);
+  }
+
+  15% {
+    transform: translateY(-30%);
+  }
+
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.zoom-screen {
+  transform-origin: center;
+  animation: zoomAnim 2s forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes zoomAnim2 {
+  0% {
+    transform: translateY(0);
+  }
+
+  15% {
+    transform: translateY(30%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.zoom-screen-2 {
+  transform-origin: center;
+  animation: zoomAnim2 2s forwards;
+  will-change: transform, opacity;
+}
