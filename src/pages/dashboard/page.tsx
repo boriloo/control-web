@@ -126,7 +126,7 @@ export default function DashboardPage() {
     useEffect(() => {
         if (!hasDesktops) return;
         setTimeout(() => { setStart(true) }, 300);
-        setTimeout(() => { setZoom(true) }, 700);
+        setTimeout(() => { setZoom(true) }, 900);
     }, [hasDesktops]);
 
 
