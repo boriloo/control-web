@@ -131,7 +131,7 @@ export default function AuthPage() {
             <div className={`${approved ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500 pointer-events-none fixed z-50 flex justify-center items-center w-full min-h-screen bg-black`}>
                 <p className={` control-text text-[50px] `}>Control</p>
             </div>
-            <p className="absolute right-10 top-10 text-lg control-text">Control</p>
+
             {!isMobile && (
                 <p style={{
                     color: 'transparent',
@@ -165,8 +165,10 @@ export default function AuthPage() {
                 <div className={`${approved ? 'opacity-0' : 'opacity-100'} max-w-[650px] md:p-8 p-4 md:py-10 py-6 transition-all duration-500 select-none flex flex-col 
                 items-center w-full h-full bg-linear-to-b from-white/9 to-white/1 backdrop-blur-md md:rounded-xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_4px_10px_rgba(0,0,0,0.3)]`}>
 
-                    <img src="assets/images/smallLogo.png" className="w-18"></img>
-                    <h1 className={`${error ? 'text-red-400 p-1 px-2 bg-red-700/20' : ''} rounded-md mt-2 transition-all text-[35px]`}>{error ? error : loginForm ? 'Entrar com e-mail' : 'Crie sua conta'}</h1>
+                    <img src="assets/images/logoContoruWhite.png" className="w-30 opacity-60"></img>
+
+
+                    <h1 className={`${error ? 'text-red-400 p-1 px-2 bg-red-700/20' : ''} rounded-md mt-6 transition-all text-[35px]`}>{error ? error : loginForm ? 'Entrar com e-mail' : 'Crie sua conta'}</h1>
                     <form className="w-full mt-6 flex flex-col gap-4 items-start" id="loginForm" onSubmit={handleSubmit(handleFormSubmit)}>
 
                         <input {...register("name")} type="text" name="name" placeholder="Nome"

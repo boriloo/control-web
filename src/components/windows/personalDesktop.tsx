@@ -188,7 +188,7 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
             absolute z-200 bg-zinc-950 w-full min-h-screen flex justify-center items-center p-4`}>
                 <h1 className={`${done ? 'opacity-100 mt-0' : 'opacity-0 mt-7'} transition-all duration-700 text-[40px] text-center`}>Tudo pronto. <br /> Aproveite :)</h1>
             </div>
-            <p className="absolute md:opacity-100 opacity-0 right-10 top-10 text-lg control-text">Control</p>
+            <img src="assets/images/logoContoruWhite.png" className="w-20 opacity-60 absolute right-10 top-10"></img>
 
             <div className={`${start ? 'opacity-0' : 'opacity-100'} bg-black transtion-all duration-500 pointer-events-none fixed z-50 flex 
             flex-col justify-center items-center w-full min-h-screen`}>
@@ -368,11 +368,11 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
 
                     <div className="flex flex-row gap-3">
                         <button onClick={previousStage} disabled={stage != 3} className={`${stage === 3 ? 'z-10' : 'opacity-0 pointer-events-none z-0'}
-                    bg-zinc-600 border-none md:text-xl text-lg p-2 md:px-6 md:w-auto w-40 font-medium cursor-pointer rounded-sm transition-all hover:bg-zinc-500 w-42 hover:scale-105`}>
+                    bg-zinc-600 border-none md:text-xl text-lg p-2 md:px-6 md:w-50 w-40 font-medium cursor-pointer rounded-sm transition-all hover:bg-zinc-500 w-42 hover:scale-105`}>
                             Voltar
                         </button>
                         <button onClick={handleSubmit} disabled={stage != 3} className={`${stage === 3 ? !colorSelected ? 'pointer-events-none saturate-0 opacity-40' : '' : 'opacity-0 pointer-events-none z-0'}
-                    bg-rose-600 border-none md:text-xl text-lg p-2 md:px-6 md:w-auto w-40 font-medium cursor-pointer rounded-sm transition-all hover:bg-rose-400 hover:scale-105`}>
+                    bg-rose-600 border-none md:text-xl text-lg p-2 md:px-6 md:w-50 w-40 font-medium cursor-pointer rounded-sm transition-all hover:bg-rose-400 hover:scale-105`}>
                             Criar Desktop
                         </button>
                     </div>
