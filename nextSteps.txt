@@ -1,4 +1,9 @@
+
+
+BOTAO DELETE EM ARQUIVO DE PASTA NO MOBILE
+
 VALIDAR SE TODOS OS ERROS ESTAO COM TOASTS
+
 
 --------------------------------------
 
