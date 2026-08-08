@@ -24,7 +24,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
     const { fileViewer, profile, newFile, config, listdt, newdt,
-        openLink, dtConfig, imgViewer, social, deleteFile, sendInvite } = useWindowContext()
+        openLink, dtConfig, imgViewer, social, deleteFile, sendInvite, gift } = useWindowContext()
     const [toastOpen, setToastOpen] = useState<boolean>(false)
     const [toast, setToast] = useState<Toast>({ message: 'Hmmm...', type: 'message' })
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -67,6 +67,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         social.minimizeWindow()
         deleteFile.closeWindow()
         sendInvite.closeWindow()
+        gift.closeWindow()
     }, []);
 
     const closeAllWindows = useCallback(() => {
@@ -82,6 +83,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         social.closeWindow()
         deleteFile.closeWindow()
         sendInvite.closeWindow()
+        gift.closeWindow()
     }, []);
 
 

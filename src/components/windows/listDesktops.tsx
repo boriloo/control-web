@@ -61,8 +61,6 @@ export default function ListDesktopsWindow() {
             })
         );
 
-        console.log('OS DDESKTOPSSS,', desktopsWithColors)
-
         setAllDesktops(desktopsWithColors);
     };
 

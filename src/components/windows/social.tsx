@@ -200,14 +200,14 @@ export default function SocialWindow() {
                     <>
                         <div className="text-md opacity-75 mt-2">Amigos</div>
                         {allFriends.map((friend) => (
-                            <div key={friend.relationId} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
+                            <div key={friend.relationId} className="group flex flex-row items-center gap-3 py-2.5 md:px-3.5 px-3 rounded-md border-1 border-white/10 bg-white/6">
                                 <img src={`${friend?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
                                 <div className="flex flex-col">
-                                    <h1 className="text-lg">{friend.name}</h1>
-                                    <p className="text-[14px] opacity-75">{friend.email}</p>
+                                    <h1 className="text-lg max-w-[85%] truncate">{friend.name}</h1>
+                                    <p className="text-[14px] opacity-75 max-w-[85%] truncate">{friend.email}</p>
                                 </div>
 
-                                <div className="flex flex-row gap-4 ml-auto">
+                                <div className="flex flex-row md:gap-4 gap-2 md:ml-auto ml-[-35px]">
                                     <UserRoundX
                                         onClick={() => handleRemoveFriend(friend.relationId)}
                                         className="cursor-pointer transition-all md:opacity-0 md:scale-75 group-hover:scale-100 group-hover:opacity-100 hover:bg-red-500/10 
@@ -236,14 +236,14 @@ export default function SocialWindow() {
                             <>
                                 <div className="text-md opacity-75">Pedidos de amizade recebidos</div>
                                 {allReceived.map((req) => (
-                                    <div key={req.relationId} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-(--color-light)/10">
+                                    <div key={req.relationId} className="group flex flex-row items-center gap-3 py-2.5 md:px-3.5 px-3 rounded-md border-1 border-white/10 bg-(--color-light)/10">
                                         <img src={`${req?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
                                         <div className="flex flex-col text-(--color-whity)">
-                                            <h1 className="text-lg">{req.name}</h1>
-                                            <p className="text-[14px] opacity-75">{req.email}</p>
+                                            <h1 className="text-lg max-w-[85%] truncate">{req.name}</h1>
+                                            <p className="text-[14px] opacity-75 max-w-[85%] truncate">{req.email}</p>
                                         </div>
 
-                                        <div className="flex flex-row gap-4 ml-auto">
+                                        <div className="flex flex-row gap-4 md:ml-auto ml-[-35px]">
                                             <Check
                                                 onClick={() => handleAcceptRequest(req.relationId)}
                                                 className="cursor-pointer transition-all hover:bg-green-500/10 hover:border-green-500 hover:text-green-500 w-9.5 h-9.5 p-1.5 bg-white/5 border border-white/40 rounded-md" />
@@ -262,14 +262,14 @@ export default function SocialWindow() {
                             <>
                                 <div className={`${allReceived.length > 0 ? 'mt-3' : ''} text-md opacity-75`}>Pedidos de amizade enviados</div>
                                 {allPending.map((req) => (
-                                    <div key={req.relationId} className="group flex flex-row items-center gap-3 py-2.5 px-3.5 rounded-md border-1 border-white/10 bg-white/6">
+                                    <div key={req.relationId} className="group flex flex-row items-center gap-3 py-2.5 md:px-3.5 px-3 rounded-md border-1 border-white/10 bg-white/6">
                                         <img src={`${req?.profileImage || "/assets/images/profile.png"}`} alt="" className="z-20 w-10 h-10 rounded-full" />
                                         <div className="flex flex-col">
                                             <h1 className="text-lg">{req.name}</h1>
                                             <p className="text-[14px] opacity-75">{req.email}</p>
                                         </div>
 
-                                        <div className="flex flex-row gap-4 ml-auto">
+                                        <div className="flex flex-row gap-4 md:ml-auto ml-[-35px]">
                                             <X
                                                 onClick={() => handleCancelSent(req.relationId)}
                                                 className="cursor-pointer transition-all hover:bg-red-300/15 
@@ -379,7 +379,7 @@ export default function SocialWindow() {
 
                         <p className={`${error ? 'p-1 px-2' : 'p-0 px-0 opacity-0'} transition-all rounded-md text-red-500 bg-red-500/10 self-start`}>{error}</p>
 
-                        <div className="min-h-40 md:p-4 p-2 gap-3 rounded-md flex flex-col h-full">
+                        <div className="min-h-40 md:p-4 p-1 gap-3 rounded-md flex flex-col h-full">
 
                             <div className="flex flex-row w-full relative select-none">
                                 <div className={`${friendListSection === 'friends' ? 'left-[1px]' : friendListSection === 'pending' ? 'left-[33.5%]' : 'left-[66.8%]'} w-[33%] transition-all h-full absolute

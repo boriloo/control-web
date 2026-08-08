@@ -3,6 +3,7 @@ import { useContextMenuHook } from "./contextMenuHook";
 import { useDeleteFileHook } from "./deleteFileHook";
 import { useDesktopConfigHook } from "./desktopConfig";
 import { useFileHook } from "./fileHook";
+import { useGiftHook } from "./giftHook";
 import { useImageViewerHook } from "./imageViewerHook";
 import { useListDesktopHook } from "./listDesktopHook";
 import { useNewDesktopHook } from "./newDesktopHook";
@@ -27,5 +28,6 @@ export function useAllWindows() {
         contextMenu: useContextMenuHook(),
         deleteFile: useDeleteFileHook(),
         sendInvite: useSendInviteHook(),
+        gift: useGiftHook(),
     };
 }

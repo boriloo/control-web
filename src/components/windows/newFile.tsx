@@ -154,7 +154,7 @@ export default function NewFileWindow() {
 
     return (
         <div onClick={handleAreaClick} className={`${newFile.currentStatus === 'open' ? returnFilterEffects() : 'pointer-events-none'} 
-        transition-all duration-500 fixed z-200 w-full h-screen flex justify-center items-center md:p-4 p-2 pb-[50px] cursor-pointer`}>
+        transition-all duration-500 fixed z-100 w-full h-screen flex justify-center items-center md:p-4 p-2 pb-[50px] cursor-pointer`}>
             <div onClick={(e) => {e.stopPropagation}} className={`${newFile.currentStatus === 'open' ? 'scale-100' : 'scale-70 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-xl 
             p-4 w-full max-w-[700px] 
             max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative border-1 border-(--color-whity)/10`}>

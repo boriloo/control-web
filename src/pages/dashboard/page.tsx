@@ -27,6 +27,7 @@ import { useFileContext } from "../../context/FileContext";
 import ContextMenu from "../../components/contextMenu";
 import DeleteFileWindow from "../../components/windows/deleteFile";
 import SendInviteWindow from "../../components/windows/sendInvite";
+import GiftWindow from "../../components/windows/gift";
 
 
 export default function DashboardPage() {
@@ -403,7 +404,7 @@ export default function DashboardPage() {
             ></div>)}
             {hasDesktops ? '' : (<PersonalDesktopWindow onFinish={(bool) => setHasDesktops(bool)} />)}
 
-
+            <GiftWindow />
             <ConfigWindow />
             <NewFileWindow />
             <SendInviteWindow />
