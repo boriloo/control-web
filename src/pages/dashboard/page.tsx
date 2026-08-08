@@ -38,7 +38,6 @@ export default function DashboardPage() {
     const { user, hasDesktops, setHasDesktops, currentDesktop, bgColors } = useUser();
     const { newFile, listdt, openLink, contextMenu, dtConfig, deleteFile } = useWindowContext();
     const [start, setStart] = useState<boolean>(false);
-    const [zoom, setZoom] = useState<boolean>(false);
     const [timer, setTimer] = useState<number>(0)
     const [saving, setSaving] = useState<boolean>(false)
     const filesMap = useRef<Map<string, { id: string; xPos: number; yPos: number }>>(new Map());
@@ -126,7 +125,6 @@ export default function DashboardPage() {
     useEffect(() => {
         if (!hasDesktops) return;
         setTimeout(() => { setStart(true) }, 300);
-        setTimeout(() => { setZoom(true) }, 900);
     }, [hasDesktops]);
 
 
@@ -383,41 +381,8 @@ export default function DashboardPage() {
 
     return (
         <>
-            <div
-                className={`${zoom ? 'zoom-screen' : ''} pointer-events-none z-[300] fixed inset-0 bg-black w-full h-screen`}
-                style={{
-                    WebkitMaskImage: "url('assets/images/logoContoruWhite.png'), linear-gradient(#000, #000)",
-                    WebkitMaskRepeat: "no-repeat, no-repeat",
-                    WebkitMaskPosition: "center, center",
-                    WebkitMaskSize: "60%, 100%",
-                    WebkitMaskComposite: "destination-out",
-                    maskImage: "url('assets/images/logoContoruWhite.png'), linear-gradient(#000, #000)",
-                    maskRepeat: "no-repeat, no-repeat",
-                    maskPosition: "center, center",
-                    maskSize: "60%, 100%",
-                    maskComposite: "exclude",
-                }}
-            />
-            <div
-                className={`${zoom ? 'zoom-screen-2' : ''} pointer-events-none z-[300] fixed inset-0 bg-black w-full h-screen`}
-                style={{
-                    WebkitMaskImage: "url('assets/images/logoContoruWhite.png'), linear-gradient(#000, #000)",
-                    WebkitMaskRepeat: "no-repeat, no-repeat",
-                    WebkitMaskPosition: "center, center",
-                    WebkitMaskSize: "60%, 100%",
-                    WebkitMaskComposite: "destination-out",
-                    maskImage: "url('assets/images/logoContoruWhite.png'), linear-gradient(#000, #000)",
-                    maskRepeat: "no-repeat, no-repeat",
-                    maskPosition: "center, center",
-                    maskSize: "60%, 100%",
-                    maskComposite: "exclude",
-                }}
-            />
+            <div className={`${blackScreen ? '' : 'opacity-0 pointer-none select-none'} transition-opacity duration-600 pointer-events-none z-201 absolute bg-black w-full h-screen`} />
 
-            <div className={`${start ? 'opacity-0' : ''} absolute z-150 pointer-events-none transition-all bg-white w-screen h-screen`}></div>
-
-
-            {/* LOADER ANIMATION */}
             <div className="pointer-events-none fixed z-[-3] flex justify-center flex-col gap-2 items-center w-full min-h-screen">
                 <DotLottieReact
                     src="assets/images/loader.lottie"
@@ -428,8 +393,21 @@ export default function DashboardPage() {
                 <p className={`${start ? 'opacity-60' : 'opacity-0'} text-center transition-all text-lg`}>Se seu plano de fundo não estiver carregando, <br /> pode ser um erro no link escolhido.</p>
             </div>
 
-            {/* --- O SEU SISTEMA REAL COMEÇA AQUI, ELE APARECERÁ DENTRO DA LOGO --- */}
-            {hasDesktops && (<div className={`${start ? 'opacity-100 ' : 'opacity-0'} scale-101 flex min-h-screen w-full fixed 
+
+
+
+
+            <div className={`${start ? 'opacity-0' : 'opacity-100'} bg-black transtion-all duration-500 pointer-events-none fixed z-50 flex justify-center items-center w-full min-h-screen`}>
+                <img src="/assets/images/logoContoruWhite.png" alt="Logo" className="w-70 mb-4 mt-4" />
+            </div>
+
+
+
+
+            {/* {hasDesktops && (<div className={`${start ? 'opacity-100 ' : 'blur-3xl opacity-0'} transition-[opacity,filter] duration-1500 scale-101 flex min-h-screen w-full fixed 
+                bg-cover bg-center z-[-2]`}
+                style={{ backgroundImage: `url(${localStorage.getItem('background')})` }}></div>)} */}
+            {hasDesktops && (<div className={`${start ? 'opacity-100 ' : 'blur-xl opacity-0'} scale-101 flex min-h-screen w-full fixed 
                 bg-cover bg-center z-[-1]`}
                 style={{ backgroundImage: `url(${currentDesktop?.backgroundImage})`, transition: 'opacity 0.3s, filter 0.3s' }}
             ></div>)}
