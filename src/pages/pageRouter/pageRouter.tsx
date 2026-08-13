@@ -59,15 +59,18 @@ const NotFoundPage = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="bg-black w-full min-h-screen flex flex-col justify-center items-center gap-6 select-none">
-            <p className="control-text text-[120px] leading-none opacity-20">404</p>
+        <div className="bg-bg w-full min-h-screen flex flex-col justify-center items-center gap-6 select-none">
+            <img src="assets/images/logoContoruWhite.png" className="w-22 opacity-60 absolute left-6 top-6"></img>
+            <p className="text-[170px] leading-none font-oswald font-bold text-main flex gap-2 flex-row items-center justify-center">4
+                <img src="assets/images/dead.png" className="w-39 h-39" />
+                4</p>
             <div className="flex flex-col items-center gap-2">
-                <p className="text-white text-2xl font-light">Página não encontrada</p>
-                <p className="text-white/40 text-base">O endereço que você acessou não existe.</p>
+                <p className="text-fg text-[40px] font-semibold font-fraunces">Página não encontrada</p>
+                <p className="text-white/40 text-[18px]">O endereço que você acessou não existe.</p>
             </div>
             <button
                 onClick={() => navigate('/')}
-                className="mt-4 px-6 py-2.5 border border-white/20 rounded-lg text-white/70 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all cursor-pointer text-sm">
+                className="mt-4 px-6 py-2.5 bg-main rounded-lg text-white hover:text-main hover:bg-white transition-all cursor-pointer text-[18px]">
                 Voltar ao início
             </button>
         </div>
@@ -89,14 +92,14 @@ export default function PageRouter() {
                 {/* resto das rotas com loading e auth */}
                 <Route path="*" element={
                     isLoading ? <LoadingScreen /> :
-                    (
-                        <Routes>
-                            <Route path="/" element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <Navigate to='/auth' replace />} />
-                            <Route path="/auth" element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <AuthPage />} />
-                            <Route path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to='/auth' replace />} />
-                            <Route path="*" element={<NotFoundPage />} />
-                        </Routes>
-                    )
+                        (
+                            <Routes>
+                                <Route path="/" element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <Navigate to='/auth' replace />} />
+                                <Route path="/auth" element={isAuthenticated ? <Navigate to='/dashboard' replace /> : <AuthPage />} />
+                                <Route path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to='/auth' replace />} />
+                                <Route path="*" element={<NotFoundPage />} />
+                            </Routes>
+                        )
                 } />
             </Routes>
         </BrowserRouter>

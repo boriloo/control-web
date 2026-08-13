@@ -23,8 +23,12 @@ export default function ForgotPasswordPage() {
     }
 
     if (sent) return (
-        <div className="bg-black w-full min-h-screen flex flex-col justify-center items-center gap-4">
-            <p className="text-white text-xl">Email enviado!</p>
+        <div className="bg-bg w-full min-h-screen flex flex-col justify-center items-center gap-4">
+
+            <img src="assets/images/logoContoruWhite.png" className="w-22 opacity-60 absolute left-6 top-6"></img>
+
+
+            <p className="text-fg text-[34px] font-semibold font-fraunces">Email enviado!</p>
             <p className="text-white/50 text-sm text-center max-w-xs">
                 Verifique sua caixa de entrada e siga as instruções para redefinir sua senha.
             </p>
@@ -32,9 +36,14 @@ export default function ForgotPasswordPage() {
     )
 
     return (
-        <div className="bg-black w-full min-h-screen flex flex-col justify-center items-center gap-6">
+        <div className="bg-bg w-full min-h-screen flex flex-col justify-center items-center gap-6">
+
+
+            <img src="assets/images/logoContoruWhite.png" className="w-22 opacity-60 absolute left-6 top-6"></img>
+
+
             <div className="flex flex-col gap-1 items-center">
-                <p className="text-white text-2xl">Esqueceu a senha?</p>
+                <p className="text-fg text-[34px] font-semibold font-fraunces">Esqueceu a senha?</p>
                 <p className="text-white/50 text-sm">Enviaremos um link para redefinir sua senha.</p>
             </div>
 
@@ -54,7 +63,7 @@ export default function ForgotPasswordPage() {
                 <button
                     onClick={handleSubmit}
                     disabled={!email || loading}
-                    className="p-3 rounded-lg bg-white/10 hover:bg-white/15 disabled:opacity-50 disabled:pointer-events-none text-white transition-all">
+                    className="p-2 rounded-lg text-[18px] font-medium bg-main hover:bg-white hover:text-main disabled:opacity-50 disabled:saturate-0 disabled:pointer-events-none text-white transition-all cursor-pointer">
                     {loading ? 'Enviando...' : 'Enviar link'}
                 </button>
             </div>

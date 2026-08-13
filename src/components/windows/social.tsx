@@ -342,18 +342,18 @@ export default function SocialWindow() {
                                     <p>{allFriends.length}</p>
                                     <p>Amigos</p>
                                 </div>
-                                <div className="h-full w-[1px] bg-white/20"></div>
+                                {/* <div className="h-full w-[1px] bg-white/20"></div>
                                 <div className="flex flex-col items-center gap-1">
                                     <p>15</p>
                                     <p>Colegas</p>
-                                </div>
+                                </div> */}
                             </div>
 
-                            <button className="flex flex-row gap-2 items-center p-1 mt-2 text-[16px] 
+                            {/* <button className="flex flex-row gap-2 items-center p-1 mt-2 text-[16px] 
                             px-3 border-[1.5px] border-white/20 cursor-pointer rounded-md bg-(--color-dark) self-center text-white transition-all hover:border-(--color-lighter) hover:text-(--color-lighter) hover:bg-zinc-950">
                                 <p>Copiar Link de amizade</p>
                                 <Clipboard size={16} />
-                            </button>
+                            </button> */}
 
                         </div>
                     )}

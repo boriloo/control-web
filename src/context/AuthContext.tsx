@@ -135,8 +135,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const cRegular = getDesaturatedTone(r, g, b, 0.30, 0.25);
 
                 // Usando getDesaturatedTone para light e lighter com saturação bem baixa
-                const cLight = getDesaturatedTone(r, g, b, 0.85, 1.25);
-                const cLighter = getDesaturatedTone(r, g, b, 1.05, 1.20);
+                const cLight = getDesaturatedTone(r, g, b, 0.85, 1.15);
+                const cLighter = getDesaturatedTone(r, g, b, 1.05, 1.10);
 
                 const cWhity = getDesaturatedTone(r, g, b, 3.0, 0.15);
 

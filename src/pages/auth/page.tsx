@@ -58,6 +58,7 @@ export default function AuthPage() {
         "TRANSFORME IDEIAS COMPLEXAS EM PROJETOS ORGANIZADOS",
         "CENTRALIZE SUA PRODUTIVIDADE EM UM ÚNICO LUGAR",
     ];
+
     useEffect(() => {
         const interval = setInterval(() => {
             setFade(false);
@@ -74,6 +75,18 @@ export default function AuthPage() {
 
     useEffect(() => {
         setTimeout(() => { setApproved(false) }, 100);
+    }, []);
+
+    useEffect(() => {
+        const imagesToPreload = [
+            'assets/images/lake.jpg',
+            'assets/images/sunflower2.jpg'
+        ];
+
+        imagesToPreload.forEach((src) => {
+            const img = new Image();
+            img.src = src;
+        });
     }, []);
 
     const { register, handleSubmit, formState: { errors }, clearErrors } = useForm<FormData>({
@@ -95,6 +108,7 @@ export default function AuthPage() {
                 setApproved(true)
             } catch (error: any) {
                 if (error.response.data.error === 'Invalid email or password.') setError('Dados Inválidos')
+                if (error.response.data.error === 'Too many requests. Try again later.') setError('Muitas tentativas, tente mais tarde.')
                 setSent(false)
             }
         } else {
@@ -110,6 +124,7 @@ export default function AuthPage() {
                 await authLoginUser({ email: registerData.email, password: registerData.password, rememberMe: false } as LoginData);
             } catch (error: any) {
                 if (error.response.data.error === 'User already exists.') setError('Usuário já existente')
+                if (error.response.data.error === 'Too many requests. Try again later.') setError('Muitas tentativas, tente mais tarde.')
                 setSent(false)
 
             }
@@ -136,18 +151,27 @@ export default function AuthPage() {
              min-h-screen w-full fixed bg-cover bg-center bg-bg transition-all duration-1000 z-[-1] overflow-hidden`}>
             </div>
 
+            <img src="assets/images/logoContoruWhite.png" className="w-22 opacity-60 absolute left-6 top-6"></img>
+
             <div className="flex justify-center items-center  w-full min-h-screen">
                 <div className="flex flex-row justify-start w-full min-h-screen items-center gap-6 z-30">
 
-                    <div className={`max-w-[750px] p-4 md:px-10 transition-all bg-bg/60 backdrop-blur-sm duration-500 select-none flex flex-col 
+                    <div className={`max-w-[750px] p-4 md:px-10 transition-all duration-500 select-none flex flex-col 
                 items-center w-full`}>
 
 
-                        <h1 className={`${error ? 'text-red-400 p-1 px-2 bg-red-700/20' : ''} rounded-md mt-6 transition-all font-fraunces font-medium`}>
-                            {error ? error : loginForm ? (<p className="text-[50px]/[55px] text-center">Entrar com {isMobile && (<br/>)}<span className="text-main">e-mail</span></p>)
-                                :
-                                (<p className="text-[50px] text-center">Crie sua <span className="text-main">conta</span></p>)}
+                        <h1 className="rounded-md mt-6 transition-all font-fraunces font-medium">
+                            <p className={`${error ? 'text-red-400 p-1 px-3 bg-red-700/20 rounded-md' : ''} text-[50px]/[55px] text-fg text-center`}>
+                                {error ? error : (
+                                    loginForm ? (
+                                        <>Entrar com {isMobile && <br />}<span className="text-main">e-mail</span></>
+                                    ) : (
+                                        <>Crie sua <span className="text-main">conta</span></>
+                                    )
+                                )}
+                            </p>
                         </h1>
+
                         <form className="w-full mt-6 flex flex-col gap-4 items-start" id="loginForm" onSubmit={handleSubmit(handleFormSubmit)}>
 
                             <input {...register("name")} type="text" name="name" placeholder="Nome" spellCheck="false"
@@ -194,9 +218,9 @@ export default function AuthPage() {
 
                             <button type="submit"
                                 disabled={sent}
-                                className={`${loginForm ? '' : 'mt-4'} ${sent ? 'opacity-50' : 'cursor-pointer'} flex justify-center items-center hover:bg-white
+                                className={`${loginForm ? '' : 'mt-4'} ${sent ? 'opacity-70 scale-80' : 'cursor-pointer hover:scale-101 hover:bg-white'} flex justify-center items-center 
                             overflow-hidden p-6.5 w-full max-h-10 self-center bg-main hover:text-main
-                             text-white font-medium rounded-md text-xl transition-all duration-250 hover:scale-101`}>
+                             text-white font-medium rounded-md text-xl transition-all duration-250 `}>
                                 {sent ? (<DotLottieReact
                                     src="assets/images/loader.lottie"
                                     className="w-26 p-0"
@@ -228,7 +252,7 @@ export default function AuthPage() {
 
                     {!isMobile && (
                         <div className="flex-1 h-full min-h-screen bg-cover bg-center transition-all duration-500"
-                            style={{ backgroundImage: loginForm ? 'url(assets/images/lake.jpg)' : 'url(assets/images/sunflower.jpg)' }}>
+                            style={{ backgroundImage: loginForm ? 'url(assets/images/lake.jpg)' : 'url(assets/images/sunflower2.jpg)' }}>
                         </div>
                     )}
 

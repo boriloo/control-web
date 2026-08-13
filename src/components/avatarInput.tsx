@@ -216,14 +216,14 @@ export function AvatarImageInput({ onFileSelected, currentImageUrl }: AvatarImag
                             <button
                                 disabled={loading}
                                 onClick={handleCancelCrop}
-                                className="px-6 py-2 border-1 border-zinc-300 text-zinc-300 cursor-pointer rounded-lg hover:bg-zinc-950 hover:border-red-500 hover:text-red-500 transition"
+                                className="px-6 py-2 border-1 text-[20px] border-zinc-300 text-zinc-300 cursor-pointer rounded-lg hover:bg-zinc-950 hover:border-red-500 hover:text-red-500 transition"
                             >
                                 Cancelar
                             </button>
                             {loading ? (
                                 <button
                                     onClick={handleConfirmCrop}
-                                    className="px-6 py-2 border-1 border-zinc-300 text-zinc-300 cursor-pointer rounded-lg hover:border-blue-500 hover:text-white hover:bg-blue-500 transition"
+                                    className="px-6 py-2 text-[20px] text-white bg-main cursor-pointer rounded-lg hover:bg-white hover:text-main transitionn"
                                     disabled={!crop.width || !crop.height}
                                 >
                                     <DotLottieReact
@@ -236,7 +236,7 @@ export function AvatarImageInput({ onFileSelected, currentImageUrl }: AvatarImag
                             ) : (
                                 <button
                                     onClick={handleConfirmCrop}
-                                    className="px-6 py-2 border-1 border-zinc-300 text-zinc-300 cursor-pointer rounded-lg hover:border-blue-500 hover:text-white hover:bg-blue-500 transition"
+                                    className="px-6 py-2 text-[20px] text-white bg-main cursor-pointer rounded-lg hover:bg-white hover:text-main transition"
                                     disabled={!crop.width || !crop.height}
                                 >
                                     Confirmar

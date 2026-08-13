@@ -6,8 +6,10 @@
 
 @theme {
   --color-main: #e73f1e;
+  --color-mainSec: #FB6C00;
   --color-bg: #0F0F10;
   --color-bgSec: #131314;
+  --color-fg: #F2F2E5;
 
   --font-oswald: "Oswald";
   --font-fraunces: "Fraunces";

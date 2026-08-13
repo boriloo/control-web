@@ -183,12 +183,12 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
 
     return (
         <div
-            className={`${done2 ? '' : 'bg-zinc-950'} ${hasDesktops ? 'opacity-0' : ''} transition-all absolute z-200 w-full min-h-screen flex justify-center items-center p-8`}>
+            className={`${done2 ? '' : 'bg-bg'} ${hasDesktops ? 'opacity-0' : ''} transition-all absolute z-200 w-full min-h-screen flex justify-center items-center p-8`}>
             <div className={`${done2 ? 'opacity-0 pointer-events-none' : done ? 'opacity-100' : 'opacity-0 pointer-events-none'} transition-all duration-500 
             absolute z-200 bg-zinc-950 w-full min-h-screen flex justify-center items-center p-4`}>
-                <h1 className={`${done ? 'opacity-100 mt-0' : 'opacity-0 mt-7'} transition-all duration-700 text-[40px] text-center`}>Tudo pronto. <br /> Aproveite :)</h1>
+                <h1 className={`${done ? 'opacity-100 mt-0' : 'opacity-0 mt-7'} transition-all duration-700 text-[40px] text-center`}>Tudo pronto. <br /> Aproveite</h1>
             </div>
-            <img src="assets/images/logoContoruWhite.png" className="w-20 opacity-60 absolute right-10 top-10"></img>
+            <img src="assets/images/logoContoruWhite.png" className="w-22 opacity-60 absolute left-6 top-6"></img>
 
             <div className={`${start ? 'opacity-0' : 'opacity-100'} bg-black transtion-all duration-500 pointer-events-none fixed z-50 flex 
             flex-col justify-center items-center w-full min-h-screen`}>
@@ -202,18 +202,6 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                 <p className={`opacity-80 control-text text-[20px] transition-all `}>(Se essa tela persistir, recarregue a página)</p>
             </div>
 
-            <div className={`${done2 ? 'opacity-0' : ''}
-             min-h-screen w-full fixed bg-cover bg-black/80 bg-center top-0 transition-all duration-1000 z-[-1] overflow-hidden brightness-75`}>
-
-                <div className="aurora-container">
-                    <div className="aurora-sphere aurora-1"></div>
-                    <div className="aurora-sphere aurora-2"></div>
-                    <div className="aurora-sphere aurora-3"></div>
-                    <div className="aurora-sphere aurora-4"></div>
-                </div>
-
-            </div>
-
             {loading ?
                 (<div className={`${done2 ? 'opacity-0' : ''} flex flex-col gap-2 items-center w-full max-w-[600px]`}>
                     <DotLottieReact
@@ -224,14 +212,14 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                     />
                     <h1 className="text-[30px] text-center">Seu desktop está sendo feito...</h1>
                     <div className="mt-2 w-full h-2 bg-black rounded-md overflow-hidden relative">
-                        <div style={{ width: `${percentage}%` }} className={`absolute h-full transition-all duration-150 bg-rose-400`}>
+                        <div style={{ width: `${percentage}%` }} className={`absolute h-full transition-all duration-150 bg-main`}>
                         </div>
                     </div>
                 </div>)
                 :
-                (<div className="flex flex-col items-center w-full max-w-[1000px] gap-8 select-none">
+                (<div className="flex flex-col items-center w-full max-w-[1000px] mt-[-10px] gap-8 select-none">
 
-                    <div className="flex flex-row items-center gap-3 p-3 bg-linear-to-b from-white/9 to-white/1 absolute top-5 left-5 md:scale-100 scale-80 origin-top-left
+                    <div className="flex flex-row items-center gap-3 p-3 bg-linear-to-b from-white/9 to-white/1 absolute top-5 right-5 md:scale-100 scale-80 origin-top-right
                     backdrop-blur-md rounded-xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_4px_10px_rgba(0,0,0,0.3)]">
                         <img src={`${user?.profileImage || "/assets/images/profile.png"}`} className="rounded-full w-11 h-11" />
                         <div className="flex flex-col justify-center">
@@ -247,29 +235,29 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                     <div className="w-full gap-3 flex flex-row items-center md:mt-0 mt-16">
 
                         <ChevronLeft onClick={previousStage} size={40} className={`${stage === 1 ? 'saturate-0 opacity-50 pointer-events-none' : ''} p-1 rounded-full 
-                        bg-zinc-200/10 transition-all cursor-pointer hover:text-rose-400 hover:bg-zinc-200/20`} />
+                        bg-zinc-200/10 transition-all cursor-pointer hover:text-main hover:bg-zinc-200/20`} />
 
-                        <div className={`${stage === 1 ? 'bg-rose-400' : 'bg-zinc-700'} flex-1 h-1 transition-all rounded-full`}></div>
-                        <div className={`${stage === 2 ? 'bg-rose-400' : 'bg-zinc-700'} flex-1 h-1 transition-all rounded-full`}></div>
-                        <div className={`${stage === 3 ? 'bg-rose-400' : 'bg-zinc-700'} flex-1 h-1 transition-all rounded-full`}></div>
+                        <div className={`${stage === 1 ? 'bg-main' : 'bg-zinc-700'} flex-1 h-1 transition-all rounded-full`}></div>
+                        <div className={`${stage === 2 ? 'bg-main' : 'bg-zinc-700'} flex-1 h-1 transition-all rounded-full`}></div>
+                        <div className={`${stage === 3 ? 'bg-main' : 'bg-zinc-700'} flex-1 h-1 transition-all rounded-full`}></div>
 
                         <ChevronRight onClick={nextStage} size={40} className={`${!isNextArrowAvailable() ? 'saturate-0 opacity-50 pointer-events-none' : ''} p-1 rounded-full 
-                        bg-zinc-200/10 transition-all cursor-pointer hover:text-rose-400 hover:bg-zinc-200/20`} />
+                        bg-zinc-200/10 transition-all cursor-pointer hover:text-main hover:bg-zinc-200/20`} />
 
                     </div>
 
                     <h1 className={`${stage === 1 ? '' : 'opacity-0 pointer-events-none z-0'} transition-all md:text-[55px] text-[41px] gap-1 text-center`}>
-                        Crie seu primeiro <p className="text-rose-400 mt-[-10px]">Desktop</p>
+                        Crie seu primeiro <p className="text-main mt-[-10px]">Desktop</p>
                     </h1>
 
                     <div className={`${stage === 1 ? '' : 'opacity-0 pointer-events-none z-0'} flex flex-col gap-1 w-full max-w-[600px] transition-all`}>
                         <p className="md:text-2xl text-lg">Qual será o nome do desktop?</p>
                         <input type="text" onChange={(e) => setDesktopName(e.target.value)} className="border-b-1 border-zinc-400 outline-none transition-all text-xl 
-                                cursor-pointer focus:cursor-text p-1 px-2 focus:border-rose-400 focus:bg-zinc-700/40 w-full " />
+                                cursor-pointer focus:cursor-text p-1 px-2 focus:border-main focus:bg-zinc-700/40 w-full " />
                     </div>
 
                     <button onClick={nextStage} disabled={!desktopName || stage != 1} className={`${stage === 1 ? 'z-10' : 'opacity-0 pointer-events-none z-0'} ${!desktopName ? 'pointer-events-none saturate-0 opacity-40' : ''}
-                    bg-rose-600 border-none text-xl p-2 px-6 font-medium cursor-pointer rounded-sm transition-all hover:bg-rose-400 hover:scale-105`}>
+                    bg-main border-none text-xl p-2 px-6 font-medium cursor-pointer rounded-sm transition-all hover:bg-mainSec hover:scale-105`}>
                         Continuar
                     </button>
 
@@ -277,19 +265,19 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                     {/* ESTAGIO 2 */}
 
                     <h1 className={`${stage === 2 ? '' : 'opacity-0 pointer-events-none z-0'} transition-all md:text-[55px] text-[41px] gap-1 text-center md:mt-[-368px] mt-[-328px]`}>
-                        Escolha o<p className={`text-rose-400 mt-[-10px]`}>Plano de Fundo</p>
+                        Escolha o<p className={`text-main mt-[-10px]`}>Plano de Fundo</p>
                     </h1>
 
                     <div className={`${stage === 2 ? '' : 'opacity-0 pointer-events-none z-0'} flex flex-row gap-3 w-full max-w-[800px] transition-all`}>
-                        <div onClick={() => setTypaBackground('upload')} className={`${typaBackground === 'upload' ? 'bg-rose-500' : 'bg-zinc-900 hover:bg-zinc-950/80'} p-2 flex-1 hover:scale-105
+                        <div onClick={() => setTypaBackground('upload')} className={`${typaBackground === 'upload' ? 'bg-main' : 'bg-zinc-900 hover:bg-zinc-950/80'} p-2 flex-1 hover:scale-105
                         rounded-md text-center cursor-pointer transition-all text-lg shadow-2xl`}>
                             Upload
                         </div>
-                        <div onClick={() => setTypaBackground('url')} className={`${typaBackground === 'url' ? 'bg-rose-500' : 'bg-zinc-900 hover:bg-zinc-950/80'} p-2 flex-1 hover:scale-105
+                        <div onClick={() => setTypaBackground('url')} className={`${typaBackground === 'url' ? 'bg-main' : 'bg-zinc-900 hover:bg-zinc-950/80'} p-2 flex-1 hover:scale-105
                         rounded-md text-center cursor-pointer transition-all text-lg shadow-2xl`}>
                             URL
                         </div>
-                        <div onClick={() => setTypaBackground('color')} className={`${typaBackground === 'color' ? 'bg-rose-500' : 'bg-zinc-900 hover:bg-zinc-950/80'} p-2 flex-1 hover:scale-105
+                        <div onClick={() => setTypaBackground('color')} className={`${typaBackground === 'color' ? 'bg-main' : 'bg-zinc-900 hover:bg-zinc-950/80'} p-2 flex-1 hover:scale-105
                         rounded-md text-center cursor-pointer transition-all text-lg shadow-2xl`}>
                             Cor Fixa
                         </div>
@@ -305,21 +293,21 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                     <div className={`${(stage === 2 && typaBackground === 'url') ? 'h-20' : 'opacity-0 pointer-events-none z-0 h-0'} flex flex-col gap-1 w-full max-w-[600px] transition-all overflow-hidden mt-[-40px]`}>
                         <p className="text-xl">URL da imagem</p>
                         <input type="text" onChange={(e) => setBackgroundUrl(e.target.value)} className="border-b-1 border-zinc-400 outline-none transition-all text-xl 
-                                cursor-pointer focus:cursor-text p-1 px-2 focus:border-rose-400 focus:bg-zinc-700/40 w-full " />
+                                cursor-pointer focus:cursor-text p-1 px-2 focus:border-main focus:bg-zinc-700/40 w-full " />
                     </div>
 
                     <div className={`${(stage === 2 && typaBackground === 'color') ? 'h-20' : 'opacity-0 pointer-events-none z-0 h-0'} flex flex-row gap-3 transition-all items-center mt-[-40px] justify-center`}>
-                        <div onClick={() => setColorSelected('red')} className={`${colorSelected === 'red' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                        <div onClick={() => setColorSelected('red')} className={`${colorSelected === 'red' ? 'border-main shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-red-500 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-red-400`}></div>
-                        <div onClick={() => setColorSelected('blue')} className={`${colorSelected === 'blue' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                        <div onClick={() => setColorSelected('blue')} className={`${colorSelected === 'blue' ? 'border-main shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-blue-600 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-blue-500 `}></div>
-                        <div onClick={() => setColorSelected('black')} className={`${colorSelected === 'black' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                        <div onClick={() => setColorSelected('black')} className={`${colorSelected === 'black' ? 'border-main shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-zinc-950 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-zinc-900`}></div>
-                        <div onClick={() => setColorSelected('purple')} className={`${colorSelected === 'purple' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                        <div onClick={() => setColorSelected('purple')} className={`${colorSelected === 'purple' ? 'border-main shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-purple-500 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-purple-400`}></div>
-                        <div onClick={() => setColorSelected('green')} className={`${colorSelected === 'green' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                        <div onClick={() => setColorSelected('green')} className={`${colorSelected === 'green' ? 'border-main shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-green-500 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-green-400`}></div>
-                        <div onClick={() => setColorSelected('orange')} className={`${colorSelected === 'orange' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                        <div onClick={() => setColorSelected('orange')} className={`${colorSelected === 'orange' ? 'border-main shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-orange-500 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-orange-400`}></div>
                     </div>
 
@@ -332,7 +320,7 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                             Voltar
                         </button>
                         <button onClick={nextStage} disabled={stage != 2} className={`${stage === 2 ? !isStage2ButtonAvailable() ? 'pointer-events-none saturate-0 opacity-40' : 'z-10' : 'opacity-0 pointer-events-none z-0'}
-                    bg-rose-600 border-none text-xl p-2 px-6 font-medium cursor-pointer rounded-sm transition-all hover:bg-rose-400 hover:scale-105`}>
+                    bg-main border-none text-xl p-2 px-6 font-medium cursor-pointer rounded-sm transition-all hover:bg-mainSec hover:scale-105`}>
                             Continuar
                         </button>
                     </div>
@@ -344,15 +332,15 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
 
                     <h1 className={`${stage === 3 ? '' : 'opacity-0 pointer-events-none z-0'} transition-all md:text-[55px] text-[41px]/[40px] gap-1 text-center md:mt-[-368px] mt-[-328px] flex flex-wrap justify-center items-center 
                     gap-3`}>
-                        Qual será o <p className="text-rose-400">Tipo</p> de Desktop?
+                        Qual será o <p className="text-main">Tipo</p> de Desktop?
                     </h1>
 
                     <div className={`${stage === 3 ? '' : 'opacity-0 pointer-events-none z-0'} flex flex-row gap-3 w-full max-w-[800px] transition-all`}>
-                        <div onClick={() => setTypaDesktop('personal')} className={`${typaDesktop === 'personal' ? 'bg-rose-500' : 'bg-zinc-900 hover:bg-zinc-950/80'} p-2 flex-1 
+                        <div onClick={() => setTypaDesktop('personal')} className={`${typaDesktop === 'personal' ? 'bg-main' : 'bg-zinc-900 hover:bg-zinc-950/80'} p-2 flex-1 
                         rounded-md text-center cursor-pointer transition-all text-lg shadow-2xl hover:scale-105`}>
                             Pessoal
                         </div>
-                        <div onClick={() => setTypaDesktop('shared')} className={`${typaDesktop === 'shared' ? 'bg-rose-500' : 'bg-zinc-900 hover:bg-zinc-950/80'} p-2 flex-1 
+                        <div onClick={() => setTypaDesktop('shared')} className={`${typaDesktop === 'shared' ? 'bg-main' : 'bg-zinc-900 hover:bg-zinc-950/80'} p-2 flex-1 
                         rounded-md text-center cursor-pointer transition-all text-lg shadow-2xl hover:scale-105`}>
                             Compartilhado
                         </div>
@@ -364,7 +352,7 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                     <p className={`${(typaDesktop === 'shared' && stage === 3) ? '' : 'opacity-0 pointer-events-none z-[-1] h-0'} text-xl transition-all mt-[-60px] text-center`}>
                         Um desktop para você e outras pessoas, com arquivos compartilhados.</p>
 
-                    <p className={`${stage === 3 ? 'opacity-60' : 'opacity-0'} md:text-xl text-base transition-all`}>(Você pode mudar isso depois)</p>
+                    <p className={`${stage === 3 ? 'opacity-60' : 'opacity-0 pointer-events-none z-0'} md:text-xl text-base transition-all`}>(Você pode mudar isso depois)</p>
 
                     <div className="flex flex-row gap-3">
                         <button onClick={previousStage} disabled={stage != 3} className={`${stage === 3 ? 'z-10' : 'opacity-0 pointer-events-none z-0'}
@@ -372,7 +360,7 @@ export default function PersonalDesktopWindow({ onFinish }: PersonalProps) {
                             Voltar
                         </button>
                         <button onClick={handleSubmit} disabled={stage != 3} className={`${stage === 3 ? !colorSelected ? 'pointer-events-none saturate-0 opacity-40' : '' : 'opacity-0 pointer-events-none z-0'}
-                    bg-rose-600 border-none md:text-xl text-lg p-2 md:px-6 md:w-50 w-40 font-medium cursor-pointer rounded-sm transition-all hover:bg-rose-400 hover:scale-105`}>
+                    bg-main border-none md:text-xl text-lg p-2 md:px-6 md:w-50 w-40 font-medium cursor-pointer rounded-sm transition-all hover:bg-white hover:text-main hover:scale-105`}>
                             Criar Desktop
                         </button>
                     </div>
