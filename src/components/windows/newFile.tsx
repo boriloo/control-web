@@ -159,7 +159,7 @@ export default function NewFileWindow() {
             p-4 w-full max-w-[700px] 
             max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative`}>
                 <X onClick={closeWindow} size={35} className="absolute top-0 right-0 p-2 rounded-bl-lg cursor-pointer transition-all hover:bg-red-500 md:bg-transparent bg-red-500" />
-                <h1 className="text-[22px] flex gap-1.5 flex-row flex-wrap">Criar um novo item em
+                <h1 className="text-[22px] flex gap-1.5 flex-row flex-wrap md:w-full w-[90%]">Criar um novo item em
                     {newFile.file ?
                         (
                             <>

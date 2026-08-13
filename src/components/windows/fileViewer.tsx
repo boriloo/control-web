@@ -36,6 +36,8 @@ export default function FileWindow() {
 
         setAnimKey(prev => prev + 1);
         const initInternalFiles = async () => {
+            if (!fileViewer.file) return;
+
             try {
                 const files = await getFilesFromParentService(currentDesktop?.id, fileViewer.file.id)
                 const pathData = await getFileParentNamesService(currentDesktop.id, fileViewer.file.parentId)

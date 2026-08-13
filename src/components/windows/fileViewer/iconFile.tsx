@@ -157,7 +157,7 @@ export default function IconFile({ file, animationKey, index, imageValidations }
                 key={`${file.id}-${animationKey}`}
                 onClick={handleClick}
                 onDoubleClick={() => returnAction()}
-                className={`group/inner flex flex-col p-3 gap-4 rounded-md transition-all cursor-pointer justify-center
+                className={`group/inner flex flex-col p-3 gap-4 rounded-md transition-all cursor-pointer justify-center md:bg-transparent bg-white/5
                 hover:bg-white/10 hover:to-(--color-light)/15 animate-slideIn opacity-0 items-center relative select-none
              w-full max-w-[112px] h-[112px]`}
                 style={{
@@ -181,7 +181,8 @@ export default function IconFile({ file, animationKey, index, imageValidations }
                 </div>
 
 
-                <div onClick={handleDeleteFile} className="scale-0 group-hover/inner:scale-100 flex justify-center absolute top-[-8px] right-[-13px] cursor-pointer items-center transition-all p-1.5
+                <div onClick={handleDeleteFile} className="md:scale-0 group-hover/inner:scale-100 flex justify-center absolute top-[-8px] right-[-13px] cursor-pointer 
+                items-center transition-all p-1.5
                             bg-red-500 text-white hover:bg-white hover:text-red-600 rounded-full z-10">
                     <Trash2 size={18} />
                 </div>

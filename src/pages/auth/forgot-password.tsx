@@ -25,7 +25,7 @@ export default function ForgotPasswordPage() {
     if (sent) return (
         <div className="bg-bg w-full min-h-screen flex flex-col justify-center items-center gap-4">
 
-            <img src="assets/images/logoContoruWhite.png" className="w-22 opacity-60 absolute left-6 top-6"></img>
+            <img src="/assets/images/logoContoruWhite.png" className="w-22 opacity-60 absolute left-6 top-6"></img>
 
 
             <p className="text-fg text-[34px] font-semibold font-fraunces">Email enviado!</p>
@@ -39,7 +39,7 @@ export default function ForgotPasswordPage() {
         <div className="bg-bg w-full min-h-screen flex flex-col justify-center items-center gap-6">
 
 
-            <img src="assets/images/logoContoruWhite.png" className="w-22 opacity-60 absolute left-6 top-6"></img>
+            <img src="/assets/images/logoContoruWhite.png" className="w-22 opacity-60 absolute left-6 top-6"></img>
 
 
             <div className="flex flex-col gap-1 items-center">
@@ -63,7 +63,8 @@ export default function ForgotPasswordPage() {
                 <button
                     onClick={handleSubmit}
                     disabled={!email || loading}
-                    className="p-2 rounded-lg text-[18px] font-medium bg-main hover:bg-white hover:text-main disabled:opacity-50 disabled:saturate-0 disabled:pointer-events-none text-white transition-all cursor-pointer">
+                    className="p-2 rounded-lg text-[18px] font-medium bg-main hover:bg-white hover:text-main disabled:opacity-50 
+                    disabled:saturate-0 disabled:pointer-events-none text-white transition-all cursor-pointer">
                     {loading ? 'Enviando...' : 'Enviar link'}
                 </button>
             </div>

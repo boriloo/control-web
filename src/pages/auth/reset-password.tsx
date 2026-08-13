@@ -52,16 +52,22 @@ export default function ResetPasswordPage() {
     }
 
     if (done) return (
-        <div className="bg-black w-full min-h-screen flex flex-col justify-center items-center gap-4">
-            <p className="text-white text-xl">Senha redefinida!</p>
+        <div className="bg-bg w-full min-h-screen flex flex-col justify-center items-center gap-4">
+
+            <img src="/assets/images/logoContoruWhite.png" className="w-22 opacity-60 absolute left-6 top-6"></img>
+            
+            <p className="text-fg text-[34px] font-semibold font-fraunces">Senha redefinida!</p>
             <p className="text-white/50 text-sm">Redirecionando para o login...</p>
         </div>
     )
 
     return (
-        <div className="bg-black w-full min-h-screen flex flex-col justify-center items-center gap-6">
+        <div className="bg-bg w-full min-h-screen flex flex-col justify-center items-center gap-6">
+
+            <img src="/assets/images/logoContoruWhite.png" className="w-22 opacity-60 absolute left-6 top-6"></img>
+
             <div className="flex flex-col gap-1 items-center">
-                <p className="text-white text-2xl">Nova senha</p>
+                <p className="text-fg text-[34px] font-semibold font-fraunces">Nova senha</p>
                 <p className="text-white/50 text-sm">Escolha uma senha segura.</p>
             </div>
 
@@ -100,7 +106,8 @@ export default function ResetPasswordPage() {
                 <button
                     onClick={handleSubmit}
                     disabled={!password || !confirm || loading}
-                    className="p-3 mt-2 rounded-lg bg-white/10 hover:bg-white/15 disabled:opacity-50 disabled:pointer-events-none text-white transition-all">
+                    className="p-2 rounded-lg text-[18px] font-medium bg-main hover:bg-white hover:text-main disabled:opacity-50 
+                    disabled:saturate-0 disabled:pointer-events-none text-white transition-all cursor-pointer">
                     {loading ? 'Salvando...' : 'Redefinir senha'}
                 </button>
             </div>
