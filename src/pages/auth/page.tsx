@@ -31,7 +31,10 @@ const registerSchema = z.object({
         .regex(/[a-z]/, { message: "Deve conter pelo menos uma letra minúscula." })
         .regex(/[0-9]/, { message: "Deve conter pelo menos um número." })
         .regex(/[^a-zA-Z0-9]/, { message: "Deve conter pelo menos um caractere especial." }),
-    confirmPassword: z.string()
+    confirmPassword: z.string(),
+    acceptTerms: z.boolean().refine((val) => val === true, {
+        message: "Você precisa aceitar os termos de uso.",
+    }),
 }).refine((data: any) => data.password === data.confirmPassword, {
     path: ['password'],
     message: 'As senhas não coincidem',
@@ -89,10 +92,15 @@ export default function AuthPage() {
         });
     }, []);
 
-    const { register, handleSubmit, formState: { errors }, clearErrors } = useForm<FormData>({
+    const { register, handleSubmit, formState: { errors }, clearErrors, setValue, watch } = useForm<FormData>({
         resolver: zodResolver(loginForm ? loginSchema : registerSchema),
-        mode: "all"
+        mode: "all",
+        defaultValues: {
+            acceptTerms: false
+        }
     });
+
+    const acceptTermsValue = watch("acceptTerms");
 
     useEffect(() => {
         clearErrors();
@@ -107,8 +115,8 @@ export default function AuthPage() {
                 await authLoginUser({ email: loginData.email, password: loginData.password, rememberMe } as LoginData);
                 setApproved(true)
             } catch (error: any) {
-                if (error.response.data.error === 'Invalid email or password.') setError('Dados Inválidos')
-                if (error.response.data.error === 'Too many requests. Try again later.') setError('Muitas tentativas, tente mais tarde.')
+                if (error.response?.data?.error === 'Invalid email or password.') setError('Dados Inválidos')
+                if (error.response?.data?.error === 'Too many requests. Try again later.') setError('Muitas tentativas, tente mais tarde.')
                 setSent(false)
             }
         } else {
@@ -123,8 +131,8 @@ export default function AuthPage() {
 
                 await authLoginUser({ email: registerData.email, password: registerData.password, rememberMe: false } as LoginData);
             } catch (error: any) {
-                if (error.response.data.error === 'User already exists.') setError('Usuário já existente')
-                if (error.response.data.error === 'Too many requests. Try again later.') setError('Muitas tentativas, tente mais tarde.')
+                if (error.response?.data?.error === 'User already exists.') setError('Usuário já existente')
+                if (error.response?.data?.error === 'Too many requests. Try again later.') setError('Muitas tentativas, tente mais tarde.')
                 setSent(false)
 
             }
@@ -157,7 +165,7 @@ export default function AuthPage() {
                 <div className="flex flex-row justify-start w-full min-h-screen items-center gap-6 z-30">
 
                     <div className={`max-w-[750px] p-4 md:px-10 transition-all duration-500 select-none flex flex-col 
-                items-center w-full`}>
+                 items-center w-full`}>
 
 
                         <h1 className="rounded-md mt-6 transition-all font-fraunces font-medium">
@@ -176,17 +184,17 @@ export default function AuthPage() {
 
                             <input {...register("name")} type="text" name="name" placeholder="Nome" spellCheck="false"
                                 className={`${!loginForm ? 'h-12.5 py-3' : 'opacity-0 h-0 py-0 mt-[-8px]'} px-4 w-full placeholder-white/80 rounded-md bg-zinc-900 text-white overflow-hidden transition-all
-                         hover:bg-zinc-800 transition-all outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-main`} />
+                                 hover:bg-zinc-800 transition-all outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-main`} />
 
 
                             <input {...register("email")} type="email" name="email" placeholder="E-mail" spellCheck="false"
                                 className="w-full p-3 px-4 placeholder-white/80 rounded-md bg-zinc-900 text-white hover:bg-zinc-800 transition-all outline-1 outline-transparent duration-400 
-                    cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-main" />
+                     cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-main" />
                             <p className={`${errors.email?.message ? 'p-1 px-3' : 'opacity-0 mt-[-10px] '} text-red-500 bg-red-700/10  rounded-sm text-[15px] transition-all`}>{errors.email?.message}</p>
                             <div className="relative w-full">
                                 <input {...register("password")} type={`${seePass ? 'text' : 'password'}`} name="password" placeholder="Senha" spellCheck="false"
                                     className="w-full p-3 px-4 placeholder-white/80 rounded-md bg-zinc-900 text-white hover:bg-zinc-800 transition-all 
-                            outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-main" />
+                             outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-main" />
                                 {!seePass ?
                                     (<Eye onClick={() => setSeePass(true)} className="absolute top-2 text-main cursor-pointer right-2 rounded-sm w-8 h-8 p-1 transition-all hover:bg-main hover:text-white" />)
                                     :
@@ -196,21 +204,36 @@ export default function AuthPage() {
 
                             <input {...register("confirmPassword")} type={`${seePass ? 'text' : 'password'}`} name="confirmPassword" placeholder="Confirmar Senha" spellCheck="false"
                                 className={`${!loginForm ? 'h-12.5 py-3' : 'opacity-0 h-0 py-0 mt-[-8px]'} px-4 w-full placeholder-white/80 rounded-md bg-zinc-900 text-white hover:bg-zinc-800
-                        transition-all outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-main`} />
+                         transition-all outline-1 outline-transparent duration-400 cursor-pointer focus:cursor-text focus:bg-black/50 focus:outline-main`} />
 
+                            {!loginForm && (
+                                <div className="flex flex-col w-full items-start mt-4">
+                                    <div className="flex flex-row gap-2 items-center cursor-pointer select-none" onClick={() => setValue("acceptTerms", !acceptTermsValue, { shouldValidate: true })}>
+                                        <div className={`w-5 h-5 min-w-5 rounded-sm flex justify-center items-center border-[1px] transition-all ${acceptTermsValue ? 'border-main bg-main' : 'border-white'} `}>
+                                            {acceptTermsValue ? (<Check className="w-full text-white" />) : ''}
+                                        </div>
+                                        <p className="text-white text-[16px]">
+                                            Eu concordo com os <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-main hover:underline" onClick={(e) => e.stopPropagation()}>Termos de Uso</a>.
+                                        </p>
+                                    </div>
+                                    <p className={`${(errors as any).acceptTerms?.message ? 'p-1 px-3 mt-2' : 'opacity-0 h-0'} text-red-500 bg-red-700/10 rounded-sm text-[15px] transition-all`}>
+                                        {(errors as any).acceptTerms?.message as string}
+                                    </p>
+                                </div>
+                            )}
 
-                            <div className={`${loginForm ? 'md:h-10 h-20 opacity-100' : 'opacity-0 h-0'} transition-all select-none 
-                        flex flex-row md:justify-between w-full gap-2 flex-wrap items-center`}>
+                            <div className={`${loginForm ? 'md:h-10 h-20 opacity-100' : 'opacity-0 h-0 overflow-hidden'} transition-all select-none 
+                         flex flex-row md:justify-between w-full gap-2 flex-wrap items-center`}>
                                 <div className={`${rememberMe ? 'hover:bg-main/20' : 'hover:bg-zinc-200/15'} flex flex-row gap-2 p-1 px-2 rounded-md transition-all items-center cursor-pointer `} onClick={() => setRememberMe(!rememberMe)}>
                                     <div className={`w-5 h-5 rounded-sm flex justify-center items-center border-[1px] transition-all ${rememberMe ? 'border-main bg-main' : 'border-white'} `}>
                                         {rememberMe && (
                                             <Check className="w-full" />
                                         )}
                                     </div>
-                                    <p className={`${rememberMe ? 'text-main' : 'text-white'} transition-all`}>Lembrar de mim</p>
+                                    <p className={`${rememberMe ? 'text-main' : 'text-white'} transition-all text-[16px]`}>Lembrar de mim</p>
                                 </div>
-                                <button disabled={sent} onClick={() => navigate('/auth/forgot-password')} className="text-main font-medium text-md cursor-pointer 
-                            p-1 px-2 transition-all hover:bg-main/20 rounded-lg md:ml-0 ml-auto">
+                                <button disabled={sent} onClick={(e) => { e.preventDefault(); navigate('/auth/forgot-password'); }} className="text-main font-medium text-md cursor-pointer 
+                             p-1 px-2 transition-all hover:bg-main/20 rounded-lg md:ml-0 ml-auto">
                                     Esqueci minha senha
                                 </button>
                             </div>
@@ -218,9 +241,9 @@ export default function AuthPage() {
 
                             <button type="submit"
                                 disabled={sent}
-                                className={`${loginForm ? '' : 'mt-4'} ${sent ? 'opacity-70 scale-80' : 'cursor-pointer hover:scale-101 hover:bg-white'} flex justify-center items-center 
-                            overflow-hidden p-6.5 w-full max-h-10 self-center bg-main hover:text-main
-                             text-white font-medium rounded-md text-xl transition-all duration-250 `}>
+                                className={`${loginForm ? '' : ''} ${sent ? 'opacity-70D scale-80' : 'cursor-pointer hover:scale-101 hover:bg-white'} flex justify-center items-center 
+                             overflow-hidden p-6.5 w-full max-h-10 self-center bg-main hover:text-main
+                              text-white font-medium rounded-md text-xl transition-all duration-250 `}>
                                 {sent ? (<DotLottieReact
                                     src="assets/images/loader.lottie"
                                     className="w-26 p-0"
@@ -231,10 +254,10 @@ export default function AuthPage() {
                         </form>
 
                         {/* <div className="flex w-full justify-center items-center mt-4">
-                    <p className={`${error ? 'p-1 px-3' : 'opacity-0 mt-[-10px] '} text-red-500 bg-red-700/10  rounded-sm text-[18px] font-medium transition-all`}>{error}</p>
-                </div> */}
+                     <p className={`${error ? 'p-1 px-3' : 'opacity-0 mt-[-10px] '} text-red-500 bg-red-700/10  rounded-sm text-[18px] font-medium transition-all`}>{error}</p>
+                 </div> */}
 
-                        <button disabled={sent} onClick={() => { setLoginForm(!loginForm); setError('') }}
+                        <button disabled={sent} onClick={() => { setLoginForm(!loginForm); setError(''); clearErrors(); }}
                             className={`${sent ? 'opacity-50' : 'cursor-pointer hover:bg-main/20'} underline text-main font-medium mt-5 text-md  p-1 px-2 transition-all  rounded-lg`}>
                             {loginForm ? 'Não possui uma conta?' : 'Já possui uma conta?'}
                         </button>
@@ -244,9 +267,12 @@ export default function AuthPage() {
                         <div onClick={handleGoogleLogin} className="flex flex-col gap-2 w-full items-center">
                             <p className="text-lg">Entrar com</p>
                             <button className="cursor-pointer p-3 w-full flex justify-center items-center max-w-[250px] bg-zinc-100 text-white font-bold rounded-lg hover:bg-white
-                        mt-2 hover:scale-102 transition-all">
+                         mt-2 hover:scale-102 transition-all">
                                 <img src="/assets/images/google.png" className="w-7 h-7" />
                             </button>
+                            <p className="text-white/50 text-[12px] mt-2 text-center max-w-[250px]">
+                                Ao entrar com Google, você concorda com nossos <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">Termos de Uso</a>.
+                            </p>
                         </div>
                     </div>
 

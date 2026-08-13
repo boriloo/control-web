@@ -9,6 +9,7 @@ import PlansPage from "../plans/page";
 import AuthCallbackPage from "../auth/callback";
 import ForgotPasswordPage from "../auth/forgot-password";
 import ResetPasswordPage from "../auth/reset-password";
+import TermsPage from "../terms/page";
 
 const phrases = [
     "Logo",
@@ -85,6 +86,7 @@ export default function PageRouter() {
             <RecoveryRedirect />
             <Routes>
                 {/* sempre acessíveis, independente de loading ou auth */}
+                <Route path="/terms" element={<TermsPage />} />
                 <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/auth/callback" element={<AuthCallbackPage />} />
