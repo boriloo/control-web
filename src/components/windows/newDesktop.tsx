@@ -126,8 +126,9 @@ export default function NewDesktopWindow() {
             }
 
             changeCurrentDesktop(newDesktop)
+            callToast({ message: 'Desktop criado!', type: 'success' })
         } catch (err) {
-            console.log('Erro ao criar: ', err)
+            callToast({ message: 'Erro ao criar desktop!', type: 'error' })
         } finally {
             setLoading(false)
             newdt.closeWindow();
@@ -187,17 +188,17 @@ export default function NewDesktopWindow() {
                     </div>
 
                     <div className={`${typaBackgroundCount === 3 ? 'h-14 mt-[-12px]' : 'h-0 opacity-0 mt-[-10px]'} flex flex-row gap-3 transition-all items-center justify-center overflow-hidden`}>
-                        <div onClick={() => setColorSelected('red')} className={`${colorSelected === 'red' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                        <div onClick={() => setColorSelected('red')} className={`${colorSelected === 'red' ? 'border-main shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-red-500 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-red-400`}></div>
-                        <div onClick={() => setColorSelected('blue')} className={`${colorSelected === 'blue' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                        <div onClick={() => setColorSelected('blue')} className={`${colorSelected === 'blue' ? 'border-main shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-blue-600 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-blue-500 `}></div>
-                        <div onClick={() => setColorSelected('black')} className={`${colorSelected === 'black' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                        <div onClick={() => setColorSelected('black')} className={`${colorSelected === 'black' ? 'border-main shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-zinc-950 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-zinc-900`}></div>
-                        <div onClick={() => setColorSelected('purple')} className={`${colorSelected === 'purple' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                        <div onClick={() => setColorSelected('purple')} className={`${colorSelected === 'purple' ? 'border-main shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-purple-500 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-purple-400`}></div>
-                        <div onClick={() => setColorSelected('green')} className={`${colorSelected === 'green' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                        <div onClick={() => setColorSelected('green')} className={`${colorSelected === 'green' ? 'border-main shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-green-500 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-green-400`}></div>
-                        <div onClick={() => setColorSelected('orange')} className={`${colorSelected === 'orange' ? 'border-rose-400 shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
+                        <div onClick={() => setColorSelected('orange')} className={`${colorSelected === 'orange' ? 'border-main shadow-[inset_0_0px_0px_3px_rgba(0,0,0,1)] w-9 h-9' : 'border-transparent w-7 h-7'} 
                         bg-orange-500 border-3 rounded-full cursor-pointer hover:scale-105 transition-all hover:bg-orange-400`}></div>
                     </div>
                 </div>
@@ -233,8 +234,8 @@ export default function NewDesktopWindow() {
                     </div>
                 </div>
                 <button onClick={handleSubmit} disabled={!canCreate} className={`${!canCreate ? 'pointer-events-none saturate-0 opacity-40' : ''}
-                    bg-rose-500 border-none text-xl ${loading ? 'saturate-0 pointer-events-none' : 'p-2'} flex justify-center px-6 font-medium cursor-pointer 
-                    mt-2 rounded-sm transition-all hover:bg-rose-400 hover:scale-101 `}>
+                    bg-main border-none text-xl ${loading ? 'saturate-0 pointer-events-none' : 'p-2'} flex justify-center px-6 font-medium cursor-pointer 
+                    mt-2 rounded-sm transition-all hover:bg-white hover:text-main hover:scale-101 `}>
                     {loading ? <DotLottieReact
                         src="assets/images/loader.lottie"
                         className="w-26 p-0"

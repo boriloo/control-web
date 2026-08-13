@@ -100,15 +100,17 @@ export default function NewFileWindow() {
                 changeAllFiles([...allFiles, dftFile]);
             }
 
-            // Moveu o toast de sucesso para cá, para não disparar caso dê erro
             callToast({ message: 'Arquivo criado com sucesso!', type: 'success' });
 
             setName(null);
             setUrl(null);
             newFile.closeWindow();
+
         } catch (error) {
+
             console.error("Falha ao criar o arquivo:", error);
             callToast({ message: 'Erro ao criar o arquivo.', type: 'error' });
+
         } finally {
             setLoading(false);
         }
