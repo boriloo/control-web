@@ -35,7 +35,7 @@ const LoadingScreen = () => {
 
     return (
         <div className={`bg-black transition-all duration-500 pointer-events-none fixed z-50 flex flex-col justify-center items-center w-full min-h-screen`}>
-            <p className={`text-[50px] text-end transition-all duration-500 select-none control-text mt-10
+            <p className={`text-[50px]/[54px] text-center transition-all duration-500 select-none control-text mt-10
             ${fade ? 'opacity-100 right-15' : 'opacity-0 right-12'}`}>
 
                 {phrases[currentPhraseIndex] === "Logo" ? (
