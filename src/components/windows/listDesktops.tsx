@@ -170,7 +170,7 @@ export default function ListDesktopsWindow() {
                             minimazeAllWindows();
                             newdt.openWindow();
                             dtConfig.changeDesktop(null)
-                        }} className={`${loading && 'saturate-0 scale-90 opacity-35 pointer-events-none'} bg-rose-500 transition-all cursor-pointer flex flex-row gap-2 group items-center
+                        }} className={`${loading && 'saturate-0 scale-90 opacity-35 pointer-events-none'} bg-main transition-all cursor-pointer flex flex-row gap-2 group items-center
                     hover:bg-white hover:text-(--color-regular) p-2 hover:px-4 rounded-full font-medium`}>
                             <Plus />
                             <p className="w-0 overflow-hidden truncate ml-[-7px] group-hover:w-40 text-[18px]/[22px]">{t("listdt.create")}</p>

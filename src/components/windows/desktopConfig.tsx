@@ -562,12 +562,12 @@ export default function DesktopConfigWindow() {
                                 <h1 className="text-2xl">Tipo de Desktop</h1>
 
                                 <div className={`flex flex-row gap-3 w-full max-w-[800px] transition-all select-none`}>
-                                    <div onClick={() => setTypaDesktop('personal')} className={`${typaDesktop === 'personal' ? 'bg-rose-500' : 'bg-zinc-950 hover:bg-black'}
+                                    <div onClick={() => setTypaDesktop('personal')} className={`${typaDesktop === 'personal' ? 'bg-main' : 'bg-zinc-950 hover:bg-black'}
                                     ${desktopMembers.length > 1 && 'saturate-0 opacity-60 pointer-events-none'} p-2 flex-1 
                         rounded-md text-center cursor-pointer transition-all text-lg shadow-2xl hover:scale-105`}>
                                         Pessoal
                                     </div>
-                                    <div onClick={() => setTypaDesktop('shared')} className={`${typaDesktop === 'shared' ? 'bg-rose-500' : 'bg-zinc-950 hover:bg-black'} p-2 flex-1 
+                                    <div onClick={() => setTypaDesktop('shared')} className={`${typaDesktop === 'shared' ? 'bg-main' : 'bg-zinc-950 hover:bg-black'} p-2 flex-1 
                         rounded-md text-center cursor-pointer transition-all text-lg shadow-2xl hover:scale-105`}>
                                         Compartilhado
                                     </div>

@@ -359,7 +359,7 @@ export default function SocialWindow() {
                     )}
 
                     <div className="flex-2 flex flex-col gap-2 md:p-6 p-3 pt-13 h-full">
-                        <div className="flex md:flex-row flex-col gap-2">
+                        <div className="flex md:flex-row flex-col gap-2 mt-6">
                             <input value={emailReq} onChange={(e) => setEmailReq(e.target.value)} type="email" placeholder="usuario@email.com"
                                 className="bg-zinc-950/40 border-1 flex-1 rounded-sm p-1.5 px-3 border-zinc-800
                             hover:bg-zinc-950/60 transition-all outline-none focus:border-zinc-500 focus:bg-zinc-950/80" />

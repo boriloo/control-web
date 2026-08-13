@@ -157,21 +157,21 @@ export default function NewFileWindow() {
         transition-all duration-500 fixed z-110 w-full h-screen flex justify-center items-center md:p-4 p-2 pb-[50px] cursor-pointer`}>
             <div onClick={(e) => { e.stopPropagation }} className={`${newFile.currentStatus === 'open' ? 'scale-100' : 'scale-70 opacity-0'} cursor-default bg-(--color-dark) origin-center rounded-xl 
             p-4 w-full max-w-[700px] 
-            max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative border-1 border-(--color-whity)/10`}>
+            max-h-full flex flex-col gap-4 overflow-y-auto transition-all relative`}>
                 <X onClick={closeWindow} size={35} className="absolute top-0 right-0 p-2 rounded-bl-lg cursor-pointer transition-all hover:bg-red-500 md:bg-transparent bg-red-500" />
                 <h1 className="text-[22px] flex gap-1.5 flex-row flex-wrap">Criar um novo item em
                     {newFile.file ?
                         (
                             <>
                                 <p className="text-white font-medium max-w-60 truncate">{newFile.file.name} </p>
-                                <p className="text-rose-500">(Pasta)</p>
+                                <p className="text-main">(Pasta)</p>
                             </>
                         )
 
                         :
                         (<>
                             <p className="text-white font-medium max-w-60 truncate">{currentDesktop?.name} </p>
-                            <p className="text-rose-500">(Desktop)</p>
+                            <p className="text-main">(Desktop)</p>
                         </>
                         )
                     }
@@ -217,7 +217,7 @@ export default function NewFileWindow() {
                     </div>
                     <div className="flex flex-row w-[40%] transition-all mt-2">
                         <button onClick={handleCreateFile} disabled={!canCreate} className={`${!canCreate && 'saturate-0 opacity-50 pointer-events-none'} p-1.5 px-5 text-[20px] font-medium cursor-pointer transition-all 
-                         bg-rose-500 hover:bg-white hover:text-(--color-dark) rounded-md w-full flex flex-row justify-center items-center`}>
+                         bg-main hover:bg-white hover:text-(--color-dark) rounded-md w-full flex flex-row justify-center items-center`}>
                             {loading ? <DotLottieReact
                                 src="assets/images/loader.lottie"
                                 className="w-15 p-0"

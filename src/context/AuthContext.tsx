@@ -78,12 +78,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
     const DEFAULT_COLORS = {
-        darker: '#15171a',
-        dark: '#1e2126',
-        regular: '#262d33',
-        light: '#1b6ad1',
-        lighter: '#1d8af0',
-        whity: '#acdbfa',
+        darker: '#0c0c0d',
+        dark: '#131314',
+        regular: '#1a1a1c',
+        light: '#e73f1e',
+        lighter: '#f25124',
+        whity: '#ffe6b8',
     };
 
 
@@ -135,8 +135,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const cRegular = getDesaturatedTone(r, g, b, 0.30, 0.25);
 
                 // Usando getDesaturatedTone para light e lighter com saturação bem baixa
-                const cLight = getDesaturatedTone(r, g, b, 0.85, 0.85);
-                const cLighter = getDesaturatedTone(r, g, b, 1.05, 0.80);
+                const cLight = getDesaturatedTone(r, g, b, 0.85, 1.25);
+                const cLighter = getDesaturatedTone(r, g, b, 1.05, 1.20);
 
                 const cWhity = getDesaturatedTone(r, g, b, 3.0, 0.15);
 
