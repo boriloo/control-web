@@ -488,7 +488,7 @@ export default function DesktopConfigWindow() {
 
                     </div>
 
-                    <div className="flex flex-row gap-6 p-2 mt-[60px] flex-wrap items-start">
+                    <div className="flex flex-row gap-6 p-2 mt-[60px] md:flex-nowrap flex-wrap items-start">
 
                         {dtConfig.desktop?.ownerId === user.id && (
                             <div className="flex flex-col w-full items-start gap-4">
