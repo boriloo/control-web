@@ -20,7 +20,6 @@ export default function ListDesktopsWindow() {
     const [allDesktops, setAllDesktops] = useState<any[]>([]);
     const [desktopInvites, setDesktopInvites] = useState<any[]>([])
 
-
     const handleAreaClick = (e: React.MouseEvent<HTMLElement>) => {
         if (e.target != e.currentTarget) return;
         listdt.minimizeWindow();
@@ -102,17 +101,15 @@ export default function ListDesktopsWindow() {
 
     }, [user, dtConfig.desktop, currentDesktop?.id]);
 
-    const handleChangeDesktop = async (id: string) => {
+    const handleChangeDesktop = async (desktop: DesktopData) => {
         setLoading(true)
         try {
 
             changeRootFiles([])
 
-            const response = await getDesktopByIdService(id)
+            changeCurrentDesktop(desktop)
 
-            changeCurrentDesktop(response)
-
-            localStorage.setItem('last-desktop', response.id);
+            localStorage.setItem('last-desktop', desktop.id);
 
             listdt.closeWindow()
         } catch (err) {
@@ -213,7 +210,7 @@ export default function ListDesktopsWindow() {
 
                     {allDesktops.length >= 1 &&
                         allDesktops.filter(d => d.id !== currentDesktop?.id).map((desktop) => (
-                            <div onClick={() => handleChangeDesktop(desktop.id)} className="group flex flex-row w-full p-4 justify-between bg-(--color-light) min-h-17 max-h-17 items-center rounded-sm 
+                            <div onClick={() => handleChangeDesktop(desktop)} className="group flex flex-row w-full p-4 justify-between bg-(--color-light) min-h-17 max-h-17 items-center rounded-sm 
                     transition-all overflow-hidden cursor-pointer relative gap-2 hover:min-h-25 hover:max-h-25">
                                 <div className="flex flex-row gap-4 relative">
                                     <div className="gap-1 z-2 bg-black/30 backdrop-blur-md p-1 px-3 rounded-full flex flex-row text-lg white 

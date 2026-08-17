@@ -161,7 +161,7 @@ export default function Icon({ icon, beingDragged }: IconProps) {
             onDoubleClick={returnAction}
             className={`${contextMenu.selectedIconId === icon.id || (isMobile && isSelected) ? 
             'bg-blue-500/30 border-blue-500' : `overflow-hidden border-transparent ${beingDragged ? 'scale-105 bg-blue-500/25' : 'hover:bg-white/15'}`} 
-            border-2 transition-all p-1 px-2 duration-300 group select-none flex flex-col justify-center 
+            border-2 transition-all p-1 px-2 duration-200 group select-none flex flex-col justify-center 
             items-center gap-2 w-20 h-full max-h-40 rounded-sm cursor-pointer relative`}
         >
             <div 
