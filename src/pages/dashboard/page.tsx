@@ -59,7 +59,7 @@ export default function DashboardPage() {
 
     useEffect(() => {
         if (isDraggin || filesMap.current.size === 0) {
-            setTimer(20);
+            setTimer(10);
             return;
         }
 
@@ -137,7 +137,7 @@ export default function DashboardPage() {
             changeNextIconPosition(nextPosition);
         };
 
-        setTimer(20)
+        setTimer(10)
 
     }, [rootFiles]);
 
